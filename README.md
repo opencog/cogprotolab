@@ -18,7 +18,7 @@ The application is consisted of two panes. Left pane resembles input command pro
 
 ## how it works
 
-*CogProtoLab* left pane command prompt uses a php telnet connection for exchanging information with CogServer. Upon sending each prompt input, while its output is being captured and displayed, a hidden telnet query command from `visualisation captures output of command` input field is being sent to CogServer. Its output is then captured by *CogProtoLab* and visually displayed in the right pane.
+*CogProtoLab* left pane command prompt uses a php telnet connection for exchanging information with CogServer. Upon sending each prompt input, while its output is being captured and displayed as text, a hidden telnet query command from `visualisation captures output of command` input field is being sent to CogServer. Its output is then captured by *CogProtoLab* and visually displayed in the right pane.
 
 ### installing
 
@@ -37,7 +37,8 @@ As a first step, run `cogserver` from the OS command prompt, then open included 
 
 After opening *CogProtoLab* in web browser, one can perform a simple test to track changing contents of AtomSpace. Copy and paste the following code to *CogProtoLab* command prompt in four steps:
 
-1. 
+1.
+
     ;Boilerplate code for loading the opencog modules
     (use-modules (ice-9 readline)) 
     (activate-readline)
@@ -45,13 +46,15 @@ After opening *CogProtoLab* in web browser, one can perform a simple test to tra
     (use-modules (opencog))
     (use-modules (opencog exec))
 
-2. 
+2.
+
     ;Some relationships
     (Inheritance (Concept "fish") (Concept "Animal"))
     (Inheritance (Concept "dog") (Concept "Animal"))
     (Inheritance (Concept "cat") (Concept "Animal"))
 
-3. 
+3.
+
     ;Graph rewriting declarations
     (define make-pets
         (Bind
@@ -68,7 +71,8 @@ After opening *CogProtoLab* in web browser, one can perform a simple test to tra
                 (Variable "$denizen")
                 (Concept "Pet"))))
 
-4. 
+4.
+
     ;Trigger graph rewriting
     (cog-execute! make-pets)
 
@@ -77,4 +81,3 @@ Entering the above commands to *CogProtoLab* command prompt should give a basic 
 ## licensing information
 
 This package, as the most OpenCog packages, is licensed under [agplv3 License](LICENSE).
-
