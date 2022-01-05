@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<!--?xml version="1.0"?-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>CogProtoLab</title>
+    <link rel="icon" type="image/png" href="./media/favicon128.png"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+   
+    <head>
+        <style media="screen">
+            html, body
+            {
+                background-color: gray;
+                overflow: hidden;
+                height: 100%;
+                width: 100%;
+                margin-top: 0px;
+                margin-left: 0px;
+                pointer-events: auto;
+                touch-action: none;
+                user-select: none;
+            }
+
+            .centerv {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              flex-direction: column;
+            }
+            
+            .centerh {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              flex-direction: row;
+            }
+            
+            a, a.btn:visited, a.btn:link {cursor: pointer; color: rgb(226, 226, 226); text-decoration:underline;}
+            a.btn:hover, a.btn:active {cursor: pointer; color:white; text-decoration:underline;}
+        </style>
+        <script src="init-ctrl.js"></script>
+        <script>
+            function setDesign(pr) {
+                var viewport = document.querySelector("meta[name=viewport]");
+                if (!viewport){
+                    viewport=document.createElement('meta');
+                    viewport.name = "viewport";
+                    document.getElementsByTagName('head')[0].appendChild(viewport);
+                }
+                var sc = 1 / pr;
+                viewport.setAttribute('content', "width=device-width, initial-scale=" + sc + ", maximum-scale=" + sc + ", minimum-scale=" + sc + ", user-scalable=no");
+            }
+            
+            setDesign(window.devicePixelRatio);
+        </script>
+    </head>
+    <body>
+        <noscript>
+        </noscript>
+        <iframe id="ctrl" style="border-style:none; position:fixed;/* top:0; left:0; bottom:0; right:0; width:100%; height:100%;*/ border:none; background-color: gray;"></iframe>
+        <iframe name="fract" id="body" style="border-style:none; position:fixed;/* top:0; left:0; bottom:0; right:0; width:100%; height:100%;*/ border:none; background-color: gray;"></iframe>
+        <a id="fullscrbtn" class="btn" style="position: absolute; text-shadow: 0px 0px 10px rgba(0,0,0,0.5);" hidden>
+            <i class="material-icons" style="font-size: 7em;">fullscreen</i>
+        </a>
+        <a id="helpbtn" class="btn" style="position: absolute; right: 0; bottom: 0; text-shadow: 0px 0px 10px rgba(0,0,0,0.5);">
+            <i class="material-icons" style="font-size: 7em;">help_outline</i>
+        </a>
+        <div id="helpcontainer" class="centerh" style="position: absolute; visibility: hidden; left: 0; top: 0; right: 0; bottom: 0; background-color: rgb(48, 48, 48, 0.95);">
+            <div style="position: absolute; top: 0em; right: 0.5em; font-size: 2.7em; color: lightgray;">×</div>
+            <div id="help0" class="centerv" style="/*position: absolute;*/ background-color: rgb(48, 48, 48, 0.0); border: 1px solid lightgray; padding: 1px;">
+                    <div align="center" style="color: lightgray; width: 520px; padding: 30px; font-family: Arial, Helvetica, sans-serif; font-size: 40px; font-weight: bold; background-color: rgb(48, 48, 48);">
+                    `guile` prompt use
+                    instructions
+                    </div>
+                    <div style="color: lightgray; width: 520px; padding: 30px; font-family: Arial, Helvetica, sans-serif; font-size: 29px; background-color: rgb(48, 48, 48);">
+                        <div style="float: left; width: 30px; height: 100px;">1.</div>
+                        Type a command to `guile` prompt
+                        and press enter to send it to CogServer
+                        Scheme shell.
+                    </div>
+                    <div style="color: lightgray; width: 520px; padding: 30px; font-family: Arial, Helvetica, sans-serif; font-size: 29px; background-color: rgb(48, 48, 48);">
+                        <div style="float: left; width: 30px; height: 100px;">2.</div>
+                        Output of the command is brought back to
+                        the `guile` prompt interface.
+                    </div>
+                    <div style="color: lightgray; width: 520px; padding: 30px; font-family: Arial, Helvetica, sans-serif; font-size: 29px; background-color: rgb(48, 48, 48);">
+                        <div style="float: left; width: 30px; height: 100px;">3.</div>
+                        Visualizer aside is being updated to
+                        reflect the output of visualisation
+                        command.
+                    </div>
+            </div>
+            <div id="help1" class="centerv" style="/*position: absolute;*/ background-color: rgb(48, 48, 48, 0.0); border: 1px solid lightgray; padding: 1px;">
+                    <div align="center" style="color: lightgray; width: 520px; padding: 30px; font-family: Arial, Helvetica, sans-serif; font-size: 40px; font-weight: bold; background-color: rgb(48, 48, 48);">
+                    visualizer navigation instructions
+                    </div>
+                    <div style="color: lightgray; width: 520px; padding: 30px; font-family: Arial, Helvetica, sans-serif; font-size: 29px; background-color: rgb(48, 48, 48);">
+                        <div style="float: left; width: 30px;">1.</div>
+                        <img src="media/li1.png" width="100" style="float: left; padding-right: 10px">
+                        Point and drag inside the central
+                        oval to scroll the visible
+                        contents.
+                    </div>
+                    <div style="color: lightgray; width: 520px; padding: 30px; font-family: Arial, Helvetica, sans-serif; font-size: 29px; background-color: rgb(48, 48, 48);">
+                        <div style="float: left; width: 30px;">2.</div>
+                        <img src="media/li2.png" width="100" style="float: left; padding-right: 10px"/>
+                        Point and drag orbiting ovals
+                        around the central oval to
+                        rotate them.
+                    </div>
+                    <div style="color: lightgray; width: 520px; padding: 30px; font-family: Arial, Helvetica, sans-serif; font-size: 29px; background-color: rgb(48, 48, 48);">
+                        <div style="float: left; width: 30px;">3.</div>
+                        <img src="media/li3.png" width="100" style="float: left; padding-right: 10px"/>
+                        Point and drag orbiting ovals
+                        in or out of the central oval
+                        area to zoom them in or out.
+                    </div>
+            </div>
+        </div>
+        <script>
+            document.body.style.fontSize = Math.sqrt(window.devicePixelRatio) + "em"
+
+            var toggleFullScreen = function () {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    if (document.exitFullscreen) {
+                      document.exitFullscreen();
+                    }
+                }
+            }
+
+            var showHelp = function () {
+                var h = document.getElementById("helpcontainer");
+                var f = 0.95;
+                var fun = function () {
+                    if (f > 0) {
+                        h.style.opacity = 1 - f;
+                        f -= 0.5;
+                        setTimeout (fun, 50);
+                    } else {
+                        h.style.visibility = "visible";
+                        h.style.opacity = 1;
+                    }
+                };
+                
+                h.style.opacity = 0;
+                h.style.visibility = "visible";
+                setTimeout(fun, 50);
+            }
+            
+            var hideHelp = function () {
+                var h = document.getElementById("helpcontainer");
+                var f = 0.95;
+                var fun = function () {
+                    if (f > 0) {
+                        h.style.opacity = f;
+                        f -= 0.5;
+                        setTimeout (fun, 50);
+                    } else {
+                        h.style.visibility = "hidden";
+                        h.style.opacity = 0;
+                    }
+                };
+                
+                h.style.opacity = 1;
+                h.style.visibility = "visible";
+                setTimeout(fun, 50);
+            }
+            
+
+            var setSize = function () {
+                var bd = document.getElementById("body");
+                var ct = document.getElementById("ctrl");
+                var hlp0 = document.getElementById("help0");
+                var hlp1 = document.getElementById("help1");
+                var f = document.getElementById("fullscrbtn");
+                var h = document.getElementById("helpbtn");
+                
+                ctw = 40 * init["font-size"];
+
+                ct.style.top = "0px";
+                ct.style.left = "0px";
+                ct.style.width = ctw + "px";
+                ct.style.height = document.body.clientHeight + "px";
+                
+                bd.style.top = "0px";
+                bd.style.left = ctw + "px";
+                bd.style.width = document.body.clientWidth - ctw + "px";
+                bd.style.height = document.body.clientHeight + "px";
+                
+                hlp0.style.transform = "scale(" + window.devicePixelRatio / 1.7 + ")";
+                hlp1.style.transform = "scale(" + window.devicePixelRatio / 1.7 + ")";
+
+                f.style.right = "0px";
+                f.style.top = "0px";
+                
+                h.style.right = "0px";
+                h.style.bottom = "0px";
+            };
+
+            window.addEventListener('resize', function () {
+                setSize ();
+            });
+
+            window.addEventListener("orientationchange", function () {
+                setSize ();
+            });
+
+            document.getElementById("fullscrbtn").addEventListener('click', toggleFullScreen);
+            document.getElementById("helpbtn").addEventListener('click', showHelp);
+            document.getElementById("helpcontainer").addEventListener('click', hideHelp);
+            
+            document.getElementById("body").src = "fract.html";
+            document.getElementById("ctrl").src = "ctrl.html";
+
+            function refreshOvals () {
+                document.getElementById('body').contentWindow.location.reload(true);
+            }
+            
+            setSize();
+        </script>
+    </body>
+</html>

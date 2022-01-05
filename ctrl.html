@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<!--?xml version="1.0"?-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <head>
+        <style media="screen">
+            section {
+                position: absolute; top:0; bottom:0; left:0; right:0;
+                overflow: hidden;
+            }
+            
+            html, body
+            {
+                overflow: hidden;
+                height: 100%;
+                width: 100%;
+                margin-top: 0px;
+                margin-left: 0px;
+                pointer-events: auto;
+                background-color: gray;
+                touch-action: none;
+                user-select: none;
+            }
+
+            a, a.exHover:visited, a.exHover:link {cursor: pointer; color: lightgray; text-decoration:none; border:0px solid #4466DD;}
+            a.exHover:hover {cursor: pointer; color:white; text-decoration:none; border:0px solid #6699FF;}
+            a.exHover:active {cursor: pointer; color:white; text-decoration:none; border:0px solid #DDDDFF;}
+        </style>
+        
+        <script>
+            function setDesign(pr) {
+                var viewport = document.querySelector("meta[name=viewport]");
+                if (!viewport){
+                    viewport=document.createElement('meta');
+                    viewport.name = "viewport";
+                    document.getElementsByTagName('head')[0].appendChild(viewport);
+                }
+                var sc = 1 / pr;
+                viewport.setAttribute('content', "width=device-width, initial-scale=" + sc + ", maximum-scale=" + sc + ", minimum-scale=" + sc + ", user-scalable=no");
+            }
+            
+            setDesign(window.devicePixelRatio);
+        </script>
+        <script src="init-ctrl.js"></script>
+        <script src="src/exp-log.js"></script>
+    </head>
+    <body onload="input.focus();">
+      <section>
+        <div id="divContainer" style="visibility: hidden; overflow: hidden; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; border-sytle: none; padding:0; margin:0;">
+            <div id="params" style="/*position: absolute; left: 0px; right: 0px; top: 0px;*/ border-style: none; padding:0; margin:0; font-family: 'monospace'; color: white; background-color: black">
+                <strong>&nbsp;cogserver telnet connection:</strong><br/>
+                <table style="border-sytle: none; padding:0; margin:0;">
+                    <tr>
+                        <td>
+                            <image id="img1" src="media/120px-OpenCog.png" height="50em"/>
+                        </td>
+                        <td id="td1" style="color: black; background-color: white">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;host: <input id="host" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="127.0.0.1"/><br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;port: <input id="port" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="17001"/><br/>
+                            cmd-delay: <input type="text" id="delay" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="125000"/>
+                        </td>
+                    </tr>
+                </table>
+                <br/>
+                <strong>&nbsp;visualisation captures output of command:</strong><br/>
+                <table style="border-sytle: none; padding:0; margin:0;">
+                    <tr>
+                        <td>
+                            <image id="img2" src="media/120px-Visual.png" height="50em"/>
+                        </td>
+                        <td>
+                            <select id="list-cmd" onfocus="document.getElementById('list-cmd').onchange()" onchange="document.getElementById('visual-cmd').value=document.getElementById('list-cmd').value" name="list-cmd" size="3" style="outline: none; border-style: none; padding:0; margin:0;">
+                            </select><textarea id="visual-cmd" spellcheck="false" wrap="off" rows="3" style="border-style: none; border-style: none; border-left: 1px solid black; resize: none; outline: none; padding: 0; margin: 0; font-family: 'monospace'; background-color: white; color: black;"></textarea>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="divContainer0" onclick="input.focus();" style="/*position: absolute; border-style: none; top: 0px; bottom: 0px; left: 0px; right: 0px;*/ overflow-y: scroll; padding:0; margin:0; margin-left: 7px;">
+                <div id="divContainer1" style="border-style: none; padding:0; margin:0;">
+                    <textarea id="output" spellcheck="false" wrap="on" rows="1" style="overflow: hidden; width: 100%; height: auto; resize: none; outline: none; box-sizing: border-box; padding: 0; margin: 0; font-family: 'monospace';" readonly></textarea>
+                    <br/>
+                    <label id="li" style="width: 70px; vertical-align: top; font-family: 'monospace';">guile> </label>
+                    <textarea id="input" spellcheck="false" wrap="off" rows="1" style="overflow: hidden; height: auto; /*min-height: 12px; */width:0%; resize: none; outline: none; box-sizing: border-box; padding: 0; margin: 0; font-family: 'monospace';"></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            rules = [
+                "RULESET",
+                [
+                    "IMP",
+                    ["CON", ["SEQ", "s-expr-ws"]],
+                    ["DIS", ["SEQ", "goal"]]
+                ],
+                [
+                    "IMP",
+                    ["CON", ["SEQ", "ws", "s-expr", "ws"]],
+                    ["DIS", ["SEQ", "s-expr-ws"]]
+                ],
+                [
+                    "IMP",
+                    ["CON", ["SEQ", "primary"]],
+                    ["DIS", ["SEQ", "s-expr"]]
+                ],
+                [
+                    "IMP",
+                    ["CON", ["SEQ", "primary", "ws", "s-expr"]],
+                    ["DIS", ["SEQ", "s-expr"]]
+                ],
+                [
+                    "IMP",
+                    ["CON", ["SEQ", "\"(\"", "ws", "\")\""]],
+                    ["DIS", ["SEQ", "primary"]]
+                ],
+                [
+                    "IMP",
+                    ["CON", ["SEQ", "/[^\\s();\"]+/"]],
+                    ["DIS", ["SEQ", "primary"]]
+                ],
+                [
+                    "IMP",
+                    ["CON", ["SEQ", "/\"([^\"\\\\\\n]|(\\\\.))*\"/"]],
+                    ["DIS", ["SEQ", "primary"]]
+                ],
+                [
+                    "IMP",
+                    ["CON", ["SEQ", "\"(\"", "s-expr-ws", "\")\""]],
+                    ["DIS", ["SEQ", "primary"]]
+                ],
+                [
+                    "IMP",
+                    ["CON", ["SEQ", "/((\\s+)|(;((.*\\n)|(.*$))))*/"]],
+                    ["DIS", ["SEQ", "ws"]]
+                ]
+            ];
+
+            var error;
+            var pad = false;
+            function getDesign() {
+                var design;
+                if (window.matchMedia('only screen and (max-device-width: 320px)').matches) {
+                    design = 'touch';
+                 } else if (window.matchMedia('only screen and (max-device-width: 1024px)').matches) {
+                    design = 'tablet';
+                } else if (window.matchMedia('screen').matches) {
+                    design = 'desktop';
+                } else if (window.matchMedia('handheld').matches) {
+                    design = 'mobile';
+                }
+                return design;
+            }
+            
+            var hist = [];
+            var histptr = 0;
+            var myTimeout;
+
+            function onkd (e) {
+                if (e && e.key === "ArrowUp" && !e.shiftKey && !e.ctrlKey && !e.altKey) {
+                    if (histptr > 0) {
+                        histptr--;
+                        input.value = hist[histptr];
+                    }
+                    
+                    e.preventDefault();
+                    oninp ();
+                    input.setSelectionRange(input.value.length, input.value.length);
+
+                } else if (e && e.key === "ArrowDown" && !e.shiftKey && !e.ctrlKey && !e.altKey) {
+                    if (histptr < hist.length - 1) {
+                        histptr++;
+                        input.value = hist[histptr];
+
+                    } else {
+                        input.value = "";
+                        histptr = hist.length;
+                    }
+
+                    e.preventDefault ();
+                    oninp ();
+                    input.setSelectionRange(input.value.length, input.value.length);
+
+                } else if (e && e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.altKey) {
+                    if (input.style.visibility !== "hidden") {
+                        if (input.value !== "") {
+                            hist.push (input.value);
+                            histptr = hist.length;
+                        }
+                        
+                        output.value += String.fromCharCode(13) + "guile> " + input.value;
+                        
+                        if (myTimeout) clearTimeout (myTimeout);
+                        sendcmd (input.value + "\n").then (
+                            (response) => {
+                                output.value += String.fromCharCode(13) + response.replaceAll("\u001b[0;34mguile\u001b[1;34m> \u001b[0m", "").trim();
+                                oninp();
+                                document.getElementById("li").style.visibility = "visible";
+                                input.style.visibility = "visible";
+                                input.focus();
+                                
+                                if (response.substr(-"connection error".length) !== "connection error") {
+                                        sendcmd (document.getElementById ("visual-cmd").value.replaceAll("\n", " ").replaceAll("\r", " ") + "\n").then (
+                                            (response) => {
+                                                if (myTimeout) clearTimeout (myTimeout);
+                                                myTimeout = setTimeout(function () {
+                                                    sendstr (response.replaceAll("\u001b[0", "").trim());
+                                                }, 1000);
+                                            }
+                                        );
+                                } else {
+                                    if (myTimeout) clearTimeout (myTimeout);
+                                    myTimeout = setTimeout(function () {
+                                        sendstr ("");
+                                    }, 1000);
+                                }
+                            }
+                        );
+                    }
+                    
+                    input.value = "";
+                    input.scrollTop = input.scrollHeight;
+                    
+                    e.preventDefault();
+                    oninp ();
+                    input.setSelectionRange(input.value.length, input.value.length);
+                    document.getElementById("li").style.visibility = "hidden";
+                    input.style.visibility = "hidden";
+                }
+            }
+                
+            function oninp () {
+                input.style.height = "auto";
+                output.style.height = "auto";
+
+                input.style.height = input.scrollHeight + 15 * env.fontSize / 12 + "px";
+                output.style.height = output.scrollHeight + "px";
+
+                input.style.width = divContainer0.clientWidth - 70 * env.fontSize / 12 + "px";
+                output.style.width = divContainer0.clientWidth + "px";
+
+                divContainer1.height = input.scrollHeight + output.scrollHeight + "px";
+                
+                divContainer0.scrollTop = divContainer0.scrollHeight;
+            }
+
+            function setSize () {
+                //divContainer0.style.top = document.getElementById ("params").clientHeight + "px";
+                
+                divContainer.style.top = env.shadowRadius + "px";
+                divContainer.style.left = env.shadowRadius + "px";
+                divContainer.style.bottom = env.shadowRadius + "px";
+                divContainer.style.right = env.shadowRadius + "px";
+                divContainer.style.backgroundColor = env.ctrlColor;
+                divContainer.style.boxShadow = "0px 0px " + env.shadowRadius + "px " + env.shadowColor; 
+                divContainer.style.fontSize = env.fontSize + "px";
+
+                output.style.backgroundColor = env.ctrlColor;
+                output.style.color = env.textColor;
+                output.style.border = "0px solid " + env.textColor;
+                output.style.fontSize = env.fontSize + "px";
+                
+                li = document.getElementById("li");
+                li.style.color = env.textColor;
+                input.style.backgroundColor = env.ctrlColor;
+                input.style.color = env.textColor;
+                input.style.border = "0px solid " + env.textColor;
+                input.style.fontSize = env.fontSize + "px";
+                
+                input.addEventListener("keydown", onkd, false);
+                input.addEventListener("input", oninp, false);
+                
+                var w = 5 * env.fontSize + "px"
+                document.getElementById ("img1").style.width = w;
+                document.getElementById ("img1").style.height = w;
+                document.getElementById ("img2").style.width = w;
+                document.getElementById ("img2").style.height = w;
+                
+                w = 5 * env.fontSize * 5 - 2 * env.shadowRadius + "px";// 25 * env.fontSize - 2 * env.shadowRadius + "px"
+                document.getElementById ("host").style.width = w;
+                document.getElementById ("host").style.fontSize = env.fontSize + "px";
+                document.getElementById ("port").style.width = w;
+                document.getElementById ("port").style.fontSize = env.fontSize + "px";
+                document.getElementById ("delay").style.width = w;
+                document.getElementById ("delay").style.fontSize = env.fontSize + "px";
+
+                var lw = 8 * env.fontSize;
+                document.getElementById ("list-cmd").style.fontSize = env.fontSize + "px";
+                document.getElementById ("list-cmd").style.height = document.getElementById ("td1").clientHeight * 1.2 + "px";
+                document.getElementById ("list-cmd").style.width = lw + "px";
+
+                document.getElementById ("visual-cmd").style.fontSize = env.fontSize + "px";
+                document.getElementById ("visual-cmd").style.height = document.getElementById ("td1").clientHeight * 1.2 + "px";
+                document.getElementById ("visual-cmd").style.width = document.getElementById ("td1").clientWidth - lw - 2 + "px";
+
+                divContainer0.style.height = divContainer.clientHeight - document.getElementById ("params").clientHeight + "px";
+
+                oninp ();
+            }
+
+            wonload = function () {
+                setSize ();
+                divContainer.style.visibility = "visible";
+
+                var resizeId;
+                window.addEventListener('resize', function () {
+                    divContainer.style.visibility = "hidden";
+                    
+                    clearTimeout(resizeId);
+                    resizeId = setTimeout(function () {
+                        setSize ();
+                        divContainer.style.visibility = "visible";
+                        
+                    }, 1000);
+                });
+            };
+            
+            function setupEnv (data) {
+                if (data["shadow-radius"]) {
+                    var sradius = parseFloat (data["shadow-radius"]);
+                    
+                } else {
+                    sradius = 0;
+                }
+                
+                return {
+                    fontSize: data["font-size"],
+                    ctrlColor: data["ctrl-color"],
+                    textColor: data["text-color"],
+                    backColor: data["background-color"],
+                    shadowRadius: sradius,
+                    shadowColor: data["shadow-color"],
+                }
+            }
+            
+            document.getElementById ("visual-cmd").addEventListener("input", function () {
+                var o = document.getElementById("list-cmd");
+                for (itm in o.children) {
+                    o[itm].selected = false;
+                }
+            }, false);
+
+            var divContainer = document.getElementById ("divContainer");
+            var divContainer0 = document.getElementById ("divContainer0");
+            var divContainer1 = document.getElementById ("divContainer1");
+            var input = document.getElementById ("input");
+            var output = document.getElementById ("output");
+            
+            env = setupEnv (init);
+            document.body.style.backgroundColor = env.backColor;
+            window.addEventListener("load", wonload ());
+            document.getElementById ("host").value = init["host"];
+            document.getElementById ("port").value = init["port"];
+            document.getElementById ("delay").value = init["cmd-delay"];
+            
+            var first = true;
+            for (itm in init["vis-cmd"]) {
+                var option = document.createElement("option");
+                option.text = itm;
+                option.value = init["vis-cmd"][itm];
+                document.getElementById("list-cmd").add(option); 
+                if (first) {
+                    document.getElementById ("visual-cmd").value = init["vis-cmd"][itm];
+                    document.getElementById("list-cmd").selectedIndex = 0;
+                    first = false;
+                }
+            }
+            
+            input.value = ""
+            output.value = "";
+            oninp ();
+            histptr = hist.length;
+
+            function sendstr (str) {
+                parsed = parser.getParseTree (rules, str);
+                sexpr = parsed.sexpr;
+                if (!sexpr) sexpr = ["", ""];
+                window.parent.frames[1].postMessage(JSON.stringify (sexpr[1]), "*");
+            }
+            
+            function sendcmd (cmd) {
+                return new Promise(function(resolve, reject) {
+                    host = encodeURI (document.getElementById ("host").value);
+                    port = encodeURI (document.getElementById ("port").value);
+                    delay = encodeURI (document.getElementById ("delay").value);
+                    cmd = encodeURI (cmd);
+
+                    var xhttp = new XMLHttpRequest ();
+                    xhttp.onreadystatechange = function () {
+                        if (this.readyState == 4 && this.status == 200) {
+                            resolve (this.responseText);
+                        }
+                    };
+                    
+                    xhttp.open("GET", "src/telnet.php?host=" + host + "&port=" + port + "&delay=" + delay + "&cmd=" + cmd, true);
+                    xhttp.overrideMimeType("text/plain");
+                    xhttp.send();
+                });
+            }
+            
+            sendcmd (document.getElementById ("visual-cmd").value.replaceAll("\n", " ").replaceAll("\r", " ") + "\n").then (
+                (response) => {
+                    if (response.substr(-"connection error".length) !== "connection error") {
+                        sendstr (response.replaceAll("\u001b[0", "").trim());
+                    }
+                }
+            );
+        </script>
+      </section>
+    </body>
+</html>
