@@ -80,4 +80,4 @@ Entering the above commands to *CogProtoLab* command prompt should give a basic 
 
 ## licensing information
 
-This package, as the most OpenCog packages, is licensed under [agplv3 License](LICENSE).
+This package, as the most of OpenCog packages, is licensed under [agplv3 License](LICENSE).
