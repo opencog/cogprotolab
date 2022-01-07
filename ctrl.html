@@ -70,7 +70,8 @@
                         </td>
                         <td>
                             <select id="list-cmd" onfocus="document.getElementById('list-cmd').onchange()" onchange="document.getElementById('visual-cmd').value=document.getElementById('list-cmd').value" name="list-cmd" size="3" style="outline: none; border-style: none; padding:0; margin:0;">
-                            </select><textarea id="visual-cmd" spellcheck="false" wrap="off" rows="3" style="border-style: none; border-style: none; border-left: 1px solid black; resize: none; outline: none; padding: 0; margin: 0; font-family: 'monospace'; background-color: white; color: black;"></textarea>
+                            </select><textarea id="visual-cmd" spellcheck="false" wrap="off" rows="3" style="border-style: none; border-left: 1px solid black; resize: none; outline: none; padding: 0; margin: 0; font-family: 'monospace'; background-color: white; color: black;"></textarea>
+                            <div align="right" style="border-top: 1px solid black;"><label id="refresh" onclick="refresh()" onmouseenter="document.getElementById('refresh').style.backgroundColor='lightgray'" onmouseleave="document.getElementById('refresh').style.backgroundColor='white'" style="background-color: white; color: black; font-family: 'monospace';">&nbsp;refresh&nbsp;</label></div>
                         </td>
                     </tr>
                 </table>
@@ -134,6 +135,8 @@
                     ["DIS", ["SEQ", "ws"]]
                 ]
             ];
+            
+            var ecol='lightgray'
 
             var error;
             var pad = false;
@@ -397,13 +400,17 @@
                 });
             }
             
-            sendcmd (document.getElementById ("visual-cmd").value.replaceAll("\n", " ").replaceAll("\r", " ") + "\n").then (
-                (response) => {
-                    if (response.substr(-"connection error".length) !== "connection error") {
-                        sendstr (response.replaceAll("\u001b[0", "").trim());
+            function refresh() {
+                sendcmd (document.getElementById ("visual-cmd").value.replaceAll("\n", " ").replaceAll("\r", " ") + "\n").then (
+                    (response) => {
+                        if (response.substr(-"connection error".length) !== "connection error") {
+                            sendstr (response.replaceAll("\u001b[0", "").trim());
+                        }
                     }
-                }
-            );
+                );
+            }
+            
+            refresh();
         </script>
       </section>
     </body>
