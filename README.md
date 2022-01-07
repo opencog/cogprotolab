@@ -14,7 +14,7 @@ Newcomers to OpenCog may face a dificulty of working with command line which are
 
 ## short instructions
 
-The application is consisted of two panes. Left pane resembles input command prompt for communicating to CogServer. Multiline input is obtained by holding `shift` while hitting `enter`. Standard pasting from clipboard should also work fine. History of previously entered commands is accessed by pressing up and down arrows. On hitting `enter` on its own, previously entered command is sent to CogServer. Output of the command is then brought back and displayed in the prompt interface. At the same time, right pane visualizer is updated to reflect the current AtomSpace query expression. To refresh the possibly changed contents, hit `enter` on empty command. Please refer to built in application instructions for info about navigating visualizer (the bottom-right questionmark).
+The application is consisted of two panes. Left pane resembles input command prompt for communicating to CogServer. Multiline input is obtained by holding `shift` while hitting `enter`. Standard pasting from clipboard should also work fine. History of previously entered commands is accessed by pressing up and down arrows. On hitting `enter` on its own, previously entered command is sent to CogServer. Output of the command is then brought back and displayed in the prompt interface. At the same time, right pane visualizer is updated to reflect the current AtomSpace query expression. Please refer to built in application instructions for info about navigating visualizer (the bottom-right questionmark).
 
 ## how it works
 
