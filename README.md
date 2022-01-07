@@ -76,8 +76,8 @@ After opening *CogProtoLab* in web browser, one can perform a simple test to tra
     ;Trigger graph rewriting
     (cog-execute! make-pets)
 
-Entering the above commands to *CogProtoLab* command prompt should give a basic insight in tracing incremental AtomSpace inhabitation. For more advanced examples, please refer to OpenCog documentation.
+Entering the above commands to *CogProtoLab* command prompt should give a basic insight in tracing incremental AtomSpace inhabitation. For more examples, please refer to [AtomSpace demo examples](https://github.com/opencog/atomspace/tree/master/examples/atomspace) and [OpenCog documentation](https://wiki.opencog.org/w/The_Open_Cognition_Project).
 
 ## licensing information
 
-This package, as the most of OpenCog packages, is licensed under [agplv3 License](LICENSE).
+This package, like the most of OpenCog packages, is licensed under [agplv3 License](LICENSE).
