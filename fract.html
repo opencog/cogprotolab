@@ -60,10 +60,13 @@
     </head>
     <body>
       <section>
-        <div id="divContainer" style="position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px;">
+        <div id="divContainer" style="position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; visibility: hidden;">
         </div>
+        <div id="divStats" style="position: absolute; top: 5px; right: 5px; font-family: 'monospace'; font-size: 9px; color: white; text-shadow: 0px 0px 2px rgba(0,0,0,1); visibility: hidden;">cache size: 0 ovals, 0 mb</div>
         
         <script>
+            var statNOvals;
+            var statMem;
 
             function GetURLParameter(sParam) {
                 var sPageURL = window.location.search.substring(1);
@@ -103,12 +106,22 @@
             
             var refr = 0;
             window.addEventListener("message", (event) => {
-                nodeTree = formArray (unfoldsexpr (JSON.parse (event.data)));
-                onBusy();
-                refr++;
-                setTimeout( function () {
-                    divContainer.dispatchEvent(new CustomEvent('redefineData', {detail: nodeTree}));
-                }, 1);
+                statNOvals = 0;
+                statMem = 0;
+
+                if (event.data === "clear") {
+                    divContainer.style.visibility = "hidden";
+                    divStats.style.visibility = "hidden";
+                } else {
+                    nodeTree = formArray (unfoldsexpr (JSON.parse (event.data)));
+                    onBusy();
+                    refr++;
+                    setTimeout( function () {
+                        divContainer.dispatchEvent(new CustomEvent('redefineData', {detail: nodeTree}));
+                        divContainer.style.visibility = "visible";
+                        divStats.style.visibility = "visible";
+                    }, 1);
+                }
             }, false);
 
             function wonload () {
@@ -118,18 +131,23 @@
 
                 Orbital (divContainer, nodeTree, env.quant / 100, env.flatArea / 100, 100 / env.scale / window.devicePixelRatio, env.ovalColor, env.backColor, env.shadowRadius, env.shadowRadius? env.shadowColor: null, env.uiscale / 100, onIdle, onBusy);
                 dispatchSize ();
-                divContainer.style.visibility = "visible";
+                //divContainer.style.visibility = "visible";
 
                 var resizeId;
                 window.addEventListener('resize', function () {
-                    document.getElementById("tooltip").style.visibility = "hidden"
+                    document.getElementById("tooltip").style.visibility = "hidden";
                     divContainer.style.visibility = "hidden";
+                    divStats.style.visibility = "hidden";
                     
                     clearTimeout(resizeId);
                     resizeId = setTimeout(function () {
+                        statNOvals = 0;
+                        statMem = 0;
+
                         setSize ();
                         dispatchSize ();
                         divContainer.style.visibility = "visible";
+                        divStats.style.visibility = "visible";
                         
                     }, 500);
                 });
@@ -264,6 +282,11 @@
                             var canvas = createCanvasImg (node.img, node.scaleImg? env.scale / 100 * node.scaleImg : 1, env.ovalColor);
                             node.scaledBitmap = Crisp.crispBitmapXY(canvas);
                             divContainer.dispatchEvent(new CustomEvent('redraw', null));
+
+                            statNOvals++;
+                            statMem += node.img.width * node.img.height * 4 + node.cachedCnv.width + node.cachedCnv.height * 4 * 1.5;
+                            divStats.innerHTML = "cache size: " + statNOvals + " ovals, " + Math.round(statMem / 1024 / 1024)  + "mb";
+
                             resolve ();
                         } else {
                             divContainer.dispatchEvent(new CustomEvent('redraw', null));
@@ -426,6 +449,7 @@
             }
             
             var divContainer = document.getElementById ("divContainer")
+            var divStats = document.getElementById ("divStats")
             
             env = setupEnv (init);
             document.body.style.backgroundColor = env.backColor;

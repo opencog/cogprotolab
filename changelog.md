@@ -2,4 +2,5 @@
 
 - **Jan, 2022**
     - initial commit
-    - added refresh button
+    - UX update
+    - left-top pane: added predefined scripts

@@ -47,31 +47,44 @@
     <body onload="input.focus();">
       <section>
         <div id="divContainer" style="visibility: hidden; overflow: hidden; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; border-sytle: none; padding:0; margin:0;">
-            <div id="params" style="/*position: absolute; left: 0px; right: 0px; top: 0px;*/ border-style: none; padding:0; margin:0; font-family: 'monospace'; color: white; background-color: black">
-                <strong>&nbsp;cogserver telnet connection:</strong><br/>
-                <table style="border-sytle: none; padding:0; margin:0;">
+            <div id="params" style="/*position: absolute; left: 0px; right: 0px; top: 0px;*/ border-style: none; padding:0; margin:0; padding-left: 5px; font-family: 'monospace'; color: white; background-color: black">
+                <strong>cogserver telnet connection:</strong><br/>
+                <table id="tbl" style="border-sytle: none; padding:0; margin:0;">
                     <tr>
-                        <td>
+                        <td id="td0" valign="top">
                             <image id="img1" src="media/120px-OpenCog.png" height="50em"/>
                         </td>
                         <td id="td1" style="color: black; background-color: white">
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;host: <input id="host" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="127.0.0.1"/><br/>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;port: <input id="port" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="17001"/><br/>
-                            cmd-delay: <input type="text" id="delay" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="125000"/>
+                            <label id="lblHost">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;host:&nbsp;</label><input id="host" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="127.0.0.1"/><br/>
+                            <label id="lblPort">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;port:&nbsp;</label><input id="port" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="17001"/><br/>
+                            <label id="lblDelay">&nbsp;cmd-delay:&nbsp;</label><input type="text" id="delay" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="125000"/>
                         </td>
                     </tr>
                 </table>
                 <br/>
-                <strong>&nbsp;visualisation captures output of command:</strong><br/>
+                <strong>predefined scripts:</strong><br/>
                 <table style="border-sytle: none; padding:0; margin:0;">
                     <tr>
+                        <td valign="top">
+                            <image id="img3" src="media/120px-Script.png" height="50em"/>
+                        </td>
                         <td>
+                            <select id="scr-list-cmd" onfocus="document.getElementById('scr-list-cmd').onchange()" onchange="document.getElementById('scr-cmd').value=document.getElementById('scr-list-cmd').value;" name="scr-list-cmd" size="3" style="outline: none; border-style: none; padding:0; margin:0; font-family: 'monospace';">
+                            </select><textarea id="scr-cmd" spellcheck="false" wrap="off" rows="3" style="border-style: none; border-left: 1px solid black; resize: none; outline: none; padding: 0; margin: 0; font-family: 'monospace'; background-color: white; color: black;"></textarea>
+                            <div align="right" style="border-top: 1px solid black;"><label id="run" onclick="runScript()" onmouseenter="document.getElementById('run').style.backgroundColor='lightgray'" onmouseleave="document.getElementById('run').style.backgroundColor='white'" style="background-color: white; color: black; font-family: 'monospace';">&nbsp;&nbsp;&nbsp;run&nbsp;&nbsp;&nbsp;</label></div>
+                        </td>
+                    </tr>
+                </table>
+                <strong>visualisation captures output of command:</strong><br/>
+                <table style="border-sytle: none; padding:0; margin:0;">
+                    <tr>
+                        <td valign="top">
                             <image id="img2" src="media/120px-Visual.png" height="50em"/>
                         </td>
                         <td>
-                            <select id="list-cmd" onfocus="document.getElementById('list-cmd').onchange()" onchange="document.getElementById('visual-cmd').value=document.getElementById('list-cmd').value" name="list-cmd" size="3" style="outline: none; border-style: none; padding:0; margin:0;">
-                            </select><textarea id="visual-cmd" spellcheck="false" wrap="off" rows="3" style="border-style: none; border-left: 1px solid black; resize: none; outline: none; padding: 0; margin: 0; font-family: 'monospace'; background-color: white; color: black;"></textarea>
-                            <div align="right" style="border-top: 1px solid black;"><label id="refresh" onclick="refresh()" onmouseenter="document.getElementById('refresh').style.backgroundColor='lightgray'" onmouseleave="document.getElementById('refresh').style.backgroundColor='white'" style="background-color: white; color: black; font-family: 'monospace';">&nbsp;refresh&nbsp;</label></div>
+                            <select id="vis-list-cmd" onfocus="document.getElementById('vis-list-cmd').onchange()" onchange="document.getElementById('vis-cmd').value=document.getElementById('vis-list-cmd').value;" name="vis-list-cmd" size="3" style="outline: none; border-style: none; padding:0; margin:0; font-family: 'monospace';">
+                            </select><textarea id="vis-cmd" spellcheck="false" wrap="off" rows="3" style="border-style: none; border-left: 1px solid black; resize: none; outline: none; padding: 0; margin: 0; font-family: 'monospace'; background-color: white; color: black;"></textarea>
+                            <div align="right" style="border-top: 1px solid black;"><label id="repaint" onclick="repaint()" onmouseenter="document.getElementById('repaint').style.backgroundColor='lightgray'" onmouseleave="document.getElementById('repaint').style.backgroundColor='white'" style="background-color: white; color: black; font-family: 'monospace';">&nbsp;repaint&nbsp;</label></div>
                         </td>
                     </tr>
                 </table>
@@ -157,8 +170,14 @@
             var hist = [];
             var histptr = 0;
             var myTimeout;
+            var timeoutFn;
 
             function onkd (e) {
+                if (myTimeout) clearTimeout (myTimeout);
+                if (timeoutFn) {
+                    myTimeout = setTimeout(timeoutFn, 1000) // don't touch
+                }
+                
                 if (e && e.key === "ArrowUp" && !e.shiftKey && !e.ctrlKey && !e.altKey) {
                     if (histptr > 0) {
                         histptr--;
@@ -191,33 +210,7 @@
                         }
                         
                         output.value += String.fromCharCode(13) + "guile> " + input.value;
-                        
-                        if (myTimeout) clearTimeout (myTimeout);
-                        sendcmd (input.value + "\n").then (
-                            (response) => {
-                                output.value += String.fromCharCode(13) + response.replaceAll("\u001b[0;34mguile\u001b[1;34m> \u001b[0m", "").trim();
-                                oninp();
-                                document.getElementById("li").style.visibility = "visible";
-                                input.style.visibility = "visible";
-                                input.focus();
-                                
-                                if (response.substr(-"connection error".length) !== "connection error") {
-                                        sendcmd (document.getElementById ("visual-cmd").value.replaceAll("\n", " ").replaceAll("\r", " ") + "\n").then (
-                                            (response) => {
-                                                if (myTimeout) clearTimeout (myTimeout);
-                                                myTimeout = setTimeout(function () {
-                                                    sendstr (response.replaceAll("\u001b[0", "").trim());
-                                                }, 1000);
-                                            }
-                                        );
-                                } else {
-                                    if (myTimeout) clearTimeout (myTimeout);
-                                    myTimeout = setTimeout(function () {
-                                        sendstr ("");
-                                    }, 1000);
-                                }
-                            }
-                        );
+                        runCmd (input.value + "\n", 1000);
                     }
                     
                     input.value = "";
@@ -247,8 +240,6 @@
             }
 
             function setSize () {
-                //divContainer0.style.top = document.getElementById ("params").clientHeight + "px";
-                
                 divContainer.style.top = env.shadowRadius + "px";
                 divContainer.style.left = env.shadowRadius + "px";
                 divContainer.style.bottom = env.shadowRadius + "px";
@@ -272,28 +263,40 @@
                 input.addEventListener("keydown", onkd, false);
                 input.addEventListener("input", oninp, false);
                 
-                var w = 5 * env.fontSize + "px"
-                document.getElementById ("img1").style.width = w;
-                document.getElementById ("img1").style.height = w;
-                document.getElementById ("img2").style.width = w;
-                document.getElementById ("img2").style.height = w;
+                var w = 5 * env.fontSize;
+                document.getElementById ("img1").style.width = w + "px";
+                document.getElementById ("img1").style.height = w + "px";
+                document.getElementById ("img2").style.width = w + "px";
+                document.getElementById ("img2").style.height = w + "px";
+                document.getElementById ("img3").style.width = w + "px";
+                document.getElementById ("img3").style.height = w + "px";
                 
-                w = 5 * env.fontSize * 5 - 2 * env.shadowRadius + "px";// 25 * env.fontSize - 2 * env.shadowRadius + "px"
-                document.getElementById ("host").style.width = w;
+                w = 390 * env.fontSize / 12 - 25;
+                
+                document.getElementById ("host").style.width = w + "px";
                 document.getElementById ("host").style.fontSize = env.fontSize + "px";
-                document.getElementById ("port").style.width = w;
+                document.getElementById ("port").style.width = w + "px";
                 document.getElementById ("port").style.fontSize = env.fontSize + "px";
-                document.getElementById ("delay").style.width = w;
+                document.getElementById ("delay").style.width = w + "px";
                 document.getElementById ("delay").style.fontSize = env.fontSize + "px";
 
-                var lw = 8 * env.fontSize;
-                document.getElementById ("list-cmd").style.fontSize = env.fontSize + "px";
-                document.getElementById ("list-cmd").style.height = document.getElementById ("td1").clientHeight * 1.2 + "px";
-                document.getElementById ("list-cmd").style.width = lw + "px";
+                w = 10 * env.fontSize;
 
-                document.getElementById ("visual-cmd").style.fontSize = env.fontSize + "px";
-                document.getElementById ("visual-cmd").style.height = document.getElementById ("td1").clientHeight * 1.2 + "px";
-                document.getElementById ("visual-cmd").style.width = document.getElementById ("td1").clientWidth - lw - 2 + "px";
+                document.getElementById ("scr-list-cmd").style.fontSize = env.fontSize + "px";
+                document.getElementById ("scr-list-cmd").style.height = document.getElementById ("td1").clientHeight * 1.7 + "px";
+                document.getElementById ("scr-list-cmd").style.width = w + "px";
+
+                document.getElementById ("scr-cmd").style.fontSize = env.fontSize + "px";
+                document.getElementById ("scr-cmd").style.height = document.getElementById ("td1").clientHeight * 1.7 + "px";
+                document.getElementById ("scr-cmd").style.width = document.getElementById ("td1").clientWidth - w - 2 + "px";
+
+                document.getElementById ("vis-list-cmd").style.fontSize = env.fontSize + "px";
+                document.getElementById ("vis-list-cmd").style.height = document.getElementById ("td1").clientHeight * 1.2 + "px";
+                document.getElementById ("vis-list-cmd").style.width = w + "px";
+
+                document.getElementById ("vis-cmd").style.fontSize = env.fontSize + "px";
+                document.getElementById ("vis-cmd").style.height = document.getElementById ("td1").clientHeight * 1.2 + "px";
+                document.getElementById ("vis-cmd").style.width = document.getElementById ("td1").clientWidth - w - 2 + "px";
 
                 divContainer0.style.height = divContainer.clientHeight - document.getElementById ("params").clientHeight + "px";
 
@@ -335,8 +338,8 @@
                 }
             }
             
-            document.getElementById ("visual-cmd").addEventListener("input", function () {
-                var o = document.getElementById("list-cmd");
+            document.getElementById ("vis-cmd").addEventListener("input", function () {
+                var o = document.getElementById("vis-list-cmd");
                 for (itm in o.children) {
                     o[itm].selected = false;
                 }
@@ -355,18 +358,67 @@
             document.getElementById ("port").value = init["port"];
             document.getElementById ("delay").value = init["cmd-delay"];
             
-            var first = true;
-            for (itm in init["vis-cmd"]) {
-                var option = document.createElement("option");
-                option.text = itm;
-                option.value = init["vis-cmd"][itm];
-                document.getElementById("list-cmd").add(option); 
-                if (first) {
-                    document.getElementById ("visual-cmd").value = init["vis-cmd"][itm];
-                    document.getElementById("list-cmd").selectedIndex = 0;
-                    first = false;
-                }
+            var dirVis;
+            function loadVisScripts() {
+                var xhttp = new XMLHttpRequest ();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var dirVis = JSON.parse (this.responseText);
+                        
+                        var first = true;
+                        for (itm in dirVis) {
+                            var option = document.createElement("option");
+                            option.text = itm;
+                            option.value = dirVis[itm];
+
+                            document.getElementById("vis-list-cmd").add(option); 
+                            if (first) {
+                                document.getElementById ("vis-cmd").value = dirVis[itm];
+                                document.getElementById("vis-list-cmd").selectedIndex = 0;
+                                first = false;
+                            }
+                        }
+                        setTimeout(function() {repaint()}, 0);
+                    }
+                };
+                
+                xhttp.open("GET", "src/load-scripts.php?dir=vis");
+                xhttp.overrideMimeType("text/plain");
+                xhttp.send();
             }
+            
+            loadVisScripts ();
+            
+            var dirScr;
+            function loadPowScripts() {
+                var xhttp = new XMLHttpRequest ();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var dirVis = JSON.parse (this.responseText);
+                        
+                        var first = true;
+                        for (itm in dirVis) {
+                            var option = document.createElement("option");
+                            option.text = itm;
+                            option.value = dirVis[itm];
+
+                            document.getElementById("scr-list-cmd").add(option); 
+                            if (first) {
+                                document.getElementById ("scr-cmd").value = dirVis[itm];
+                                document.getElementById("scr-list-cmd").selectedIndex = 0;
+                                first = false;
+                            }
+                        }
+                        setTimeout(function() {repaint()}, 0);
+                    }
+                };
+                
+                xhttp.open("GET", "src/load-scripts.php?dir=scr");
+                xhttp.overrideMimeType("text/plain");
+                xhttp.send();
+            }
+            
+            loadPowScripts ();
             
             input.value = ""
             output.value = "";
@@ -378,6 +430,10 @@
                 sexpr = parsed.sexpr;
                 if (!sexpr) sexpr = ["", ""];
                 window.parent.frames[1].postMessage(JSON.stringify (sexpr[1]), "*");
+            }
+            
+            function clearstr () {
+                window.parent.frames[1].postMessage("clear", "*");
             }
             
             function sendcmd (cmd) {
@@ -400,17 +456,63 @@
                 });
             }
             
-            function refresh() {
-                sendcmd (document.getElementById ("visual-cmd").value.replaceAll("\n", " ").replaceAll("\r", " ") + "\n").then (
+            function repaint () {
+                clearstr();
+                sendcmd (document.getElementById ("vis-cmd").value.replaceAll("\n", " ").replaceAll("\r", " ") + "\n").then (
                     (response) => {
                         if (response.substr(-"connection error".length) !== "connection error") {
-                            sendstr (response.replaceAll("\u001b[0", "").trim());
+                            if (myTimeout) clearTimeout (myTimeout);
+                            myTimeout = setTimeout(function () {
+                                sendstr (response.replaceAll("\u001b[0", "").trim());
+                            }, 0);
+                        } else {
+                            if (myTimeout) clearTimeout (myTimeout);
+                            myTimeout = setTimeout(function () {
+                                sendstr ("");
+                            }, 0);
                         }
                     }
                 );
             }
             
-            refresh();
+            function runScript () {
+                output.value += String.fromCharCode(13) + "guile> ...";
+                runCmd (document.getElementById ("scr-cmd").value, 0);
+            }
+            
+            function runCmd (cmd, delay) {
+                if (myTimeout) clearTimeout (myTimeout);
+                sendcmd (cmd + "\n").then (
+                    (response) => {
+                        output.value += String.fromCharCode(13) + response.replaceAll("\u001b[0;34mguile\u001b[1;34m> \u001b[0m", "").trim();
+                        oninp();
+                        document.getElementById("li").style.visibility = "visible";
+                        input.style.visibility = "visible";
+                        input.focus();
+                        
+                        if (response.substr(-"connection error".length) !== "connection error") {
+                            sendcmd (document.getElementById ("vis-cmd").value.replaceAll("\n", " ").replaceAll("\r", " ") + "\n").then (
+                                (response) => {
+                                    if (myTimeout) clearTimeout (myTimeout);
+                                    timeoutFn = function () {
+                                        timeoutFn = null;
+                                        clearstr();
+                                        sendstr (response.replaceAll("\u001b[0", "").trim());
+                                    }
+                                    
+                                    myTimeout = setTimeout(timeoutFn, delay) // don't touch
+                                }
+                            );
+                        } else {
+                            if (myTimeout) clearTimeout (myTimeout);
+                            timeoutFn = function () {
+                                sendstr ("");
+                            }
+                            myTimeout = setTimeout(timeoutFn, delay); // don't touch
+                        }
+                    }
+                );
+            }
         </script>
       </section>
     </body>
