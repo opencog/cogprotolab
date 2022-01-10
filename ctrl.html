@@ -483,13 +483,13 @@
             }
             
             function runScript () {
-                output.value += String.fromCharCode(13) + "guile> ...";
-                runCmd (document.getElementById ("scr-cmd").value.replaceAll("\r", " "), 0);
+                output.value += String.fromCharCode(13) + "guile> " + document.getElementById ("scr-cmd").value.replaceAll(/;((.*\\n)|(.*$))/gm, " ").replaceAll(/(\n *)+/gm, " ").replaceAll(/^ +/gm, "");
+                runCmd (document.getElementById ("scr-cmd").value, 0);
             }
             
             function runCmd (cmd, delay) {
                 if (myTimeout) clearTimeout (myTimeout);
-                sendcmd (cmd + "\n").then (
+                sendcmd (cmd.replaceAll(/;((.*\\n)|(.*$))/gm, " ").replaceAll(/(^ +|\n *)+/gm, " ").replaceAll(/^ +/gm, "") + "\n").then (
                     (response) => {
                         output.value += String.fromCharCode(13) + response.replaceAll("\u001b[0;34mguile\u001b[1;34m> \u001b[0m", "").trim();
                         oninp();
