@@ -6,7 +6,7 @@
 
 ## about the application
 
-OpenCog comes with command line tools for exchanging data with AtomSpace. *CogProtoLab* is built on top of this tool chain by teaming up a command prompt with a novel AtomSpace visualizer. *CogProtoLab* command prompt part should behave like OpenCog Scheme shell while visualizer part graphically displays AtomSpace contents in an interactive, fractally structured system of ovals navigable by mouse.
+OpenCog comes with command line tools for exchanging data with AtomSpace. *CogProtoLab* is built on top of this tool chain by teaming up AtomSpace command prompt with a novel AtomSpace visualizer.
 
 ## why cogprotolab?
 
@@ -18,7 +18,7 @@ The application is consisted of two panes. Left pane resembles input command pro
 
 ## how it works
 
-*CogProtoLab* left pane command prompt uses a php telnet connection for exchanging information with CogServer. Upon sending each prompt input, while its output is being captured and displayed as text, a hidden telnet query command from `visualisation captures output of command` input field is being sent to CogServer. Its output is then captured by *CogProtoLab* and visually displayed in the right pane.
+*CogProtoLab* left pane command prompt internally uses a php telnet connection for exchanging information with CogServer. Upon sending each prompt input, while its output is being captured and displayed as text, a hidden telnet query command from `visualisation captures output of command` input field is being sent to CogServer. Its output is then captured by *CogProtoLab* and visually displayed in the right pane.
 
 ### installing
 
@@ -27,15 +27,19 @@ Prerequisites:
 - Appache web server
 - PHP 7.4.3
 
-After installing prerequisites, clone this package to a folder of your choice anywhere under the local web server home folder.
+After installing prerequisites, there id no build procedure, just clone this package to a folder of your choice anywhere under the local web server home folder. It is possible to have multiple instances of *CogProtoLab* in multiple folders simultaneously.
 
 ### running
 
-As a first step, run `cogserver` from the OS command prompt, then open included `index.html` in a web browser over local web server, possibly adjust telnet connection defaults along with visualisation command, and you are ready to start OpenCogging in *CogProtoLab* shell. For adjusting parameters like predefined telnet parameters and commands, font size, colors, shadows, ..., edit files `init-ctrl.js` for the left application pane, and `init-fract.js` for the right application pane. Init files are representing JSON objects, and should be self-descriptive on their own.
+As a first step, run `cogserver` from the OS command prompt, then open `index.html` from the package root in a web browser over local web server, possibly adjust telnet connection defaults, and you are ready to start AtomSpacing in *CogProtoLab* shell.
+
+To adjust parameters like predefined telnet parameters, font sizes, colors, shadows, ..., edit files `init-ctrl.js` for the left application pane, and `init-fract.js` for the right application pane. These init files are representing JSON objects, and should be self-descriptive on their own.
+
+To adjust predefined scripts and visualisation commands, edit, add, or remove files from folders `dir-scripts/` and `dir-visuals/`, respectively. Contents of these folders are automatically loaded into *CogProtoLab* upon loading or refreshing the application web page.
 
 ### test drive
 
-After opening *CogProtoLab* in web browser, one can perform a simple test to track changing contents of AtomSpace. Copy and paste the following code to *CogProtoLab* command prompt in four steps:
+After opening *CogProtoLab* application in web browser, one can perform a simple test to track changing contents of AtomSpace. Copy and paste the following code to *CogProtoLab* command prompt in four steps:
 
 1.
 
@@ -49,36 +53,41 @@ After opening *CogProtoLab* in web browser, one can perform a simple test to tra
 2.
 
     ;Some relationships
-    (Inheritance (Concept "fish") (Concept "Animal"))
-    (Inheritance (Concept "dog") (Concept "Animal"))
-    (Inheritance (Concept "cat") (Concept "Animal"))
+    (MemberLink (Concept "Sun") (Concept "Has mass"))
+    (MemberLink (Concept "Moon") (Concept "Has mass"))
+    (MemberLink (Concept "Earth") (Concept "Has mass"))
 
 3.
 
     ;Graph rewriting declarations
-    (define make-pets
+    (define make-conclusions
         (Bind
             ;Declare the variables [optional]
-            (Variable "$denizen")
+            (Variable "$object")
             ;Declare the pattern used to ground the variables
-            (Inheritance
-                (Variable "$denizen")
-                (Concept "Animal"))
+            (MemberLink
+                (Variable "$object")
+                (Concept "Has mass"))
             
             ;If a match is found for the pattern then we want
             ;to add the following hypergraph at the Atomspace
-            (Inheritance
-                (Variable "$denizen")
-                (Concept "Pet"))))
+            (MemberLink
+                (Variable "$object")
+                (Concept "Has gravity"))))
 
 4.
 
     ;Trigger graph rewriting
-    (cog-execute! make-pets)
+    (cog-execute! make-conclusions)
 
-Entering the above commands to *CogProtoLab* command prompt should give a basic insight in tracing incremental AtomSpace inhabitation. For more examples, please refer to [AtomSpace demo examples](https://github.com/opencog/atomspace/tree/master/examples/atomspace) and [OpenCog documentation](https://wiki.opencog.org/w/The_Open_Cognition_Project).
+Entering the above commands to *CogProtoLab* command prompt should give a basic insight in tracing incremental AtomSpace inhabitation. For more examples, please refer to [AtomSpace demo examples](https://github.com/opencog/atomspace/tree/master/examples/atomspace) and [official OpenCog documentation](https://wiki.opencog.org/w/The_Open_Cognition_Project).
+
+## known issues
+
+- there are problems with long-running CogServer processes where output is returned and truncated after cmd-delay duration. We're working on solving this, but in a meanwhile, workarond is to raise telnet cmd-delay duration parameter to expected command duration.
+- the application is very memory hungry. Count on capability of holding less than a thousand of visualized ovals per gigybyte of RAM. This may pose a problem with larger datasets.
 
 ## licensing information
 
-This package, like the most of OpenCog packages, is licensed under [agplv3 License](LICENSE).
+This package, like the most of OpenCog packages, is licensed under [AGPL-3.0 license](LICENSE).
 
