@@ -345,6 +345,13 @@
                 }
             }, false);
 
+            document.getElementById ("scr-cmd").addEventListener("input", function () {
+                var o = document.getElementById("scr-list-cmd");
+                for (itm in o.children) {
+                    o[itm].selected = false;
+                }
+            }, false);
+
             var divContainer = document.getElementById ("divContainer");
             var divContainer0 = document.getElementById ("divContainer0");
             var divContainer1 = document.getElementById ("divContainer1");
@@ -477,7 +484,7 @@
             
             function runScript () {
                 output.value += String.fromCharCode(13) + "guile> ...";
-                runCmd (document.getElementById ("scr-cmd").value, 0);
+                runCmd (document.getElementById ("scr-cmd").value.replaceAll("\r", " "), 0);
             }
             
             function runCmd (cmd, delay) {
