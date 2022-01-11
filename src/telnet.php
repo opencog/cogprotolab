@@ -1,13 +1,12 @@
 <?php
     $host = urldecode($_GET['host']);
     $port = urldecode((int)$_GET['port']);
-    $delay = urldecode((int)$_GET['delay']);
     $cmd = urldecode($_GET['cmd']);
     
     $fp = fsockopen($host, $port, $errno, $errstr, 5);
 
     if(!$fp){
-        echo "connection error";
+        echo "telnet connection error";
 
     } else {
         stream_set_blocking($fp, false);
@@ -20,18 +19,22 @@
 
     function send ($fp, $delay, $command) {
         //write to socket
-        if (fwrite($fp, $command) === false) {
-            return "command send error";
+        if (fwrite($fp, $command) == false) {
+            return "telnet command send error";
         }
 
-        usleep($delay);
-        
         //read socket
-        $response = "";
-        while (($ret = fgets($fp)) !== false) {
-            $response .= $ret;
+        while (true) {
+            usleep(10000);
+            $response = "";
+            while (($ret = fgets($fp)) != false) {
+                if (substr($ret, -25) == "[0;34mguile[1;34m> [0m") {
+                    $response = substr($response, 0, -1);
+                    return $response;
+                }
+                
+                $response .= $ret;
+            }
         }
-
-        return $response;
     }
 ?>
