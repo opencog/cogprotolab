@@ -7,6 +7,4 @@ var init = {
     "shadow-color": "rgba(255, 255, 255, 0.5)",
     "host": "127.0.0.1",
     "port": "17001",
-    "cmd-delay": "250000",
 };
-

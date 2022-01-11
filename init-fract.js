@@ -10,4 +10,3 @@ var init = {
     "power-consumption-optimisation": "80%",
     "ui-scale": "100%"
 };
-

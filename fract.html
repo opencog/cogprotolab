@@ -265,6 +265,7 @@
                         try {
                             await loadOval (ovals[i].data, refr);
                         } catch (e) {
+                            i--;
                         }
                     }
                 }
@@ -283,11 +284,16 @@
                             node.scaledBitmap = Crisp.crispBitmapXY(canvas);
                             divContainer.dispatchEvent(new CustomEvent('redraw', null));
 
-                            statNOvals++;
-                            statMem += node.img.width * node.img.height * 4 + node.cachedCnv.width + node.cachedCnv.height * 4 * 1.5;
-                            divStats.innerHTML = "cache size: " + statNOvals + " ovals, " + Math.round(statMem / 1024 / 1024)  + "mb";
-
-                            resolve ();
+                            if (node.cachedCnv) {
+                                statNOvals++;
+                                statMem += node.img.width * node.img.height * 4 + node.cachedCnv.width + node.cachedCnv.height * 4 * 1.5;
+                                divStats.innerHTML = "cache size: " + statNOvals + " ovals, " + Math.round(statMem / 1024 / 1024)  + "mb";
+                                
+                                resolve ();
+                                
+                            } else
+                                reject ();
+                                
                         } else {
                             divContainer.dispatchEvent(new CustomEvent('redraw', null));
                             reject ();

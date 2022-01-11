@@ -48,16 +48,16 @@
       <section>
         <div id="divContainer" style="visibility: hidden; overflow: hidden; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; border-sytle: none; padding:0; margin:0;">
             <div id="params" style="/*position: absolute; left: 0px; right: 0px; top: 0px;*/ border-style: none; padding:0; margin:0; padding-left: 5px; font-family: 'monospace'; color: white; background-color: black">
-                <strong>cogserver telnet connection:</strong><br/>
+                <strong>cogserver connection:</strong><br/>
                 <table id="tbl" style="border-sytle: none; padding:0; margin:0;">
                     <tr>
                         <td id="td0" valign="top">
                             <image id="img1" src="media/120px-OpenCog.png" height="50em"/>
                         </td>
                         <td id="td1" style="color: black; background-color: white">
-                            <label id="lblHost">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;host:&nbsp;</label><input id="host" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="127.0.0.1"/><br/>
-                            <label id="lblPort">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;port:&nbsp;</label><input id="port" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="17001"/><br/>
-                            <label id="lblDelay">&nbsp;cmd-delay:&nbsp;</label><input type="text" id="delay" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="125000"/>
+                            <label id="lblHost">&nbsp;host:&nbsp;</label><input id="host" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="127.0.0.1"/><br/>
+                            <label id="lblPort">&nbsp;port:&nbsp;</label><input id="port" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="17001"/><br/>
+                            <!--label id="lblDelay">&nbsp;cmd-delay:&nbsp;</label><input type="text" id="delay" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="125000"/-->
                         </td>
                     </tr>
                 </table>
@@ -70,12 +70,12 @@
                         </td>
                         <td>
                             <select id="scr-list-cmd" onfocus="document.getElementById('scr-list-cmd').onchange()" onchange="document.getElementById('scr-cmd').value=document.getElementById('scr-list-cmd').value;" name="scr-list-cmd" size="3" style="outline: none; border-style: none; padding:0; margin:0; font-family: 'monospace';">
-                            </select><textarea id="scr-cmd" spellcheck="false" wrap="off" rows="3" style="border-style: none; border-left: 1px solid black; resize: none; outline: none; padding: 0; margin: 0; font-family: 'monospace'; background-color: white; color: black;"></textarea>
+                            </select><textarea id="scr-cmd" maxlength="500000000" spellcheck="false" wrap="off" rows="3" style="border-style: none; border-left: 1px solid black; resize: none; outline: none; padding: 0; margin: 0; font-family: 'monospace'; background-color: white; color: black;"></textarea>
                             <div align="right" style="border-top: 1px solid black;"><label id="run" onclick="runScript()" onmouseenter="document.getElementById('run').style.backgroundColor='lightgray'" onmouseleave="document.getElementById('run').style.backgroundColor='white'" style="background-color: white; color: black; font-family: 'monospace';">&nbsp;&nbsp;&nbsp;run&nbsp;&nbsp;&nbsp;</label></div>
                         </td>
                     </tr>
                 </table>
-                <strong>visualisation captures output of command:</strong><br/>
+                <strong>visualisation script:</strong><br/>
                 <table style="border-sytle: none; padding:0; margin:0;">
                     <tr>
                         <td valign="top">
@@ -83,7 +83,7 @@
                         </td>
                         <td>
                             <select id="vis-list-cmd" onfocus="document.getElementById('vis-list-cmd').onchange()" onchange="document.getElementById('vis-cmd').value=document.getElementById('vis-list-cmd').value;" name="vis-list-cmd" size="3" style="outline: none; border-style: none; padding:0; margin:0; font-family: 'monospace';">
-                            </select><textarea id="vis-cmd" spellcheck="false" wrap="off" rows="3" style="border-style: none; border-left: 1px solid black; resize: none; outline: none; padding: 0; margin: 0; font-family: 'monospace'; background-color: white; color: black;"></textarea>
+                            </select><textarea id="vis-cmd" maxlength="500000000" spellcheck="false" wrap="off" rows="3" style="border-style: none; border-left: 1px solid black; resize: none; outline: none; padding: 0; margin: 0; font-family: 'monospace'; background-color: white; color: black;"></textarea>
                             <div align="right" style="border-top: 1px solid black;"><label id="repaint" onclick="repaint()" onmouseenter="document.getElementById('repaint').style.backgroundColor='lightgray'" onmouseleave="document.getElementById('repaint').style.backgroundColor='white'" style="background-color: white; color: black; font-family: 'monospace';">&nbsp;repaint&nbsp;</label></div>
                         </td>
                     </tr>
@@ -91,10 +91,10 @@
             </div>
             <div id="divContainer0" onclick="input.focus();" style="/*position: absolute; border-style: none; top: 0px; bottom: 0px; left: 0px; right: 0px;*/ overflow-y: scroll; padding:0; margin:0; margin-left: 7px;">
                 <div id="divContainer1" style="border-style: none; padding:0; margin:0;">
-                    <textarea id="output" spellcheck="false" wrap="on" rows="1" style="overflow: hidden; width: 100%; height: auto; resize: none; outline: none; box-sizing: border-box; padding: 0; margin: 0; font-family: 'monospace';" readonly></textarea>
+                    <textarea id="output"  maxlength="500000000" spellcheck="false" wrap="on" rows="1" style="word-break: break-all; overflow: hidden; width: 100%; height: auto; resize: none; outline: none; box-sizing: border-box; padding: 0; margin: 0; font-family: 'monospace';" readonly></textarea>
                     <br/>
                     <label id="li" style="width: 70px; vertical-align: top; font-family: 'monospace';">guile> </label>
-                    <textarea id="input" spellcheck="false" wrap="off" rows="1" style="overflow: hidden; height: auto; /*min-height: 12px; */width:0%; resize: none; outline: none; box-sizing: border-box; padding: 0; margin: 0; font-family: 'monospace';"></textarea>
+                    <textarea id="input" maxlength="500000000" spellcheck="false" wrap="off" rows="1" style="overflow: hidden; height: auto; /*min-height: 12px; */width:0%; resize: none; outline: none; box-sizing: border-box; padding: 0; margin: 0; font-family: 'monospace';"></textarea>
                 </div>
             </div>
         </div>
@@ -209,8 +209,9 @@
                             histptr = hist.length;
                         }
                         
-                        output.value += String.fromCharCode(13) + "guile> " + input.value;
-                        runCmd (input.value + "\n", 1000);
+                        output.value += String.fromCharCode(13) + "guile> " + input.value.replaceAll(/;((.*\\n)|(.*$))/gm, " ").replaceAll(/( *\n *)+/gm, " ").replaceAll(/^ +/gm, "");
+                        var inv = input.value;
+                        setTimeout(function() {runCmd (inv + "\n", 1000);}, 1);
                     }
                     
                     input.value = "";
@@ -271,14 +272,14 @@
                 document.getElementById ("img3").style.width = w + "px";
                 document.getElementById ("img3").style.height = w + "px";
                 
-                w = 390 * env.fontSize / 12 - 25;
+                w = 423 * env.fontSize / 12 - 25 - 2 * env.shadowRadius;
                 
                 document.getElementById ("host").style.width = w + "px";
                 document.getElementById ("host").style.fontSize = env.fontSize + "px";
                 document.getElementById ("port").style.width = w + "px";
                 document.getElementById ("port").style.fontSize = env.fontSize + "px";
-                document.getElementById ("delay").style.width = w + "px";
-                document.getElementById ("delay").style.fontSize = env.fontSize + "px";
+                //document.getElementById ("delay").style.width = w + "px";
+                //document.getElementById ("delay").style.fontSize = env.fontSize + "px";
 
                 w = 10 * env.fontSize;
 
@@ -363,7 +364,7 @@
             window.addEventListener("load", wonload ());
             document.getElementById ("host").value = init["host"];
             document.getElementById ("port").value = init["port"];
-            document.getElementById ("delay").value = init["cmd-delay"];
+            //document.getElementById ("delay").value = init["cmd-delay"];
             
             var dirVis;
             function loadVisScripts() {
@@ -447,7 +448,7 @@
                 return new Promise(function(resolve, reject) {
                     host = encodeURI (document.getElementById ("host").value);
                     port = encodeURI (document.getElementById ("port").value);
-                    delay = encodeURI (document.getElementById ("delay").value);
+                    //delay = encodeURI (document.getElementById ("delay").value);
                     cmd = encodeURI (cmd);
 
                     var xhttp = new XMLHttpRequest ();
@@ -457,7 +458,7 @@
                         }
                     };
                     
-                    xhttp.open("GET", "src/telnet.php?host=" + host + "&port=" + port + "&delay=" + delay + "&cmd=" + cmd, true);
+                    xhttp.open("GET", "src/telnet.php?host=" + host + "&port=" + port + "&cmd=" + cmd, true);
                     xhttp.overrideMimeType("text/plain");
                     xhttp.send();
                 });
@@ -483,42 +484,50 @@
             }
             
             function runScript () {
-                output.value += String.fromCharCode(13) + "guile> " + document.getElementById ("scr-cmd").value.replaceAll(/;((.*\\n)|(.*$))/gm, " ").replaceAll(/(\n *)+/gm, " ").replaceAll(/^ +/gm, "");
+                output.value += String.fromCharCode(13) + "guile> " + document.getElementById ("scr-cmd").value.replaceAll(/;((.*\\n)|(.*$))/gm, " ").replaceAll(/( *\n *)+/gm, " ").replaceAll(/^ +/gm, "");
                 runCmd (document.getElementById ("scr-cmd").value, 0);
             }
             
             function runCmd (cmd, delay) {
                 if (myTimeout) clearTimeout (myTimeout);
-                sendcmd (cmd.replaceAll(/;((.*\\n)|(.*$))/gm, " ").replaceAll(/(^ +|\n *)+/gm, " ").replaceAll(/^ +/gm, "") + "\n").then (
-                    (response) => {
-                        output.value += String.fromCharCode(13) + response.replaceAll("\u001b[0;34mguile\u001b[1;34m> \u001b[0m", "").trim();
-                        oninp();
-                        document.getElementById("li").style.visibility = "visible";
-                        input.style.visibility = "visible";
-                        input.focus();
-                        
-                        if (response.substr(-"connection error".length) !== "connection error") {
-                            sendcmd (document.getElementById ("vis-cmd").value.replaceAll("\n", " ").replaceAll("\r", " ") + "\n").then (
-                                (response) => {
-                                    if (myTimeout) clearTimeout (myTimeout);
-                                    timeoutFn = function () {
-                                        timeoutFn = null;
-                                        clearstr();
-                                        sendstr (response.replaceAll("\u001b[0", "").trim());
+                parsed = parser.getParseTree (rules, cmd);
+                if (cmd.trim() === "" || parsed.success) {
+                    sendcmd (cmd.replaceAll(/;((.*\\n)|(.*$))/gm, " ").replaceAll(/( *\n *)+/gm, " ").replaceAll(/^ +/gm, "") + "\n").then (
+                        (response) => {
+                            output.value += String.fromCharCode(13) + response/*.replaceAll("\u001b[0;34mguile\u001b[1;34m> \u001b[0m", "").trim()*/;
+                            oninp();
+                            document.getElementById("li").style.visibility = "visible";
+                            input.style.visibility = "visible";
+                            input.focus();
+                            
+                            if (response.substr(-"connection error".length) !== "connection error") {
+                                sendcmd (document.getElementById ("vis-cmd").value.replaceAll("\n", " ").replaceAll("\r", " ") + "\n").then (
+                                    (response) => {
+                                        if (myTimeout) clearTimeout (myTimeout);
+                                        timeoutFn = function () {
+                                            timeoutFn = null;
+                                            clearstr();
+                                            sendstr (response.replaceAll("\u001b[0", "").trim());
+                                        }
+                                        myTimeout = setTimeout(timeoutFn, delay) // don't touch
                                     }
-                                    
-                                    myTimeout = setTimeout(timeoutFn, delay) // don't touch
+                                );
+                            } else {
+                                if (myTimeout) clearTimeout (myTimeout);
+                                timeoutFn = function () {
+                                    sendstr ("");
                                 }
-                            );
-                        } else {
-                            if (myTimeout) clearTimeout (myTimeout);
-                            timeoutFn = function () {
-                                sendstr ("");
+                                myTimeout = setTimeout(timeoutFn, delay); // don't touch
                             }
-                            myTimeout = setTimeout(timeoutFn, delay); // don't touch
                         }
-                    }
-                );
+                    );
+                } else {
+                    output.value += String.fromCharCode(13) + "CogProtoLab error: unmatched braces";
+                    oninp();
+                    document.getElementById("li").style.visibility = "visible";
+                    input.style.visibility = "visible";
+                    input.focus();
+                }
             }
         </script>
       </section>

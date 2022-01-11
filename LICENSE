@@ -691,4 +691,3 @@ MindAgents and other applications. When OpenCog is used unmodified as the core
 class library for an OpenCog instance, compiler for the combo language, or for 
 a program written in the combo programming language it does not affect the 
 licensing for distributing those programs directly.
-
