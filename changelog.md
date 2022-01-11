@@ -4,3 +4,5 @@
     - initial commit
     - UX update
     - left-top pane: added predefined scripts
+    - removed cmd-delay time. Php telnet script now waits for `guile>` prompt to appear,
+    then returns the output. Interfacing command prompt works faster now.
