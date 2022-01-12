@@ -16,7 +16,7 @@ Newcomers to OpenCog may face a dificulty of working with command line which are
 
 The application is consisted of two panes. Left pane contains telnet configuration parameters, and some utility controls to corroborate input command prompt for communicating to CogServer. Input command prompt tries to simulate standard REPL scheme interface to CogServer. Multiline input is obtained by holding `shift` while hitting `enter`. Standard pasting from clipboard should also work fine. History of previously entered commands is accessed by pressing up and down arrows. Entered command is sent to CogServer on hitting `enter` on its own. Output of the command is then brought back and displayed in the prompt interface. At the same time, right pane visualizer is updated to reflect the current visualisation query to AtomSpace. Please refer to built in application instructions for info about navigating visualizer (the bottom-right questionmark).
 
-## how it works
+## how does it work
 
 *CogProtoLab* left pane command prompt internally uses a php telnet connection for exchanging information with CogServer. Upon sending each prompt input, while its output is being captured and displayed as text, a hidden telnet query command from the current contents of `visualisation script` text area is being sent to CogServer. Its output is then captured by *CogProtoLab* and visually displayed in the right pane.
 
@@ -31,7 +31,7 @@ After installing prerequisites, there is no build procedure, just clone this pac
 
 ### running
 
-As a first step, we have to run `cogserver` from the OS command prompt, then to open `index.html` from the package root in a web browser over the HTTP server, possibly to adjust telnet connection defaults, and we are ready to start interacting with AtomSpace in *CogProtoLab*.
+As a first step, we have to run `cogserver` from the OS command prompt where a HTTP server resides, then to open `index.html` from the package root in a web browser over the HTTP server, possibly to adjust telnet connection defaults, and we are ready to start interacting with AtomSpace in *CogProtoLab*.
 
 To modify predefined scripts and visualisation commands, we can edit, create, or delete files in folders `dir-scripts/` and `dir-visuals/`, respectively. Contents of these folders are automatically loaded into the web page upon loading or refreshing it. We can also edit (but not create or delete) these files directly in the browser, although the changes will not be permanently saved.
 
@@ -80,7 +80,7 @@ After opening *CogProtoLab* application in web browser, one can perform a simple
     ;Trigger graph rewriting
     (cog-execute! make-conclusions)
 
-Entering the above commands to *CogProtoLab* command prompt should give a basic insight in tracing incremental AtomSpace inhabitation. For more examples, please refer to [AtomSpace demo examples](https://github.com/opencog/atomspace/tree/master/examples/atomspace) and [official OpenCog documentation](https://wiki.opencog.org/w/The_Open_Cognition_Project).
+Successively  entering the above commands to *CogProtoLab* command prompt should give a basic insight in tracing incremental AtomSpace inhabitation. For more examples, please refer to [AtomSpace demo examples](https://github.com/opencog/atomspace/tree/master/examples/atomspace) and [official OpenCog documentation](https://wiki.opencog.org/w/The_Open_Cognition_Project).
 
 ## known issues
 

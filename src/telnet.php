@@ -25,7 +25,7 @@
 
         //read socket
         while (true) {
-            usleep(10000);
+            usleep(25000);
             $response = "";
             while (($ret = fgets($fp)) != false) {
                 if (substr($ret, -25) == "[0;34mguile[1;34m> [0m") {

@@ -48,7 +48,8 @@
       <section>
         <div id="divContainer" style="visibility: hidden; overflow: hidden; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; border-sytle: none; padding:0; margin:0;">
             <div id="params" style="/*position: absolute; left: 0px; right: 0px; top: 0px;*/ border-style: none; padding:0; margin:0; padding-left: 5px; font-family: 'monospace'; color: white; background-color: black">
-                <strong>cogserver connection:</strong><br/>
+                <strong id="title">cogprotolab</strong><br/>
+                <br/><strong>cogserver connection:</strong><br/>
                 <table id="tbl" style="border-sytle: none; padding:0; margin:0;">
                     <tr>
                         <td id="td0" valign="top">
@@ -241,6 +242,8 @@
             }
 
             function setSize () {
+                document.getElementById ("title").style.fontSize = 2 * env.fontSize + "px";
+                
                 divContainer.style.top = env.shadowRadius + "px";
                 divContainer.style.left = env.shadowRadius + "px";
                 divContainer.style.bottom = env.shadowRadius + "px";
@@ -490,7 +493,7 @@
             
             function runCmd (cmd, delay) {
                 if (myTimeout) clearTimeout (myTimeout);
-                parsed = parser.getParseTree (rules, cmd);
+                parsed = parser.getParseTree (rules, cmd.replaceAll(/;((.*\\n)|(.*$))/gm, " ").replaceAll(/( *\n *)+/gm, " ").replaceAll(/^ +/gm, ""));
                 if (cmd.trim() === "" || parsed.success) {
                     sendcmd (cmd.replaceAll(/;((.*\\n)|(.*$))/gm, " ").replaceAll(/( *\n *)+/gm, " ").replaceAll(/^ +/gm, "") + "\n").then (
                         (response) => {
