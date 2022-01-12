@@ -84,6 +84,7 @@ Successively  entering the above commands to *CogProtoLab* command prompt should
 
 ## known issues
 
+- Only `scm` shell is supported for now. There are plans to extend this support to other offered languages in the future.
 - The time available for long running processes depends on AJAX call default timeout.
 - Output of processes is not streamed while they run, yet it is returned after processes end.
 - Because of caching, the application is very memory hungry. Count on capability of holding less than a thousand of visualized ovals per gigybyte of RAM. This may pose a problem with larger datasets.
