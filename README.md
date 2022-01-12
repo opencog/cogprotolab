@@ -86,7 +86,7 @@ Successively  entering the above commands to *CogProtoLab* command prompt should
 
 - The time available for long running processes depends on AJAX call default timeout.
 - Output of processes is not streamed while they run, yet it is returned after processes end.
-- Because of cacheing, the application is very memory hungry. Count on capability of holding less than a thousand of visualized ovals per gigybyte of RAM. This may pose a problem with larger datasets.
+- Because of caching, the application is very memory hungry. Count on capability of holding less than a thousand of visualized ovals per gigybyte of RAM. This may pose a problem with larger datasets.
 
 ## licensing information
 
