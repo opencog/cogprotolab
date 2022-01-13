@@ -47,15 +47,15 @@
     <body onload="input.focus();">
       <section>
         <div id="divContainer" style="visibility: hidden; overflow: hidden; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; border-sytle: none; padding:0; margin:0;">
-            <div id="params" style="/*position: absolute; left: 0px; right: 0px; top: 0px;*/ border-style: none; padding:0; margin:0; padding-left: 5px; font-family: 'monospace'; color: white; background-color: black">
+            <div id="params" style="/*position: absolute; left: 0px; right: 0px; top: 0px;*/ border-style: none; padding:0; margin:0; padding-left: 5px; padding-bottom: 4px; font-family: 'monospace'; color: white; background-color: black">
                 <strong id="title">cogprotolab</strong><br/>
                 <br/><strong>cogserver connection:</strong><br/>
-                <table id="tbl" style="border-sytle: none; padding:0; margin:0;">
-                    <tr>
-                        <td id="td0" valign="top">
+                <table id="tbl" style="border-sytle: none; padding:0; margin:0; border-collapse: collapse; border-spacing: 0;">
+                    <tr style="padding:0; margin:0; border-style: none;">
+                        <td id="td0" valign="top" style="padding:0; margin:0; border-style: none;">
                             <image id="img1" src="media/120px-OpenCog.png" height="50em"/>
                         </td>
-                        <td id="td1" style="color: black; background-color: white">
+                        <td id="td1" style="color: black; background-color: white" style="padding:0; margin:0; border-style: none;">
                             <label id="lblHost">&nbsp;host:&nbsp;</label><input id="host" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="127.0.0.1"/><br/>
                             <label id="lblPort">&nbsp;port:&nbsp;</label><input id="port" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="17001"/><br/>
                             <!--label id="lblDelay">&nbsp;cmd-delay:&nbsp;</label><input type="text" id="delay" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="125000"/-->
@@ -64,28 +64,35 @@
                 </table>
                 <br/>
                 <strong>predefined scripts:</strong><br/>
-                <table style="border-sytle: none; padding:0; margin:0;">
-                    <tr>
-                        <td valign="top">
+                <table style="border-sytle: none; padding:0; margin:0; border-collapse: collapse; border-spacing: 0;">
+                    <tr style="padding:0; margin:0; border-style: none;">
+                        <td valign="top" style="padding:0; margin:0; border-style: none;">
                             <image id="img3" src="media/120px-Script.png" height="50em"/>
                         </td>
-                        <td>
-                            <select id="scr-list-cmd" onfocus="document.getElementById('scr-list-cmd').onchange()" onchange="document.getElementById('scr-cmd').value=document.getElementById('scr-list-cmd').value;" name="scr-list-cmd" size="3" style="outline: none; border-style: none; padding:0; margin:0; font-family: 'monospace';">
-                            </select><textarea id="scr-cmd" maxlength="500000000" spellcheck="false" wrap="off" rows="3" style="border-style: none; border-left: 1px solid black; resize: none; outline: none; padding: 0; margin: 0; font-family: 'monospace'; background-color: white; color: black;"></textarea>
-                            <div align="right" style="border-top: 1px solid black;"><label id="run" onclick="runScript()" onmouseenter="document.getElementById('run').style.backgroundColor='lightgray'" onmouseleave="document.getElementById('run').style.backgroundColor='white'" style="background-color: white; color: black; font-family: 'monospace';">&nbsp;&nbsp;&nbsp;run&nbsp;&nbsp;&nbsp;</label></div>
+                        <td valign="top" style="padding:0; margin:0; border-style: none;">
+                            <div id="div-scr" style="padding:0; margin:0; border-style: none; overflow: hidden; background-color: white;">
+                                <select id="scr-list-cmd" onfocus="document.getElementById('scr-list-cmd').onchange()" onchange="document.getElementById('scr-cmd').value=document.getElementById('scr-list-cmd').value;" name="scr-list-cmd" size="3" style="outline: none; border-style: none; padding:0; margin:0; font-family: 'monospace';"></select>
+                            </div>
+                        </td>
+                        <td style="padding:0; margin:0; border-style: none;">
+                            <textarea id="scr-cmd" maxlength="500000000" spellcheck="false" wrap="off" rows="3" style="border-style: none; border-left: 1px solid black; resize: none; outline: none; padding: 0; margin: 0; font-family: 'monospace'; background-color: white; color: black;"></textarea>
+                            <div align="right" style="border-style: none; border-top: 1px solid black; padding: 0; margin:0;"><div id="run" onclick="runScript()" onmouseenter="document.getElementById('run').style.backgroundColor='lightgray'" onmouseleave="document.getElementById('run').style.backgroundColor='white'" style="display: inline-block; background-color: white; color: black; font-family: 'monospace'; border-style: none;">&nbsp;&nbsp;&nbsp;run&nbsp;&nbsp;&nbsp;</div></div>
                         </td>
                     </tr>
                 </table>
                 <strong>visualisation script:</strong><br/>
-                <table style="border-sytle: none; padding:0; margin:0;">
-                    <tr>
-                        <td valign="top">
+                <table style="border-sytle: none; padding:0; margin:0; border-collapse: collapse; border-spacing: 0;">
+                    <tr style="padding:0; margin:0; border-style: none;">
+                        <td valign="top" style="padding:0; margin:0; border-style: none;">
                             <image id="img2" src="media/120px-Visual.png" height="50em"/>
                         </td>
-                        <td>
-                            <select id="vis-list-cmd" onfocus="document.getElementById('vis-list-cmd').onchange()" onchange="document.getElementById('vis-cmd').value=document.getElementById('vis-list-cmd').value;" name="vis-list-cmd" size="3" style="outline: none; border-style: none; padding:0; margin:0; font-family: 'monospace';">
-                            </select><textarea id="vis-cmd" maxlength="500000000" spellcheck="false" wrap="off" rows="3" style="border-style: none; border-left: 1px solid black; resize: none; outline: none; padding: 0; margin: 0; font-family: 'monospace'; background-color: white; color: black;"></textarea>
-                            <div align="right" style="border-top: 1px solid black;"><label id="repaint" onclick="repaint()" onmouseenter="document.getElementById('repaint').style.backgroundColor='lightgray'" onmouseleave="document.getElementById('repaint').style.backgroundColor='white'" style="background-color: white; color: black; font-family: 'monospace';">&nbsp;repaint&nbsp;</label></div>
+                        <td valign="top" style="padding:0; margin:0; border-style: none;">
+                            <div id="div-vis" style="padding:0; margin:0;  border-style: none; overflow: hidden; background-color: white;">
+                            <select id="vis-list-cmd" onfocus="document.getElementById('vis-list-cmd').onchange()" onchange="document.getElementById('vis-cmd').value=document.getElementById('vis-list-cmd').value;" name="vis-list-cmd" size="3" style="outline: none; border-style: none; padding:0; margin:0; font-family: 'monospace';"></select>
+                        </td>
+                        <td style="padding:0; margin:0; border-style: none;">
+                            <textarea id="vis-cmd" maxlength="500000000" spellcheck="false" wrap="off" rows="3" style="border-style: none; border-left: 1px solid black; resize: none; outline: none; padding: 0; margin: 0; font-family: 'monospace'; background-color: white; color: black;"></textarea>
+                            <div align="right" style="border-style: none; border-top: 1px solid black; padding: 0; margin:0;"><div id="repaint" onclick="repaint()" onmouseenter="document.getElementById('repaint').style.backgroundColor='lightgray'" onmouseleave="document.getElementById('repaint').style.backgroundColor='white'" style="display: inline-block; background-color: white; color: black; font-family: 'monospace'; border-style: none;">&nbsp;repaint&nbsp;</div></div>
                         </td>
                     </tr>
                 </table>
@@ -275,7 +282,7 @@
                 document.getElementById ("img3").style.width = w + "px";
                 document.getElementById ("img3").style.height = w + "px";
                 
-                w = 423 * env.fontSize / 12 - 25 - 2 * env.shadowRadius;
+                w = 430 * env.fontSize / 12 - 25 - 2 * env.shadowRadius;
                 
                 document.getElementById ("host").style.width = w + "px";
                 document.getElementById ("host").style.fontSize = env.fontSize + "px";
@@ -289,6 +296,8 @@
                 document.getElementById ("scr-list-cmd").style.fontSize = env.fontSize + "px";
                 document.getElementById ("scr-list-cmd").style.height = document.getElementById ("td1").clientHeight * 1.7 + "px";
                 document.getElementById ("scr-list-cmd").style.width = w + "px";
+                document.getElementById ("div-scr").style.height = document.getElementById ("td1").clientHeight * 1.7 + "px";
+                document.getElementById ("div-scr").style.width = w + "px";
 
                 document.getElementById ("scr-cmd").style.fontSize = env.fontSize + "px";
                 document.getElementById ("scr-cmd").style.height = document.getElementById ("td1").clientHeight * 1.7 + "px";
@@ -297,6 +306,8 @@
                 document.getElementById ("vis-list-cmd").style.fontSize = env.fontSize + "px";
                 document.getElementById ("vis-list-cmd").style.height = document.getElementById ("td1").clientHeight * 1.2 + "px";
                 document.getElementById ("vis-list-cmd").style.width = w + "px";
+                document.getElementById ("div-vis").style.height = document.getElementById ("td1").clientHeight * 1.2 + "px";
+                document.getElementById ("div-vis").style.width = w + "px";
 
                 document.getElementById ("vis-cmd").style.fontSize = env.fontSize + "px";
                 document.getElementById ("vis-cmd").style.height = document.getElementById ("td1").clientHeight * 1.2 + "px";
