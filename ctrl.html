@@ -99,8 +99,7 @@
             </div>
             <div id="divContainer0" onclick="input.focus();" style="/*position: absolute; border-style: none; top: 0px; bottom: 0px; left: 0px; right: 0px;*/ overflow-y: scroll; padding:0; margin:0; margin-left: 7px;">
                 <div id="divContainer1" style="border-style: none; padding:0; margin:0;">
-                    <textarea id="output"  maxlength="500000000" spellcheck="false" wrap="on" rows="1" style="word-break: break-all; overflow: hidden; width: 100%; height: auto; resize: none; outline: none; box-sizing: border-box; padding: 0; margin: 0; font-family: 'monospace';" readonly></textarea>
-                    <br/>
+                    <textarea id="output"  maxlength="500000000" spellcheck="false" wrap="on" rows="1" style="display: block; word-break: break-all; overflow: hidden; width: 100%; height: auto; resize: none; outline: none; box-sizing: border-box; padding: 0; margin: 0; font-family: 'monospace';" readonly></textarea>
                     <label id="li" style="width: 70px; vertical-align: top; font-family: 'monospace';">guile> </label>
                     <textarea id="input" maxlength="500000000" spellcheck="false" wrap="off" rows="1" style="overflow: hidden; height: auto; /*min-height: 12px; */width:0%; resize: none; outline: none; box-sizing: border-box; padding: 0; margin: 0; font-family: 'monospace';"></textarea>
                 </div>
@@ -282,7 +281,7 @@
                 document.getElementById ("img3").style.width = w + "px";
                 document.getElementById ("img3").style.height = w + "px";
                 
-                w = divContainer.clientWidth - document.getElementById ("host").offsetLeft - w - 15;//430 * env.fontSize / 12 - 25 - 2 * env.shadowRadius;
+                w = divContainer.clientWidth - document.getElementById ("host").offsetLeft - w - 15;
                 
                 document.getElementById ("host").style.width = w + "px";
                 document.getElementById ("host").style.fontSize = env.fontSize + "px";
