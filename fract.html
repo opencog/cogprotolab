@@ -265,7 +265,7 @@
                 pauseLoading = false;
                 ovals.sort((a, b) => (a.radius > b.radius) ? -1 : 1)
                 for (i = 0; i < ovals.length && !pauseLoading; i++) {
-                    if (!ovals[i].data.cachedCnv || !ovals[i].data.scaledBitmap) {
+                    if (!ovals[i].data.cachedCnv || !ovals[i].data.cachedData || !ovals[i].data.scaledBitmap) {
                         try {
                             await loadOval (ovals[i].data, refr);
                         } catch (e) {
