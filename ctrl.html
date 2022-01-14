@@ -55,14 +55,16 @@
                         <td id="td0" valign="top" style="padding:0; margin:0; border-style: none;">
                             <image id="img1" src="media/120px-OpenCog.png" height="50em"/>
                         </td>
-                        <td id="td1" style="color: black; background-color: white" style="padding:0; margin:0; border-style: none;">
-                            <label id="lblHost">&nbsp;&nbsp;&nbsp;host:&nbsp;</label><input id="host" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="127.0.0.1"/><br/>
-                            <label id="lblPort">&nbsp;&nbsp;&nbsp;port:&nbsp;</label><input id="port" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="17001"/><br/>
-                            <label id="lblPrompt">&nbsp;prompt:&nbsp;</label><input type="text" id="prompt" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="\\x1b[0;34mguile\\x1b[1;34m> \\x1b[0m">
+                        <td id="td1" style="padding:0; margin:0; border-style: none;">
+                            <div style="color: black; background-color: white; border-bottom: 3px solid white;">
+                                <label id="lblHost">&nbsp;&nbsp;&nbsp;host:&nbsp;</label><input id="host" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="127.0.0.1"/><br/>
+                                <label id="lblPort">&nbsp;&nbsp;&nbsp;port:&nbsp;</label><input id="port" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="17001"/><br/>
+                                <label id="lblPrompt">&nbsp;prompt:&nbsp;</label><input type="text" id="prompt" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="\\x1b[0;34mguile\\x1b[1;34m> \\x1b[0m">
+                            </div>
+                            <div align="right" style="border-style: none; border-top: 1px solid black; padding: 0; margin:0;"><div id="testconn" onclick="testConn()" onmouseenter="document.getElementById('testconn').style.backgroundColor='lightgray'" onmouseleave="document.getElementById('testconn').style.backgroundColor='white'" style="display: inline-block; background-color: white; color: black; font-family: 'monospace'; border-style: none;">&nbsp;&nbsp;test&nbsp;&nbsp;&nbsp;</div></div>
                         </td>
                     </tr>
                 </table>
-                <br/>
                 <strong>predefined scripts:</strong><br/>
                 <table style="border-sytle: none; padding:0; margin:0; border-collapse: collapse; border-spacing: 0;">
                     <tr style="padding:0; margin:0; border-style: none;">
@@ -479,6 +481,25 @@
                 });
             }
             
+            function sendConn () {
+                return new Promise(function(resolve, reject) {
+                    host = encodeURI (document.getElementById ("host").value);
+                    port = encodeURI (document.getElementById ("port").value);
+                    prompt = encodeURI (document.getElementById ("prompt").value);
+
+                    var xhttp = new XMLHttpRequest ();
+                    xhttp.onreadystatechange = function () {
+                        if (this.readyState == 4 && this.status == 200) {
+                            resolve (this.responseText);
+                        }
+                    };
+                    
+                    xhttp.open("GET", "src/test-conn.php?host=" + host + "&port=" + port + "&prompt=" + prompt, true);
+                    xhttp.overrideMimeType("text/plain");
+                    xhttp.send();
+                });
+            }
+            
             function repaint () {
                 document.getElementById('li').innerHTML = document.getElementById('prompt').value.replace(/\\x1b.*?m/gm, '')
                 clearstr();
@@ -502,6 +523,21 @@
             function runScript () {
                 output.value += String.fromCharCode(13) + document.getElementById('prompt').value.replace(/\\x1b.*?m/gm, '') + document.getElementById ("scr-cmd").value.replaceAll(/;((.*\\n)|(.*$))/gm, " ").replaceAll(/( *\n *)+/gm, " ").replaceAll(/^ +/gm, "");
                 runCmd (document.getElementById ("scr-cmd").value, 0);
+            }
+            
+            function testConn () {
+                document.getElementById('li').innerHTML = document.getElementById('prompt').value.replace(/\\x1b.*?m/gm, '')
+                output.value += String.fromCharCode(13) + document.getElementById('prompt').value.replace(/\\x1b.*?m/gm, '');
+
+                sendConn ().then (
+                    (response) => {
+                        output.value += String.fromCharCode(13) + response;
+                        oninp();
+                        document.getElementById("li").style.visibility = "visible";
+                        input.style.visibility = "visible";
+                        input.focus();
+                    }
+                );
             }
             
             function runCmd (cmd, delay) {
