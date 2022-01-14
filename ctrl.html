@@ -56,12 +56,13 @@
                             <image id="img1" src="media/120px-OpenCog.png" height="50em"/>
                         </td>
                         <td id="td1" style="padding:0; margin:0; border-style: none;">
-                            <div style="color: black; background-color: white; border-bottom: 3px solid white;">
-                                <label id="lblHost">&nbsp;&nbsp;&nbsp;host:&nbsp;</label><input id="host" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="127.0.0.1"/><br/>
-                                <label id="lblPort">&nbsp;&nbsp;&nbsp;port:&nbsp;</label><input id="port" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="17001"/><br/>
-                                <label id="lblPrompt">&nbsp;prompt:&nbsp;</label><input type="text" id="prompt" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="\\x1b[0;34mguile\\x1b[1;34m> \\x1b[0m">
+                            <div id="conn" style="display: flex; align-items: center; color: black; background-color: white; border-bottom: 3px solid white;">
+                                <div>
+                                    <label id="lblHost">&nbsp;host:&nbsp;</label><input id="host" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="127.0.0.1"/><br/>
+                                    <label id="lblPort">&nbsp;port:&nbsp;</label><input id="port" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="17001"/>
+                                </div>
                             </div>
-                            <div align="right" style="border-style: none; border-top: 1px solid black; padding: 0; margin:0;"><div id="testconn" onclick="testConn()" onmouseenter="document.getElementById('testconn').style.backgroundColor='lightgray'" onmouseleave="document.getElementById('testconn').style.backgroundColor='white'" style="display: inline-block; background-color: white; color: black; font-family: 'monospace'; border-style: none;">&nbsp;&nbsp;test&nbsp;&nbsp;&nbsp;</div></div>
+                            <div align="right" style="border-style: none; border-top: 1px solid black; padding: 0; margin:0;"><div id="testconn" onclick="setPrompt()" onmouseenter="document.getElementById('testconn').style.backgroundColor='lightgray'" onmouseleave="document.getElementById('testconn').style.backgroundColor='white'" style="display: inline-block; background-color: white; color: black; font-family: 'monospace'; border-style: none;">&nbsp;rewire&nbsp;&nbsp;</div></div>
                         </td>
                     </tr>
                 </table>
@@ -104,7 +105,7 @@
                 <div id="divContainer1" style="border-style: none; padding:0; margin:0;">
                     <textarea id="output"  maxlength="500000000" spellcheck="false" wrap="on" rows="1" style="display: block; word-break: break-all; overflow: hidden; width: 100%; height: auto; resize: none; outline: none; box-sizing: border-box; padding: 0; margin: 0; font-family: 'monospace';" readonly></textarea>
                     <label id="li" style="width: 70px; vertical-align: top; font-family: 'monospace';">> </label>
-                    <textarea id="input" onfocus="document.getElementById('li').innerHTML=document.getElementById('prompt').value.replace(/\\x1b.*?m/gm, '');oninp();" maxlength="500000000" spellcheck="false" wrap="off" rows="1" style="overflow: hidden; height: auto; /*min-height: 12px; */width:0%; resize: none; outline: none; box-sizing: border-box; padding: 0; margin: 0; font-family: 'monospace';"></textarea>
+                    <textarea id="input" maxlength="500000000" spellcheck="false" wrap="off" rows="1" style="overflow: hidden; height: auto; /*min-height: 12px; */width:0%; resize: none; outline: none; box-sizing: border-box; padding: 0; margin: 0; font-family: 'monospace'; visibility: hidden;"></textarea>
                 </div>
             </div>
         </div>
@@ -284,14 +285,15 @@
                 document.getElementById ("img3").style.width = w + "px";
                 document.getElementById ("img3").style.height = w + "px";
                 
+                var w = 5 * env.fontSize;
+                document.getElementById ("conn").style.height = w + "px";
+
                 w = divContainer.clientWidth - document.getElementById ("host").offsetLeft - w - 15;
                 
                 document.getElementById ("host").style.width = w + "px";
                 document.getElementById ("host").style.fontSize = env.fontSize + "px";
                 document.getElementById ("port").style.width = w + "px";
                 document.getElementById ("port").style.fontSize = env.fontSize + "px";
-                document.getElementById ("prompt").style.width = w + "px";
-                document.getElementById ("prompt").style.fontSize = env.fontSize + "px";
 
                 w = 10 * env.fontSize;
 
@@ -380,7 +382,7 @@
             window.addEventListener("load", wonload ());
             document.getElementById ("host").value = init["host"];
             document.getElementById ("port").value = init["port"];
-            document.getElementById ("prompt").value = init["prompt"];
+            //document.getElementById ("prompt").value = init["prompt"];
             
             var dirVis;
             function loadVisScripts() {
@@ -402,7 +404,6 @@
                                 first = false;
                             }
                         }
-                        setTimeout(function() {repaint()}, 0);
                     }
                 };
                 
@@ -433,7 +434,6 @@
                                 first = false;
                             }
                         }
-                        setTimeout(function() {repaint()}, 0);
                     }
                 };
                 
@@ -462,9 +462,9 @@
             
             function sendcmd (cmd) {
                 return new Promise(function(resolve, reject) {
-                    host = encodeURI (document.getElementById ("host").value);
-                    port = encodeURI (document.getElementById ("port").value);
-                    prompt = encodeURI (document.getElementById ("prompt").value);
+                    host = encodeURI (strHost);
+                    port = encodeURI (strPort);
+                    prompt = encodeURI (strPrompt);
 
                     cmd = encodeURI (cmd);
 
@@ -481,11 +481,10 @@
                 });
             }
             
-            function sendConn () {
+            function getprompt () {
                 return new Promise(function(resolve, reject) {
                     host = encodeURI (document.getElementById ("host").value);
                     port = encodeURI (document.getElementById ("port").value);
-                    prompt = encodeURI (document.getElementById ("prompt").value);
 
                     var xhttp = new XMLHttpRequest ();
                     xhttp.onreadystatechange = function () {
@@ -494,48 +493,84 @@
                         }
                     };
                     
-                    xhttp.open("GET", "src/test-conn.php?host=" + host + "&port=" + port + "&prompt=" + prompt, true);
+                    xhttp.open("GET", "src/get-prompt.php?host=" + host + "&port=" + port, true);
                     xhttp.overrideMimeType("text/plain");
                     xhttp.send();
                 });
             }
             
             function repaint () {
-                document.getElementById('li').innerHTML = document.getElementById('prompt').value.replace(/\\x1b.*?m/gm, '')
-                clearstr();
-                sendcmd (document.getElementById ("vis-cmd").value.replaceAll("\n", " ").replaceAll("\r", " ") + "\n").then (
-                    (response) => {
-                        if (response.substr(-"connection error".length) !== "connection error") {
-                            if (myTimeout) clearTimeout (myTimeout);
-                            myTimeout = setTimeout(function () {
-                                sendstr (response.trim());
-                            }, 0);
-                        } else {
-                            if (myTimeout) clearTimeout (myTimeout);
-                            myTimeout = setTimeout(function () {
-                                sendstr ("");
-                            }, 0);
+                if (strPrompt === null) {
+                    promptError();
+
+                } else {
+                    clearstr();
+                    sendcmd (document.getElementById ("vis-cmd").value.replaceAll("\n", " ").replaceAll("\r", " ") + "\n").then (
+                        (response) => {
+                            if (response.substr(-"connection error".length) !== "connection error") {
+                                if (myTimeout) clearTimeout (myTimeout);
+                                myTimeout = setTimeout(function () {
+                                    sendstr (response.trim());
+                                }, 0);
+                            } else {
+                                if (myTimeout) clearTimeout (myTimeout);
+                                myTimeout = setTimeout(function () {
+                                    sendstr ("");
+                                }, 0);
+                            }
                         }
-                    }
-                );
+                    );
+                }
             }
             
             function runScript () {
-                output.value += String.fromCharCode(13) + document.getElementById('prompt').value.replace(/\\x1b.*?m/gm, '') + document.getElementById ("scr-cmd").value.replaceAll(/;((.*\\n)|(.*$))/gm, " ").replaceAll(/( *\n *)+/gm, " ").replaceAll(/^ +/gm, "");
-                runCmd (document.getElementById ("scr-cmd").value, 0);
+                if (strPrompt === null) {
+                    promptError();
+
+                } else {
+                    output.value += String.fromCharCode(13) + strPrompt.replace(/\\x1b.*?m/gm, '') + document.getElementById ("scr-cmd").value.replaceAll(/;((.*\\n)|(.*$))/gm, " ").replaceAll(/( *\n *)+/gm, " ").replaceAll(/^ +/gm, "");
+                    runCmd (document.getElementById ("scr-cmd").value, 0);
+                }
             }
             
-            function testConn () {
-                document.getElementById('li').innerHTML = document.getElementById('prompt').value.replace(/\\x1b.*?m/gm, '')
-                output.value += String.fromCharCode(13) + document.getElementById('prompt').value.replace(/\\x1b.*?m/gm, '');
+            function promptError () {
+                output.value += String.fromCharCode(13) + "Please rewire connection!";
+                oninp();
+            }
+            
+            var strPrompt = null;
+            var strHost = null;
+            var strPort = null;
+            function setPrompt () {
+                strHost = document.getElementById ("host").value;
+                strPort = document.getElementById ("port").value
+                document.getElementById("li").style.visibility = "hidden";
+                input.style.visibility = "hidden";
+                output.value += String.fromCharCode(13) + "rewiring new connection (" + strHost + ":" + strPort + ")...";
+                oninp();
 
-                sendConn ().then (
+                getprompt ().then (
                     (response) => {
-                        output.value += String.fromCharCode(13) + response;
+                        var arr = response.split("\n");
+                        if (arr.length === 1) {
+                            output.value += String.fromCharCode(13) + arr[0];
+                            strPrompt = null;
+                            var strHost = null;
+                            var strPort = null;
+                            
+                            sendstr("");
+                            
+                        } else {
+                            output.value += "success";
+                            strPrompt = arr[arr.length - 1];
+                            document.getElementById('li').innerHTML = strPrompt.replace(/\\x1b.*?m/gm, '');
+                            document.getElementById("li").style.visibility = "visible";
+                            input.style.visibility = "visible";
+                            input.focus();
+                            setTimeout(function () {repaint();}, 0);
+                        }
+                        output.value += String.fromCharCode(13);
                         oninp();
-                        document.getElementById("li").style.visibility = "visible";
-                        input.style.visibility = "visible";
-                        input.focus();
                     }
                 );
             }
@@ -581,6 +616,8 @@
                     input.focus();
                 }
             }
+            
+            setPrompt ();
         </script>
       </section>
     </body>

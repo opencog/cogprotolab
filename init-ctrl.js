@@ -6,6 +6,5 @@ var init = {
     "shadow-radius": "0",
     "shadow-color": "rgba(255, 255, 255, 0.5)",
     "host": "127.0.0.1",
-    "port": "17001",
-    "prompt": "\\x1b[0;34mguile\\x1b[1;34m> \\x1b[0m"
+    "port": "17001"
 };
