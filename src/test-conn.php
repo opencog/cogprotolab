@@ -1,4 +1,6 @@
 <?php
+    error_reporting(0);
+    
     $host = urldecode($_GET['host']);
     $port = urldecode((int)$_GET['port']);
     $prompt = str_replace("\\x1b", "", urldecode($_GET['prompt']));
@@ -19,7 +21,7 @@
         if ($expected == $prompt) {
             echo "prompt test successful";
         } else {
-            echo "prompt test error: expected `".str_replace("", "\\x1b", $expected)."`";
+            echo "prompt test error: expected `".str_replace("", "\\x1b", $prompt)."`, found `".str_replace("", "\\x1b", $expected)."`";
         }
 
         fclose($fp);

