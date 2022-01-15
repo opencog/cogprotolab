@@ -2364,5 +2364,15 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
             if (!animating && !dragging && !panning)
                 redraw ();
         });
-    }   
+    }
+    
+    return {
+        data: function () {
+            var p = cursor;
+            while (p.parent)
+                p = p.parent;
+                
+            return p.children[0].data;
+        }
+    };
 }

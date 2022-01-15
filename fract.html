@@ -65,9 +65,6 @@
         <div id="divStats" style="position: absolute; top: 5px; right: 5px; font-family: 'monospace'; font-size: 9px; color: white; text-shadow: 0px 0px 2px rgba(0,0,0,1); visibility: hidden;">cache size: 0 ovals, 0 mb</div>
         
         <script>
-            var statNOvals = 0;
-            var statMem = 0;
-
             function GetURLParameter(sParam) {
                 var sPageURL = window.location.search.substring(1);
                 var sURLVariables = sPageURL.split('&');
@@ -106,9 +103,9 @@
             var refr = 0;
             var evt;
             var msg = (event) => {
+                divStats.innerHTML = "cache size: 0 ovals, 0mb";
+
                 evt = event;
-                statNOvals = 0;
-                statMem = 0;
 
                 if (event.data === "clear") {
                     divContainer.style.visibility = "hidden";
@@ -132,7 +129,7 @@
 
                 nodeTree = formArray (unfoldsexpr (""));
 
-                Orbital (divContainer, nodeTree, env.quant / 100, env.flatArea / 100, 100 / env.scale / window.devicePixelRatio, env.ovalColor, env.backColor, env.shadowRadius, env.shadowRadius? env.shadowColor: null, env.uiscale / 100, onIdle, onBusy);
+                nodes = Orbital (divContainer, nodeTree, env.quant / 100, env.flatArea / 100, 100 / env.scale / window.devicePixelRatio, env.ovalColor, env.backColor, env.shadowRadius, env.shadowRadius? env.shadowColor: null, env.uiscale / 100, onIdle, onBusy);
                 dispatchSize ();
                 //divContainer.style.visibility = "visible";
 
@@ -144,9 +141,6 @@
                     
                     clearTimeout(resizeId);
                     resizeId = setTimeout(function () {
-                        statNOvals = 0;
-                        statMem = 0;
-
                         setSize ();
                         dispatchSize ();
                         divContainer.style.visibility = "visible";
@@ -259,6 +253,30 @@
             function onBusy () {
                 pauseLoading = true;
             }
+            
+            function calcStats (nodes) {
+                var statNOvals = 0;
+                var statMem = 0;
+                
+                (
+                    function rec (node) {
+                        if (node.img) {
+                            statNOvals++;
+                            statMem += node.img.width * node.img.height * 4;
+                        }
+                        
+                        if (node.cachedCnv) {
+                            statMem +=  node.cachedCnv.width + node.cachedCnv.height * 4 * 2.5
+                        }
+                        
+                        for (var i = 0; i < node.children.length; i++) {
+                            rec (node.children[i]);
+                        }
+                    }
+                ) (nodes)
+                
+                divStats.innerHTML = "cache size: " + statNOvals + " ovals, " + Math.round(statMem / 1024 / 1024)  + "mb";
+            }
 
             var oldOvals = [];
             async function onIdle (ovals) {
@@ -273,7 +291,9 @@
                         }
                     }
                 }
+                
                 /*
+                // don't touch!!!
                 for (var i1 = 0; i1 < oldOvals.length; i1++) {
                     is = false;
                     for (var i2 = 0; i2 < ovals.length; i2++) {
@@ -284,18 +304,16 @@
                     }
                     
                     if (!is) {
-                        var node = oldOvals[i1].data;
-                        if (node.cachedCnv && node.img) {
-                            statNOvals--;
-                            statMem -= node.img.width * node.img.height * 4 + node.cachedCnv.width + node.cachedCnv.height * 4 * 2.5;
-                        }
-
+                        oldOvals[i1].data.img = null;
                         oldOvals[i1].data.cachedCnv = null;
                         oldOvals[i1].data.cachedData = null;
                         oldOvals[i1].data.scaledBitmap = null;
                     }
                 }
+                oldOvals = ovals;
                 */
+                
+                calcStats (nodes.data ());
             }
             
             async function loadOval(data, oldrefr) {
@@ -312,10 +330,6 @@
                             divContainer.dispatchEvent(new CustomEvent('redraw', null));
 
                             if (node.cachedCnv) {
-                                statNOvals++;
-                                statMem += node.img.width * node.img.height * 4 + node.cachedCnv.width + node.cachedCnv.height * 4 * 2.5;
-                                divStats.innerHTML = "cache size: " + statNOvals + " ovals, " + Math.round(statMem / 1024 / 1024)  + "mb";
-                                
                                 resolve ();
                                 
                             } else
@@ -481,6 +495,8 @@
                 return node;
             }
             
+            var nodes = [];
+
             var divContainer = document.getElementById ("divContainer")
             var divStats = document.getElementById ("divStats")
             
