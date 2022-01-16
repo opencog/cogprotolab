@@ -466,7 +466,7 @@
                     port = encodeURI (strPort);
                     prompt = encodeURI (strPrompt);
 
-                    cmd = encodeURI (cmd).replace ("#", "%23");
+                    cmd = encodeURI (cmd.replace ("#", "%23").replace ("+", "%2B"));
 
                     var xhttp = new XMLHttpRequest ();
                     xhttp.onreadystatechange = function () {
