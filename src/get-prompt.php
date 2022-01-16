@@ -18,14 +18,6 @@
         $prompt = $ret[count($ret) - 1];
         
         echo str_replace("", "\\x1b", $prompt);
-        /*
-        //if (substr($ret, -strlen($prompt)) == $prompt) {
-        if ($expected == $prompt) {
-            echo "prompt test successful";
-        } else {
-            echo "prompt test error: expected `".str_replace("", "\\x1b", $prompt)."`, found `".str_replace("", "\\x1b", $expected)."`";
-        }
-        */
 
         fclose($fp);
     }
