@@ -464,9 +464,9 @@
                 return new Promise(function(resolve, reject) {
                     host = encodeURI (strHost);
                     port = encodeURI (strPort);
-                    prompt = encodeURI (strPrompt);
+                    prompt = encodeURI (encodeURIComponent (strPrompt));
 
-                    cmd = encodeURI (cmd.replace ("#", "%23").replace ("+", "%2B"));
+                    cmd = encodeURI (encodeURIComponent (cmd));
 
                     var xhttp = new XMLHttpRequest ();
                     xhttp.onreadystatechange = function () {
