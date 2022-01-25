@@ -9,4 +9,4 @@
     - support for prompts other than `guile>`
     - along scripts editing, added predefined and visualisation scripts creating, renaming,
     deleting, and saving to disk without a need for running external editor. Just be sure
-    to adjust file access privileges to `scripts` folder.
+    to adjust file access privileges for `scripts` folder.
