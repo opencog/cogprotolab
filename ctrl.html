@@ -62,7 +62,7 @@
                                     <label id="lblPort">&nbsp;port:&nbsp;</label><input id="port" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="17001"/>
                                 </div>
                             </div>
-                            <div align="right" style="border-style: none; border-top: 1px solid black; padding: 0; margin:0;"><div id="testconn" onclick="setPrompt()" onmouseenter="document.getElementById('testconn').style.backgroundColor='lightgray'" onmouseleave="document.getElementById('testconn').style.backgroundColor='white'" style="display: inline-block; background-color: white; color: black; font-family: 'monospace'; border-style: none;">&nbsp;rewire&nbsp;&nbsp;</div></div>
+                            <div align="right" style="border-style: none; border-top: 1px solid black; padding: 0; margin:0;"><div id="testconn" onclick="setPrompt()" onmouseenter="document.getElementById('testconn').style.backgroundColor='lightgray'" onmouseleave="document.getElementById('testconn').style.backgroundColor='white'" style="display: inline-block; background-color: white; color: black; font-family: 'monospace'; border-style: none;">&nbsp;&nbsp;rewire&nbsp;</div></div>
                         </td>
                     </tr>
                 </table>
@@ -73,7 +73,8 @@
                             <image id="img3" src="media/120px-Script.png" height="50em"/>
                         </td>
                         <td valign="top" style="padding:0; margin:0; border-style: none;">
-                            <div id="div-scr" style="padding:0; margin:0; border-style: none; overflow: hidden; background-color: white;">
+                            <label onclick="scrCreate('scr-list-cmd')" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" id="scr-create" style="border-right: 1px solid black; color: black; background-color: white;">&nbsp;+&nbsp;</label><label onclick="scrRename('scr-list-cmd')" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" id="scr-rename" style="border-right: 1px solid black; color: black; background-color: white;">&nbsp;±&nbsp;</label><label onclick="scrDelete('scr-list-cmd')" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" id="scr-delete" style="border-right: 1px solid black; color: black; background-color: white;">&nbsp;−&nbsp;</label><label onclick="scrSave('scr-list-cmd')" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" id="scr-save" style="text-align: center; display: inline-block; color: black; background-color: white;">save all</label><br/>
+                            <div id="div-scr" style="padding:0; margin:0; border-style: none; border-top: 1px solid black; overflow: hidden; background-color: white;">
                                 <select id="scr-list-cmd" onfocus="document.getElementById('scr-list-cmd').onchange()" onchange="document.getElementById('scr-cmd').value=document.getElementById('scr-list-cmd').value;" name="scr-list-cmd" size="3" style="outline: none; border-style: none; padding:0; margin:0; font-family: 'monospace';"></select>
                             </div>
                         </td>
@@ -90,7 +91,8 @@
                             <image id="img2" src="media/120px-Visual.png" height="50em"/>
                         </td>
                         <td valign="top" style="padding:0; margin:0; border-style: none;">
-                            <div id="div-vis" style="padding:0; margin:0;  border-style: none; overflow: hidden; background-color: white;">
+                            <label onclick="scrCreate('vis-list-cmd')" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" id="vis-create" style="border-right: 1px solid black; color: black; background-color: white;">&nbsp;+&nbsp;</label><label onclick="scrRename('vis-list-cmd')" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" id="vis-rename" style="border-right: 1px solid black; color: black; background-color: white;">&nbsp;±&nbsp;</label><label onclick="scrDelete('vis-list-cmd')" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" id="vis-delete" style="border-right: 1px solid black; color: black; background-color: white;">&nbsp;−&nbsp;</label><label onclick="scrSave('vis-list-cmd')" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" id="vis-save" style="text-align: center; display: inline-block; color: black; background-color: white;">save all</label><br/>
+                            <div id="div-vis" style="padding:0; margin:0;  border-style: none; border-top: 1px solid black; overflow: hidden; background-color: white;">
                                 <select id="vis-list-cmd" onfocus="document.getElementById('vis-list-cmd').onchange()" onchange="document.getElementById('vis-cmd').value=document.getElementById('vis-list-cmd').value;" name="vis-list-cmd" size="3" style="outline: none; border-style: none; padding:0; margin:0; font-family: 'monospace';"></select>
                             </div>
                         </td>
@@ -295,12 +297,15 @@
                 document.getElementById ("port").style.width = w + "px";
                 document.getElementById ("port").style.fontSize = env.fontSize + "px";
 
-                w = 10 * env.fontSize;
+                w = Math.floor (12 * env.fontSize);
+
+                document.getElementById ("scr-save").style.width = 1 + w - (document.getElementById ("scr-create").offsetWidth + document.getElementById ("scr-rename").offsetWidth + document.getElementById ("scr-delete").offsetWidth) + "px";
+                document.getElementById ("vis-save").style.width = 1 + w - (document.getElementById ("vis-create").offsetWidth + document.getElementById ("vis-rename").offsetWidth + document.getElementById ("vis-delete").offsetWidth) + "px";
 
                 document.getElementById ("scr-list-cmd").style.fontSize = env.fontSize + "px";
-                document.getElementById ("scr-list-cmd").style.height = document.getElementById ("td1").clientHeight * 1.7 + "px";
+                document.getElementById ("scr-list-cmd").style.height = document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("scr-save").clientHeight - 1 + "px";
                 document.getElementById ("scr-list-cmd").style.width = w + "px";
-                document.getElementById ("div-scr").style.height = document.getElementById ("td1").clientHeight * 1.7 + "px";
+                document.getElementById ("div-scr").style.height = document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("scr-save").clientHeight - 1 + "px";
                 document.getElementById ("div-scr").style.width = w + "px";
 
                 document.getElementById ("scr-cmd").style.fontSize = env.fontSize + "px";
@@ -308,9 +313,9 @@
                 document.getElementById ("scr-cmd").style.width = document.getElementById ("td1").clientWidth - w - 1 + "px";
 
                 document.getElementById ("vis-list-cmd").style.fontSize = env.fontSize + "px";
-                document.getElementById ("vis-list-cmd").style.height = document.getElementById ("td1").clientHeight * 1.2 + "px";
+                document.getElementById ("vis-list-cmd").style.height = document.getElementById ("td1").clientHeight * 1.2 - document.getElementById ("vis-save").clientHeight - 1 + "px";
                 document.getElementById ("vis-list-cmd").style.width = w + "px";
-                document.getElementById ("div-vis").style.height = document.getElementById ("td1").clientHeight * 1.2 + "px";
+                document.getElementById ("div-vis").style.height = document.getElementById ("td1").clientHeight * 1.2 - document.getElementById ("vis-save").clientHeight - 1 + "px";
                 document.getElementById ("div-vis").style.width = w + "px";
 
                 document.getElementById ("vis-cmd").style.fontSize = env.fontSize + "px";
@@ -356,20 +361,6 @@
                     shadowColor: data["shadow-color"],
                 }
             }
-            
-            document.getElementById ("vis-cmd").addEventListener("input", function () {
-                var o = document.getElementById("vis-list-cmd");
-                for (itm in o.children) {
-                    o[itm].selected = false;
-                }
-            }, false);
-
-            document.getElementById ("scr-cmd").addEventListener("input", function () {
-                var o = document.getElementById("scr-list-cmd");
-                for (itm in o.children) {
-                    o[itm].selected = false;
-                }
-            }, false);
 
             var divContainer = document.getElementById ("divContainer");
             var divContainer0 = document.getElementById ("divContainer0");
@@ -383,66 +374,6 @@
             document.getElementById ("host").value = init["host"];
             document.getElementById ("port").value = init["port"];
             //document.getElementById ("prompt").value = init["prompt"];
-            
-            var dirVis;
-            function loadVisScripts() {
-                var xhttp = new XMLHttpRequest ();
-                xhttp.onreadystatechange = function () {
-                    if (this.readyState == 4 && this.status == 200) {
-                        var dirVis = JSON.parse (this.responseText);
-                        
-                        var first = true;
-                        for (itm in dirVis) {
-                            var option = document.createElement("option");
-                            option.text = itm;
-                            option.value = dirVis[itm];
-
-                            document.getElementById("vis-list-cmd").add(option); 
-                            if (first) {
-                                document.getElementById ("vis-cmd").value = dirVis[itm];
-                                document.getElementById("vis-list-cmd").selectedIndex = 0;
-                                first = false;
-                            }
-                        }
-                    }
-                };
-                
-                xhttp.open("GET", "src/load-scripts.php?dir=vis");
-                xhttp.overrideMimeType("text/plain");
-                xhttp.send();
-            }
-            
-            loadVisScripts ();
-            
-            var dirScr;
-            function loadPowScripts() {
-                var xhttp = new XMLHttpRequest ();
-                xhttp.onreadystatechange = function () {
-                    if (this.readyState == 4 && this.status == 200) {
-                        var dirVis = JSON.parse (this.responseText);
-                        
-                        var first = true;
-                        for (itm in dirVis) {
-                            var option = document.createElement("option");
-                            option.text = itm;
-                            option.value = dirVis[itm];
-
-                            document.getElementById("scr-list-cmd").add(option); 
-                            if (first) {
-                                document.getElementById ("scr-cmd").value = dirVis[itm];
-                                document.getElementById("scr-list-cmd").selectedIndex = 0;
-                                first = false;
-                            }
-                        }
-                    }
-                };
-                
-                xhttp.open("GET", "src/load-scripts.php?dir=scr");
-                xhttp.overrideMimeType("text/plain");
-                xhttp.send();
-            }
-            
-            loadPowScripts ();
             
             input.value = ""
             output.value = "";
@@ -462,9 +393,9 @@
             
             function sendcmd (cmd) {
                 return new Promise(function(resolve, reject) {
-                    host = encodeURI (strHost);
-                    port = encodeURI (strPort);
-                    prompt = encodeURI (encodeURIComponent (strPrompt));
+                    var host = encodeURI (strHost);
+                    var port = encodeURI (strPort);
+                    var prompt = encodeURI (encodeURIComponent (strPrompt));
 
                     cmd = encodeURI (encodeURIComponent (cmd));
 
@@ -483,8 +414,8 @@
             
             function getprompt () {
                 return new Promise(function(resolve, reject) {
-                    host = encodeURI (document.getElementById ("host").value);
-                    port = encodeURI (document.getElementById ("port").value);
+                    var host = encodeURI (document.getElementById ("host").value);
+                    var port = encodeURI (document.getElementById ("port").value);
 
                     var xhttp = new XMLHttpRequest ();
                     xhttp.onreadystatechange = function () {
@@ -618,6 +549,150 @@
                 }
             }
             
+            function sortSelect(selElem) {
+                var tmpAry = new Array();
+                for (var i=0;i<selElem.options.length;i++) {
+                    tmpAry[i] = new Array();
+                    tmpAry[i][0] = selElem.options[i].text;
+                    tmpAry[i][1] = selElem.options[i].value;
+                }
+                tmpAry.sort();
+                while (selElem.options.length > 0) {
+                    selElem.options[0] = null;
+                }
+                for (var i=0;i<tmpAry.length;i++) {
+                    var op = new Option(tmpAry[i][0], tmpAry[i][1]);
+                    selElem.options[i] = op;
+                }
+                return;
+            }
+            
+            function scrCreate(listCmd) {
+                listCmd = document.getElementById(listCmd);
+                var fileName;
+                if (fileName = prompt ("Creating a new script.\n\n(None of the changes are permanently memorized until you click `save all` button.)\n\nPlease enter the script name:")) {
+                    var option = document.createElement("option");
+                    option.text = fileName.trim() + "*";
+                    option.value = "";
+                    var lst = listCmd;
+                    lst.add(option);
+                    sortSelect(listCmd);
+                    for (var i = 0; i < lst.length; i++)
+                        if (lst[i].text === option.text)
+                            lst[i].selected = true;
+                            
+                    listCmd.onchange()
+                }
+            }
+            
+            function scrRename(listCmd) {
+                listCmd = document.getElementById(listCmd);
+                var opt = listCmd.selectedOptions[0];
+                var fileName = opt.text.substring(0, opt.text.length - 1);
+                if (fileName = prompt ("Renaming script `" + opt.text.substring(0, opt.text.length - 1) + "`.\n\n(None of the changes are permanently memorized until you click `save all` button.)\n\nPlease enter new script name:", fileName)) {
+                    opt.text = fileName.trim() + "*";
+                    var lst = listCmd;
+                    sortSelect(lst);
+                    for (var i = 0; i < lst.length; i++)
+                        if (lst[i].text === opt.text)
+                            lst[i].selected = true;
+                            
+                    listCmd.onchange()
+                }
+            }
+            
+            function scrDelete(listCmd) {
+                listCmd = document.getElementById(listCmd);
+                var opt = listCmd.selectedOptions[0];
+                if (confirm ("Please confirm deleting script `" + opt.text.substring(0, opt.text.length - 1) + "`.\n\n(None of the changes are permanently memorized until you click `save all` button.)")) {
+                    listCmd.removeChild(opt);
+                    listCmd.children[0].selected = true;
+                    listCmd.onchange()
+                } 
+            }
+            
+            function scrSave(listCmd) {
+                if (listCmd === 'scr-list-cmd')
+                    var dir = "pre";
+                else
+                    var dir = "vis";
+                    
+                listCmd = document.getElementById(listCmd);
+                var ret = "{";
+                var o = listCmd;
+                for (var i = 0; i < o.children.length; i++) {
+                    o.children[i].text = o.children[i].text.substring(0, o.children[i].text.length - 1) + "\xA0";
+                    ret += '"' + o.children[i].text.substring(0, o.children[i].text.length - 1).replaceAll('"', '\\\"').replaceAll('\n', '\\n') + '" : "' + o.children[i].value.replaceAll('"', '\\\"').replaceAll('\n', '\\n') + '"';
+                    if (i < o.children.length - 1)
+                        ret += ",";
+                }
+                
+                ret += "}"
+                
+                var xhttp = new XMLHttpRequest ();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        alert (this.responseText);
+                    }
+                };
+                
+                ret = encodeURIComponent (ret);
+                
+                xhttp.open("GET", "src/save-scripts.php?dir=" + dir + "&files=" + ret);
+                xhttp.overrideMimeType("text/plain");
+                xhttp.send();
+            }
+
+            document.getElementById ("scr-cmd").addEventListener("input", function () {
+                var txt = document.getElementById("scr-list-cmd").selectedOptions[0].text;
+                document.getElementById("scr-list-cmd").selectedOptions[0].text = txt.substring(0, txt.length - 1) + "*";
+                document.getElementById("scr-list-cmd").selectedOptions[0].value = document.getElementById ("scr-cmd").value;
+            }, false);
+
+            document.getElementById ("vis-cmd").addEventListener("input", function () {
+                var txt = document.getElementById("vis-list-cmd").selectedOptions[0].text;
+                document.getElementById("vis-list-cmd").selectedOptions[0].text = txt.substring(0, txt.length - 1) + "*";
+                document.getElementById("vis-list-cmd").selectedOptions[0].value = document.getElementById ("vis-cmd").value;
+            }, false);
+            
+            function loadScripts(listCmd, cmd) {
+                if (listCmd === 'scr-list-cmd')
+                    var dir = "pre";
+                else
+                    var dir = "vis";
+
+                listCmd = document.getElementById(listCmd);
+                cmd = document.getElementById(cmd);
+                
+                var xhttp = new XMLHttpRequest ();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var dirVis = JSON.parse (this.responseText);
+                        
+                        var first = true;
+                        for (itm in dirVis) {
+                            var option = document.createElement("option");
+                            option.text = itm + "\xA0";
+                            option.value = dirVis[itm];
+
+                            listCmd.add(option); 
+                            if (first) {
+                                cmd.value = dirVis[itm];
+                                listCmd.selectedIndex = 0;
+                                first = false;
+                            }
+                        }
+                    }
+                };
+                
+                xhttp.open("GET", "src/load-scripts.php?dir=" + dir);
+                xhttp.overrideMimeType("text/plain");
+                xhttp.send();
+            }
+            
+            loadScripts ("scr-list-cmd", "scr-cmd");
+            loadScripts ("vis-list-cmd", "vis-cmd");
+
             setPrompt ();
         </script>
       </section>

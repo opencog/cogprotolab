@@ -2,18 +2,17 @@
     $dir = urldecode($_GET['dir']);
 
     if ($dir == "vis") {
-        $dirstr = "../dir-visuals";
+        $dirstr = "../scripts/scm/visualisation";
     
-    } else if ($dir == "scr"){
-        $dirstr = "../dir-scripts";
+    } else if ($dir == "pre"){
+        $dirstr = "../scripts/scm/predefined";
     }
 
     echo "{";
     $arr = scandir($dirstr);
     for ($i = 0; $i < count($arr); $i++) {
-        if ($arr[$i] != "." && $arr[$i] != "..") {
+        if (!is_dir($dirstr."/".$arr[$i])) {
             $file = file_get_contents($dirstr."/".$arr[$i]);
-            $file = substr($file, 0, -1);
             $file = str_replace("\"", "\\\"", $file);
             $file = str_replace("\n", "\\n", $file);
             
