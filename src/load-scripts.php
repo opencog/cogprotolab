@@ -2,7 +2,7 @@
     $dir = urldecode($_GET['dir']);
 
     if ($dir == "vis") {
-        $dirstr = "../scripts/scm/visualisation";
+        $dirstr = "../scripts/scm/visualization";
     
     } else if ($dir == "pre"){
         $dirstr = "../scripts/scm/predefined";

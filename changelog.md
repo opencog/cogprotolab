@@ -7,6 +7,6 @@
     - removed cmd-delay time. Php telnet script now waits for `guile>` prompt to appear,
     then returns the output. Interfacing command prompt works faster now.
     - support for prompts other than `guile>`
-    - along scripts editing, added predefined and visualisation scripts creating, renaming,
+    - along scripts editing, added predefined and visualization scripts creating, renaming,
     deleting, and saving to disk without a need for running external editor. Just be sure
     to adjust file access privileges for `scripts` folder.

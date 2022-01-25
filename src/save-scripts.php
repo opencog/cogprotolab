@@ -3,7 +3,7 @@
     $fls = urldecode($_GET['files']);
 
     if ($dir == "vis") {
-        $dirstr = "../scripts/scm/visualisation";
+        $dirstr = "../scripts/scm/visualization";
     
     } else if ($dir == "pre"){
         $dirstr = "../scripts/scm/predefined";
@@ -26,7 +26,7 @@
     }
     
     if ($dir == "vis") {
-        echo "Changes to visualisation scripts are permanently memorized.";
+        echo "Changes to visualization scripts are permanently memorized.";
         
     } else if ($dir == "pre"){
         echo "Changes to predefined scripts are permanently memorized.";
