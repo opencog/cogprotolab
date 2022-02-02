@@ -10,3 +10,6 @@
     - along scripts editing, added predefined and visualization scripts creating, renaming,
     deleting, and saving to disk without a need for running an external editor. Just be sure
     to adjust file access privileges for the `scripts` folder.
+    
+- **Feb, 2022**
+    - changing "GET" to "POST" AJAX method - supporting saving bigger scripts
