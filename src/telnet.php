@@ -1,10 +1,10 @@
 <?php
     error_reporting(0);
     
-    $host = urldecode($_GET['host']);
-    $port = urldecode((int)$_GET['port']);
-    $cmd = urldecode($_GET['cmd']);
-    $prompt = str_replace("\\x1b", "", urldecode($_GET['prompt']));
+    $host = urldecode($_POST['host']);
+    $port = urldecode((int)$_POST['port']);
+    $cmd = urldecode($_POST['cmd']);
+    $prompt = str_replace("\\x1b", "", urldecode($_POST['prompt']));
     
     $fp = fsockopen($host, $port, $errno, $errstr, 5);
 
@@ -31,7 +31,7 @@
             usleep(25000);
             $response = "";
             while (($ret = fgets($fp)) != false) {
-                if (substr($ret, -25) == $prompt) {
+                if ($ret == $prompt) {
                     $response = substr($response, 0, -1);
                     return $response;
                 }

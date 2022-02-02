@@ -1,6 +1,6 @@
 <?php
-    $dir = urldecode($_GET['dir']);
-    $fls = urldecode($_GET['files']);
+    $dir = urldecode($_POST['dir']);
+    $fls = urldecode($_POST['files']);
 
     if ($dir == "vis") {
         $dirstr = "../scripts/scm/visualization";

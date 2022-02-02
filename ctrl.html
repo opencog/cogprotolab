@@ -409,10 +409,9 @@
                             resolve (this.responseText);
                         }
                     };
-                    
-                    xhttp.open("GET", "src/telnet.php?host=" + host + "&port=" + port + "&cmd=" + cmd + "&prompt=" + prompt, true);
-                    xhttp.overrideMimeType("text/plain");
-                    xhttp.send();
+                    xhttp.open("POST", "src/telnet.php", true);
+                    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                    xhttp.send("host=" + host + "&port=" + port + "&cmd=" + cmd + "&prompt=" + prompt);
                 });
             }
             
@@ -641,11 +640,10 @@
                 };
                 
                 ret = encodeURIComponent (ret);
-                
-                xhttp.open("GET", "src/save-scripts.php?dir=" + dir + "&files=" + ret);
-                xhttp.overrideMimeType("text/plain");
-                xhttp.send();
-            }
+                xhttp.open("POST", "src/save-scripts.php", true);
+                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhttp.send("dir=" + dir + "&files=" + ret);
+             }
 
             document.getElementById ("scr-cmd").addEventListener("input", function () {
                 var txt = document.getElementById("scr-list-cmd").selectedOptions[0].text;
