@@ -6,7 +6,7 @@
 
 ## about the application
 
-OpenCog comes with command line tools for exchanging data with AtomSpace. *CogProtoLab* is built on top of this tool chain by teaming up AtomSpace command prompt with a novel AtomSpace visualizer.
+OpenCog comes with command line tools for exchanging data with AtomSpace. *CogProtoLab* is built as a helper for this tool chain by teaming up AtomSpace command prompt with a novel AtomSpace visualizer.
 
 ## why cogprotolab?
 
@@ -98,4 +98,3 @@ Successively  entering the above commands to *CogProtoLab* command prompt should
 ## licensing information
 
 This package, like the most of OpenCog packages, is licensed under [AGPL-3.0 license](LICENSE).
-
