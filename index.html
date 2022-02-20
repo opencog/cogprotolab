@@ -39,7 +39,7 @@
             a, a.btn:visited, a.btn:link {cursor: pointer; color: rgb(226, 226, 226); text-decoration:underline;}
             a.btn:hover, a.btn:active {cursor: pointer; color:white; text-decoration:underline;}
         </style>
-        <script src="init-ctrl.js"></script>
+        <script src="ctrl.conf.js"></script>
         <script>
             function setDesign(pr) {
                 var viewport = document.querySelector("meta[name=viewport]");
@@ -213,8 +213,8 @@
             document.getElementById("helpbtn").addEventListener('click', showHelp);
             document.getElementById("helpcontainer").addEventListener('click', hideHelp);
             
-            document.getElementById("body").src = "fract.html";
-            document.getElementById("ctrl").src = "ctrl.html";
+            document.getElementById("body").src = "fract.html?c=0";
+            document.getElementById("ctrl").src = "ctrl.html?c=0";
 
             function refreshOvals () {
                 document.getElementById('body').contentWindow.location.reload(true);

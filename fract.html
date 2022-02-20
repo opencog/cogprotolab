@@ -55,7 +55,7 @@
             
             setDesign(window.devicePixelRatio);
         </script>
-        <script src="init-fract.js"></script>
+        <script src="fract.conf.js"></script>
         <script src="src/fract-exp.js"></script>
     </head>
     <body>
@@ -338,6 +338,7 @@
                     }
                 }
                 
+                // update cache
                 for (var i1 = 0; i1 < oldOvals.length; i1++) {
                     is = false;
                     for (var i2 = 0; i2 < ovals.length; i2++) {
@@ -356,7 +357,7 @@
                 }
                 oldOvals = ovals;
 
-                calcStats (nodes.data ());
+                calcStats (nodes.data ()); // to be deleted
 
                 onIdleRunning = false;
             }

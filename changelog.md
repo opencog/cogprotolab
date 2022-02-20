@@ -14,3 +14,4 @@
 - **Feb, 2022**
     - changing "GET" to "POST" AJAX method - supporting saving bigger scripts
     - more reasonable memory usage
+    - maximize/restore buttons on editors
