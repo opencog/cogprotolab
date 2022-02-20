@@ -274,11 +274,11 @@
             }
 
             function setSize () {
-                document.getElementById('conn-pane').style.display = "";
-                document.getElementById('scr-pane').style.display = "";
-                document.getElementById('scr1').style.display = "";
-                document.getElementById('vis-pane').style.display = "";
-                document.getElementById('vis1').style.display = "";
+                document.getElementById('conn-pane').style.display = "block";
+                document.getElementById('scr-pane').style.display = "block";
+                document.getElementById('scr1').style.display = "block";
+                document.getElementById('vis-pane').style.display = "block";
+                document.getElementById('vis1').style.display = "block";
                 document.getElementById ("title").style.fontSize = 2 * env.fontSize + "px";
 
                 divContainer.style.top = env.shadowRadius + "px";
@@ -337,7 +337,7 @@
                 document.getElementById ("scr-cmd").style.height = document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("scr-save").clientHeight - 1 + "px";
                 document.getElementById ("scr-cmd").style.width = document.getElementById ("td1").clientWidth - w - 1 + "px";
 
-                document.getElementById ("scr-name").style.width = document.getElementById ("scr-cmd").clientWidth - document.getElementById ("scr-btn").clientWidth - 10 * env.fontSize / 12 + "px";
+                document.getElementById ("scr-name").style.width = document.getElementById ("scr-cmd").offsetWidth - document.getElementById ("scr-btn").clientWidth - 10 * env.fontSize / 12 + "px";
 
                 document.getElementById ("vis-list-cmd").style.fontSize = env.fontSize + "px";
                 document.getElementById ("vis-list-cmd").style.height = document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("vis-save").clientHeight - 1 + "px";
@@ -349,7 +349,7 @@
                 document.getElementById ("vis-cmd").style.height = document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("scr-save").clientHeight - 1 + "px";
                 document.getElementById ("vis-cmd").style.width = document.getElementById ("td1").clientWidth - w - 1 + "px";
 
-                document.getElementById ("vis-name").style.width = document.getElementById ("vis-cmd").clientWidth - document.getElementById ("vis-btn").clientWidth - 10 * env.fontSize / 12  + "px";
+                document.getElementById ("vis-name").style.width = document.getElementById ("vis-cmd").offsetWidth - document.getElementById ("vis-btn").clientWidth - 10 * env.fontSize / 12 + "px";
 
                 divContainer0.style.height = divContainer.clientHeight - document.getElementById ("params").clientHeight + "px";
 
