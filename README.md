@@ -37,7 +37,7 @@ After installing prerequisites, there is no build procedure, just clone this pac
 
 To be able to save predefined and visualization scripts, it is required to provide read/write access privileges to `scripts` folder recursively. It is enough to do this only once, upon installing. That way we will be able to memorize all the changed script snippets by clicking on `save all` button, for use in future browser sessions. If the file privileges are not correctly adjusted, an error should be raised in a new popup window upon unsuccessful scripts saving.
 
-To adjust some parameters like predefined telnet configuration, font sizes, colors, shadows, ..., edit files `init-ctrl.js` for the left application pane, and `init-fract.js` for the right application pane. These init files are allocating relevant JSON objects, and should be self-descriptive on their own.
+To adjust some parameters like predefined telnet configuration, font sizes, colors, shadows, ..., edit files `ctrl.conf.js` for the left application pane, and `fract.conf.js` for the right application pane. These configuration files are allocating relevant JSON objects, and should be self-descriptive on their own.
 
 ### running
 

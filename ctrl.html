@@ -386,12 +386,12 @@
 
                 w = ~~(44 * env.fontSize);
                 
-                document.getElementById ("host").style.width = w - 12 + "px";
+                document.getElementById ("host").style.width = w - 12 - 2 * env.shadowRadius + "px";
                 document.getElementById ("host").style.fontSize = env.fontSize + "px";
-                document.getElementById ("port").style.width = w - 12 + "px";
+                document.getElementById ("port").style.width = w - 12 - 2 * env.shadowRadius + "px";
                 document.getElementById ("port").style.fontSize = env.fontSize + "px";
 
-                document.getElementById ("td1").style.width = 50 * env.fontSize - 12 + 2 + "px";
+                document.getElementById ("td1").style.width = 50 * env.fontSize - 12 + 2 - 2 * env.shadowRadius + "px";
 
                 w = ~~(14 * env.fontSize);
 
@@ -407,9 +407,9 @@
                 document.getElementById ("scr-btn").style.width = 3 * env.fontSize + "px";
                 document.getElementById ("scr-cmd").style.fontSize = env.fontSize + "px";
                 document.getElementById ("scr-cmd").style.height = ~~(document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("scr-save").clientHeight - 1) + "px";
-                document.getElementById ("scr-cmd").style.width = 36 * env.fontSize - 12 + "px";
+                document.getElementById ("scr-cmd").style.width = 36 * env.fontSize - 12 - 2 * env.shadowRadius + "px";
 
-                document.getElementById ("scr-top").style.width = 36 * env.fontSize - 12 + 1 + "px";
+                document.getElementById ("scr-top").style.width = 36 * env.fontSize - 12 + 1 - 2 * env.shadowRadius + "px";
                 
                 document.getElementById ("vis-list-cmd").style.fontSize = env.fontSize + "px";
                 document.getElementById ("vis-list-cmd").style.height = ~~(document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("vis-save").clientHeight - 1) + "px";
@@ -420,9 +420,9 @@
                 document.getElementById ("vis-btn").style.width = 3 * env.fontSize + "px";
                 document.getElementById ("vis-cmd").style.fontSize = env.fontSize + "px";
                 document.getElementById ("vis-cmd").style.height = ~~(document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("scr-save").clientHeight - 1) + "px";
-                document.getElementById ("vis-cmd").style.width = 36 * env.fontSize - 12 + "px";
+                document.getElementById ("vis-cmd").style.width = 36 * env.fontSize - 12 - 2 * env.shadowRadius + "px";
                 
-                document.getElementById ("vis-top").style.width = 36 * env.fontSize - 12 + 1 + "px";
+                document.getElementById ("vis-top").style.width = 36 * env.fontSize - 12 + 1 - 2 * env.shadowRadius + "px";
 
                 divContainer0.style.height = divContainer.clientHeight - document.getElementById ("params").clientHeight + "px";
 
@@ -809,8 +809,8 @@
                         
             function scrMaximize () {
                 document.getElementById ("scr-cmd").style.height = document.getElementById ("conn-pane").clientHeight + document.getElementById ("scr-cmd").offsetHeight + document.getElementById ("vis-pane").clientHeight - 1 + "px";
-                document.getElementById ("scr-cmd").style.width = 50 * env.fontSize - 12 + 1 + "px";
-                document.getElementById ("scr-top").style.width = 50 * env.fontSize - 12 + 2 + "px";
+                document.getElementById ("scr-cmd").style.width = 50 * env.fontSize - 12 + 1 - 2 * env.shadowRadius + "px";
+                document.getElementById ("scr-top").style.width = 50 * env.fontSize - 12 + 2 - 2 * env.shadowRadius + "px";
 
                 document.getElementById('scr1').style.display = "none";
                 document.getElementById('conn-pane').style.display = "none";
@@ -827,8 +827,8 @@
                         
             function visMaximize () {
                 document.getElementById ("vis-cmd").style.height = document.getElementById ("conn-pane").clientHeight + document.getElementById ("scr-cmd").offsetHeight + document.getElementById ("vis-pane").clientHeight - 1 + "px";
-                document.getElementById ("vis-cmd").style.width = 50 * env.fontSize - 12 + 1 + "px";
-                document.getElementById ("vis-top").style.width = 50 * env.fontSize - 12 + 2 + "px";
+                document.getElementById ("vis-cmd").style.width = 50 * env.fontSize - 12 + 1 - 2 - 2 * env.shadowRadius + "px";
+                document.getElementById ("vis-top").style.width = 50 * env.fontSize - 12 + 2 - 2 * env.shadowRadius + "px";
 
                 document.getElementById('vis1').style.display = "none";
                 document.getElementById('conn-pane').style.display = "none";
