@@ -59,7 +59,7 @@
                                 <image id="img1" src="media/120px-OpenCog.png" height="50em"/>
                             </td>
                             <td id="td1" style="padding:0; margin:0; border-style: none;">
-                                <div id="conn" style="display: flex; align-items: center; color: black; background-color: white;">
+                                <div id="conn" style="display: flex; align-items: center; border-left: 1px solid black; color: black; background-color: white;">
                                     <div>
                                         <label id="lblHost">&nbsp;host:&nbsp;</label><input id="host" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="127.0.0.1"/><br/>
                                         <label id="lblPort">&nbsp;port:&nbsp;</label><input id="port" type="text" style="outline: none; border-style: none; border-bottom: 1px solid black; font-family: 'monospace';" value="17001"/>
@@ -78,19 +78,25 @@
                                 <image id="img3" src="media/120px-Script.png" height="50em"/>
                             </td>
                             <td id="scr1" valign="top" style="padding:0; margin:0; border-style: none;">
-                                <div style="padding:0; margin:0; border-style: none; background-color: white; white-space: nowrap">
+                                <div style="padding:0; margin:0; border-style: none; border-left: 1px solid black; background-color: white; white-space: nowrap">
                                     <label onclick="scrCreate('scr-list-cmd')" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" id="scr-create" style="border-right: 1px solid black; color: black; background-color: white;">&nbsp;+&nbsp;</label><label onclick="scrRename('scr-list-cmd')" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" id="scr-rename" style="border-right: 1px solid black; color: black; background-color: white;">&nbsp;±&nbsp;</label><label onclick="scrDelete('scr-list-cmd')" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" id="scr-delete" style="border-right: 1px solid black; color: black; background-color: white;">&nbsp;−&nbsp;</label><label onclick="scrSave('scr-list-cmd')" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" id="scr-save" style="text-align: center; display: inline-block; color: black; background-color: white;">save all</label><br/>
                                     <div id="div-scr" style="padding:0; margin:0; border-style: none; border-top: 1px solid black; overflow: hidden; background-color: white;">
                                         <select id="scr-list-cmd" onfocus="document.getElementById('scr-list-cmd').onchange()" onchange="document.getElementById('scr-cmd').value=document.getElementById('scr-list-cmd').value;" name="scr-list-cmd" size="3" style="outline: none; border-style: none; padding:0; margin:0; font-family: 'monospace';"></select>
                                     </div>
                                 </div>
                             </td>
-                            <td id="scr2" style="padding:0; margin:0; border-style: none;">
-                                <div style="background-color: white;">
-                                    <label id="scr-name" style="text-align: left; padding-left: 2px; border-left: 1px solid black; display: inline-block; color: black; background-color: white;"></label>
-                                    <label id="scr-btn" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" style="text-align: right; border-left: 1px solid black; display: inline-block; color: black; background-color: white;">&nbsp;▲&nbsp;</label>
-                                    <textarea id="scr-cmd" maxlength="500000000" spellcheck="false" wrap="off" rows="3" style="display: block; border-style: none; border-left: 1px solid black; border-top: 1px solid black; resize: none; outline: none; padding: 0; margin: 0; font-family: 'monospace'; background-color: white; color: black;"></textarea>
-                                </div>
+                            <td id="scr2" style="padding:0; margin:0; border-style: none; border-collapse: collapse; border-spacing: 0;">
+                                <table id="scr-top" style="padding:0; margin:0; border-style: none; border-spacing: 0; background-color: white">
+                                    <tr style="padding:0; margin:0; border-style: none;">
+                                        <td style="padding:0; margin:0; border-style: none;">
+                                            <label id="scr-name" style="text-align: left; padding-left: 2px; border-left: 1px solid black; display: inline-block; color: black; background-color: white;"></label>
+                                        </td>
+                                        <td style="padding:0; margin:0; border-style: none; text-align: right;">
+                                            <div id="scr-btn" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" style="text-align: center; border-left: 1px solid black; display: inline-block; color: black; background-color: white;">▲</div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <textarea id="scr-cmd" maxlength="500000000" spellcheck="false" wrap="off" rows="3" style="display: block; border-style: none; border-left: 1px solid black; border-top: 1px solid black; resize: none; outline: none; padding: 0; margin: 0; font-family: 'monospace'; background-color: white; color: black;"></textarea>
                                 <div align="right" style="border-style: none; border-top: 1px solid black; padding: 0; margin:0;"><div id="run" onclick="runScript()" onmouseenter="document.getElementById('run').style.backgroundColor='lightgray'" onmouseleave="document.getElementById('run').style.backgroundColor='white'" style="display: inline-block; background-color: white; color: black; font-family: 'monospace'; border-style: none;">&nbsp;&nbsp;&nbsp;run&nbsp;&nbsp;&nbsp;</div></div>
                             </td>
                         </tr>
@@ -104,7 +110,7 @@
                                 <image id="img2" src="media/120px-Visual.png" height="50em"/>
                             </td>
                             <td id="vis1" valign="top" style="padding:0; margin:0; border-style: none;">
-                                <div style="padding:0; margin:0; border-style: none; background-color: white; white-space: nowrap">
+                                <div style="padding:0; margin:0; border-style: none; border-left: 1px solid black; background-color: white; white-space: nowrap">
                                     <label onclick="scrCreate('vis-list-cmd')" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" id="vis-create" style="border-right: 1px solid black; color: black; background-color: white;">&nbsp;+&nbsp;</label><label onclick="scrRename('vis-list-cmd')" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" id="vis-rename" style="border-right: 1px solid black; color: black; background-color: white;">&nbsp;±&nbsp;</label><label onclick="scrDelete('vis-list-cmd')" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" id="vis-delete" style="border-right: 1px solid black; color: black; background-color: white;">&nbsp;−&nbsp;</label><label onclick="scrSave('vis-list-cmd')" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" id="vis-save" style="text-align: center; display: inline-block; color: black; background-color: white;">save all</label><br/>
                                     <div id="div-vis" style="padding:0; margin:0; border-style: none; border-top: 1px solid black; overflow: hidden; background-color: white;">
                                         <select id="vis-list-cmd" onfocus="document.getElementById('vis-list-cmd').onchange()" onchange="document.getElementById('vis-cmd').value=document.getElementById('vis-list-cmd').value;" name="vis-list-cmd" size="3" style="outline: none; border-style: none; padding:0; margin:0; font-family: 'monospace';"></select>
@@ -112,11 +118,17 @@
                                 </div>
                             </td>
                             <td id="vis2" style="padding:0; margin:0; border-style: none;">
-                                <div style="background-color: white;">
-                                    <label id="vis-name" style="text-align: left; padding-left: 2px; border-left: 1px solid black; display: inline-block; color: black; background-color: white;"></label>
-                                    <label id="vis-btn" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" style="text-align: right; border-left: 1px solid black; display: inline-block; color: black; background-color: white;">&nbsp;▲&nbsp;</label>
-                                    <textarea id="vis-cmd" maxlength="500000000" spellcheck="false" wrap="off" rows="3" style="display: block; border-style: none; border-left: 1px solid black; border-top: 1px solid black; resize: none; outline: none; padding: 0; margin: 0; font-family: 'monospace'; background-color: white; color: black;"></textarea>
-                                </div>
+                                <table id="vis-top" style="padding:0; margin:0; border-style: none; border-spacing: 0; background-color: white">
+                                    <tr style="padding:0; margin:0; border-style: none;">
+                                        <td style="padding:0; margin:0; border-style: none;">
+                                            <label id="vis-name" style="text-align: left; padding-left: 2px; border-left: 1px solid black; display: inline-block; color: black; background-color: white;"></label>
+                                        </td>
+                                        <td style="padding:0; margin:0; border-style: none; text-align: right;">
+                                            <div id="vis-btn" onmouseenter="this.style.backgroundColor='lightgray'" onmouseleave="this.style.backgroundColor='white'" style="text-align: center; border-left: 1px solid black; display: inline-block; color: black; background-color: white;">▲</div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <textarea id="vis-cmd" maxlength="500000000" spellcheck="false" wrap="off" rows="3" style="display: block; border-style: none; border-left: 1px solid black; border-top: 1px solid black; resize: none; outline: none; padding: 0; margin: 0; font-family: 'monospace'; background-color: white; color: black;"></textarea>
                                 <div align="right" style="border-style: none; border-top: 1px solid black; padding: 0; margin:0;"><div id="repaint" onclick="repaint()" onmouseenter="document.getElementById('repaint').style.backgroundColor='lightgray'" onmouseleave="document.getElementById('repaint').style.backgroundColor='white'" style="display: inline-block; background-color: white; color: black; font-family: 'monospace'; border-style: none;">&nbsp;repaint&nbsp;</div></div>
                             </td>
                         </tr>
@@ -273,6 +285,63 @@
                 divContainer0.scrollTop = divContainer0.scrollHeight;
             }
 
+            function getScrollbarWidth() {
+
+              // Creating invisible container
+              const outer = document.createElement('div');
+              outer.style.visibility = 'hidden';
+              outer.style.overflow = 'scroll'; // forcing scrollbar to appear
+              outer.style.msOverflowStyle = 'scrollbar'; // needed for WinJS apps
+              document.body.appendChild(outer);
+
+              // Creating inner element and placing it in the container
+              const inner = document.createElement('div');
+              outer.appendChild(inner);
+
+              // Calculating difference between container's full width and the child width
+              const scrollbarWidth = (outer.offsetWidth - inner.offsetWidth);
+
+              // Removing temporary elements from the DOM
+              outer.parentNode.removeChild(outer);
+
+              return scrollbarWidth;
+
+            }
+
+            function getTextWidth(text, font) {
+              // re-use canvas object for better performance
+              const canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas"));
+              const context = canvas.getContext("2d");
+              context.font = font;
+              const metrics = context.measureText(text);
+              return metrics.width;
+            }
+
+            function getCssStyle(element, prop) {
+                return window.getComputedStyle(element, null).getPropertyValue(prop);
+            }
+
+            function getCanvasFontSize(el = document.body) {
+              const fontWeight = getCssStyle(el, 'font-weight') || 'normal';
+              const fontSize = getCssStyle(el, 'font-size') || '16px';
+              const fontFamily = getCssStyle(el, 'font-family') || 'Times New Roman';
+              
+              return `${fontWeight} ${fontSize} ${fontFamily}`;
+            }
+
+            String.prototype.width = function(font) {
+              var f = font || '12px arial',
+                  o = $('<div></div>')
+                        .text(this)
+                        .css({'position': 'absolute', 'float': 'left', 'white-space': 'nowrap', 'visibility': 'hidden', 'font': f})
+                        .appendTo($('body')),
+                  w = o.width();
+
+              o.remove();
+
+              return w;
+            }
+
             function setSize () {
                 document.getElementById('conn-pane').style.display = "block";
                 document.getElementById('scr-pane').style.display = "block";
@@ -304,7 +373,7 @@
                 input.addEventListener("keydown", onkd, false);
                 input.addEventListener("input", oninp, false);
                 
-                var w = 5 * env.fontSize;
+                var w = ~~(5 * env.fontSize);
                 document.getElementById ("img1").style.width = w + "px";
                 document.getElementById ("img1").style.height = w + "px";
                 document.getElementById ("img2").style.width = w + "px";
@@ -312,54 +381,58 @@
                 document.getElementById ("img3").style.width = w + "px";
                 document.getElementById ("img3").style.height = w + "px";
                 
-                var w = 5 * env.fontSize;
+                var w = ~~(5 * env.fontSize);
                 document.getElementById ("conn").style.height = w + "px";
 
-                w = divContainer.clientWidth - document.getElementById ("host").offsetLeft - w - 15;
+                w = ~~(43 * env.fontSize);
                 
                 document.getElementById ("host").style.width = w + "px";
                 document.getElementById ("host").style.fontSize = env.fontSize + "px";
                 document.getElementById ("port").style.width = w + "px";
                 document.getElementById ("port").style.fontSize = env.fontSize + "px";
 
-                w = Math.floor (14 * env.fontSize);
+                document.getElementById ("td1").style.width = 49 * env.fontSize + 2 + "px";
+
+                w = ~~(14 * env.fontSize);
 
                 document.getElementById ("scr-save").style.width = w - (document.getElementById ("scr-create").offsetWidth + document.getElementById ("scr-rename").offsetWidth + document.getElementById ("scr-delete").offsetWidth) + "px";
                 document.getElementById ("vis-save").style.width = w - (document.getElementById ("vis-create").offsetWidth + document.getElementById ("vis-rename").offsetWidth + document.getElementById ("vis-delete").offsetWidth) + "px";
 
                 document.getElementById ("scr-list-cmd").style.fontSize = env.fontSize + "px";
-                document.getElementById ("scr-list-cmd").style.height = document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("scr-save").clientHeight - 1 + "px";
+                document.getElementById ("scr-list-cmd").style.height = ~~(document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("scr-save").clientHeight - 1) + "px";
                 document.getElementById ("scr-list-cmd").style.width = w + "px";
-                document.getElementById ("div-scr").style.height = document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("scr-save").clientHeight - 1 + "px";
+                document.getElementById ("div-scr").style.height = ~~(document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("scr-save").clientHeight - 1) + "px";
                 document.getElementById ("div-scr").style.width = w + "px";
 
+                document.getElementById ("scr-btn").style.width = 3 * env.fontSize + "px";
                 document.getElementById ("scr-cmd").style.fontSize = env.fontSize + "px";
-                document.getElementById ("scr-cmd").style.height = document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("scr-save").clientHeight - 1 + "px";
-                document.getElementById ("scr-cmd").style.width = document.getElementById ("td1").clientWidth - w - 1 + "px";
+                document.getElementById ("scr-cmd").style.height = ~~(document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("scr-save").clientHeight - 1) + "px";
+                document.getElementById ("scr-cmd").style.width = 35 * env.fontSize + "px";
 
-                document.getElementById ("scr-name").style.width = document.getElementById ("scr-cmd").offsetWidth - document.getElementById ("scr-btn").clientWidth - 10 * env.fontSize / 12 + "px";
-
+                document.getElementById ("scr-top").style.width = 35 * env.fontSize + 1 + "px";
+                
                 document.getElementById ("vis-list-cmd").style.fontSize = env.fontSize + "px";
-                document.getElementById ("vis-list-cmd").style.height = document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("vis-save").clientHeight - 1 + "px";
+                document.getElementById ("vis-list-cmd").style.height = ~~(document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("vis-save").clientHeight - 1) + "px";
                 document.getElementById ("vis-list-cmd").style.width = w + "px";
-                document.getElementById ("div-vis").style.height = document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("vis-save").clientHeight - 1 + "px";
+                document.getElementById ("div-vis").style.height = ~~(document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("vis-save").clientHeight - 1) + "px";
                 document.getElementById ("div-vis").style.width = w + "px";
 
+                document.getElementById ("vis-btn").style.width = 3 * env.fontSize + "px";
                 document.getElementById ("vis-cmd").style.fontSize = env.fontSize + "px";
-                document.getElementById ("vis-cmd").style.height = document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("scr-save").clientHeight - 1 + "px";
-                document.getElementById ("vis-cmd").style.width = document.getElementById ("td1").clientWidth - w - 1 + "px";
-
-                document.getElementById ("vis-name").style.width = document.getElementById ("vis-cmd").offsetWidth - document.getElementById ("vis-btn").clientWidth - 10 * env.fontSize / 12 + "px";
+                document.getElementById ("vis-cmd").style.height = ~~(document.getElementById ("td1").clientHeight * 1.7 - document.getElementById ("scr-save").clientHeight - 1) + "px";
+                document.getElementById ("vis-cmd").style.width = 35 * env.fontSize + "px";
+                
+                document.getElementById ("vis-top").style.width = 35 * env.fontSize + 1 + "px";
 
                 divContainer0.style.height = divContainer.clientHeight - document.getElementById ("params").clientHeight + "px";
 
                 document.getElementById ("scr-btn").removeEventListener('click', setSize);
                 document.getElementById ("scr-btn").addEventListener("click", scrMaximize);
-                document.getElementById ("scr-btn").innerHTML = "&nbsp;▲&nbsp";
+                document.getElementById ("scr-btn").innerHTML = "▲";
 
                 document.getElementById ("vis-btn").removeEventListener('click', setSize);
                 document.getElementById ("vis-btn").addEventListener("click", visMaximize);
-                document.getElementById ("vis-btn").innerHTML = "&nbsp;▲&nbsp";
+                document.getElementById ("vis-btn").innerHTML = "▲";
 
                 oninp ();
             }
@@ -735,9 +808,9 @@
             });
                         
             function scrMaximize () {
-                document.getElementById ("scr-cmd").style.height = document.getElementById ("conn-pane").clientHeight + document.getElementById ("scr-cmd").clientHeight + document.getElementById ("vis-pane").clientHeight + "px";
-                document.getElementById ("scr-cmd").style.width = document.getElementById('td1').clientWidth - 1 + "px";
-                document.getElementById ("scr-name").style.width = document.getElementById ("scr-cmd").clientWidth - document.getElementById ("scr-btn").clientWidth - 10 * env.fontSize / 12  + "px";
+                document.getElementById ("scr-cmd").style.height = document.getElementById ("conn-pane").clientHeight + document.getElementById ("scr-cmd").offsetHeight + document.getElementById ("vis-pane").clientHeight - 1 + "px";
+                document.getElementById ("scr-cmd").style.width = 49 * env.fontSize + 1 + "px";
+                document.getElementById ("scr-top").style.width = 49 * env.fontSize + 2 + "px";
 
                 document.getElementById('scr1').style.display = "none";
                 document.getElementById('conn-pane').style.display = "none";
@@ -745,7 +818,7 @@
 
                 document.getElementById ("scr-btn").removeEventListener('click', scrMaximize);
                 document.getElementById ("scr-btn").addEventListener("click", setSize);
-                document.getElementById ("scr-btn").innerHTML = "&nbsp;▼&nbsp";
+                document.getElementById ("scr-btn").innerHTML = "▼";
             }
 
             document.getElementById ("vis-list-cmd").addEventListener("change", function () {
@@ -753,9 +826,9 @@
             });
                         
             function visMaximize () {
-                document.getElementById ("vis-cmd").style.height = document.getElementById ("conn-pane").clientHeight + document.getElementById ("scr-pane").clientHeight + document.getElementById ("vis-cmd").clientHeight + "px";
-                document.getElementById ("vis-cmd").style.width = document.getElementById('td1').clientWidth - 1 + "px";
-                document.getElementById ("vis-name").style.width = document.getElementById ("vis-cmd").clientWidth - document.getElementById ("vis-btn").clientWidth - 10 * env.fontSize / 12  + "px";
+                document.getElementById ("vis-cmd").style.height = document.getElementById ("conn-pane").clientHeight + document.getElementById ("scr-cmd").offsetHeight + document.getElementById ("vis-pane").clientHeight - 1 + "px";
+                document.getElementById ("vis-cmd").style.width = 49 * env.fontSize + 1 + "px";
+                document.getElementById ("vis-top").style.width = 49 * env.fontSize + 2 + "px";
 
                 document.getElementById('vis1').style.display = "none";
                 document.getElementById('conn-pane').style.display = "none";
@@ -763,7 +836,7 @@
 
                 document.getElementById ("vis-btn").removeEventListener('click', visMaximize);
                 document.getElementById ("vis-btn").addEventListener("click", setSize);
-                document.getElementById ("vis-btn").innerHTML = "&nbsp;▼&nbsp";
+                document.getElementById ("vis-btn").innerHTML = "▼";
             }
 
             loadScripts ("scr-list-cmd", "scr-cmd");
