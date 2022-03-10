@@ -721,12 +721,14 @@
             }
             
             function scrSave(listCmd) {
-                if (listCmd === 'scr-list-cmd')
+                if (listCmd === 'scr-list-cmd') {
                     var dir = "pre";
-                else
+                } else {
                     var dir = "vis";
+                }
                     
                 listCmd = document.getElementById(listCmd);
+
                 var ret = "{";
                 var o = listCmd;
                 for (var i = 0; i < o.children.length; i++) {
@@ -738,6 +740,12 @@
                 
                 ret += "}"
                 
+                if (listCmd === document.getElementById('scr-list-cmd')) {
+                    document.getElementById('scr-name').innerHTML = listCmd.options[listCmd.selectedIndex].text;
+                } else {
+                    document.getElementById('vis-name').innerHTML = listCmd.options[listCmd.selectedIndex].text;
+                }
+
                 var xhttp = new XMLHttpRequest ();
                 xhttp.onreadystatechange = function () {
                     if (this.readyState == 4 && this.status == 200) {
@@ -754,12 +762,14 @@
             document.getElementById ("scr-cmd").addEventListener("input", function () {
                 var txt = document.getElementById("scr-list-cmd").selectedOptions[0].text;
                 document.getElementById("scr-list-cmd").selectedOptions[0].text = txt.substring(0, txt.length - 1) + "*";
+                document.getElementById("scr-name").innerHTML = txt.substring(0, txt.length - 1) + "*";
                 document.getElementById("scr-list-cmd").selectedOptions[0].value = document.getElementById ("scr-cmd").value;
             }, false);
 
             document.getElementById ("vis-cmd").addEventListener("input", function () {
                 var txt = document.getElementById("vis-list-cmd").selectedOptions[0].text;
                 document.getElementById("vis-list-cmd").selectedOptions[0].text = txt.substring(0, txt.length - 1) + "*";
+                document.getElementById("vis-name").innerHTML = txt.substring(0, txt.length - 1) + "*";
                 document.getElementById("vis-list-cmd").selectedOptions[0].value = document.getElementById ("vis-cmd").value;
             }, false);
             
