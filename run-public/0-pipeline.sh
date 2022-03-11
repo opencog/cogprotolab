@@ -16,7 +16,7 @@ export COMMON_DIR=/home/ubuntu/src/learn/run-common
 # It is recommended that this be located on an SSD disk, for
 # performance.
 # If you are using Postgres, just delete `ROCKS_DATA_DIR`.
-export ROCKS_DATA_DIR=/home/ubuntu/data/
+export ROCKS_DATA_DIR=/home/atomspace/data/
 
 # Directory in which configuration parameters (including this file)
 # are located. Obtained automatically; don't change.
@@ -26,4 +26,4 @@ export CONFIG_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 export MASTER_CONFIG_FILE=${CONFIG_DIR}/$( basename "${BASH_SOURCE[0]}" )
 
 # File containing grammatical-class configuration
-export GRAM_CONF_FILE=$CONFIG_DIR/4-gram-conf-en.sh
+# export GRAM_CONF_FILE=$CONFIG_DIR/4-gram-conf-en.sh
