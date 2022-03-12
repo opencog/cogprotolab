@@ -11,11 +11,13 @@ guile -l cogserver.scm
 (define pair-stars (add-pair-stars pair-obj))
 (pair-obj 'fetch-pairs)
 (print-matrix-summary-report pair-stars)
+(define pair-freq (add-pair-freq-api pair-stars))
 
 (define cset-obj (make-pseudo-cset-api))
 (cset-obj 'fetch-pairs)
-(define cset-stars cset-obj)
+(define cset-stars (add-pair-stars cset-obj))
 (print-matrix-summary-report cset-stars)
+(define cset-freq (add-pair-freq-api cset-stars))
 ```
 
 * `run-1-marg-tranche-123.rdb` -- Requires 59GB to load word-pairs,
@@ -23,5 +25,95 @@ guile -l cogserver.scm
 
 * `run-1-t12-tsup-1-1-1.rdb` -- 6.4 GB to load word pairs and
    also disjuncts.  9 minutes to load everything.
+
+
+TODO:
+```
+(batch-all-pair-mi cset-stars)
+```
+
+User Instructions
+=================
+User should do this:
+
+```
+ssh -f -N -p 224 atomspace@gnucash.org -L 17014:10.0.3.90:19014
+rlwrap telnet localhost 17014
+scm
+(format #t "Hello world\n")
+```
+
+There are two types of data in this dataset: word-word pairs and
+word-disjunct pairs.  The first example is for word-word pairs,
+showing how to find related words.
+
+Many words are NOT in the dataset, so random experimentation
+may result in no replies.
+
+To get a list of all word-word pairs, with a given word on the right:
+```
+(pair-stars 'left-stars (WordNode "end"))
+```
+
+This will return a long list, the last part of which is:
+```
+ (EvaluationLink (ctv 1 0 19)
+  (LgLinkNode "ANY")
+  (ListLink (WordNode "cold") (WordNode "end")))
+ (EvaluationLink (ctv 1 0 10)
+  (LgLinkNode "ANY")
+  (ListLink (WordNode "seen") (WordNode "end")))
+ (EvaluationLink (ctv 1 0 34)
+  (LgLinkNode "ANY")
+  (ListLink (WordNode "quick") (WordNode "end")))
+ (EvaluationLink (ctv 1 0 18)
+  (LgLinkNode "ANY")
+  (ListLink (WordNode "horrible") (WordNode "end")))
+```
+Ignore the `ctv` (this is an observation count)
+
+These "pairs" are "edges", the name of the edge is "ANY",
+and there's a bunch of numerical data hanging off each edge.
+
+The "relatedness" of a word-pair can be obtained by looking
+at it's mutual information (MI). View this as follows:
+```
+(pair-freq 'pair-fmi
+   (Evaluation (LgLink "ANY") (List (Word "horrible") (Word "end"))))
+```
+The above returns a single floating point number, in the range of
+about -20 to about +20, indicating the MI of the pair. The higher,
+the better.
+
+Pairs, with the word on the left:
+```
+(pair-stars 'right-stars (Word "end"))
+```
+
+The "other end" of a given word. (the other vertex at the
+end of an edge).
+```
+(pair-stars 'right-duals (Word "end"))
+(pair-stars 'left-duals (Word "end"))
+```
+
+Word-disjunct pairs
+-------------------
+A lot like the above, except:
+```
+(cset-stars 'right-stars (WordNode "end"))
+```
+
+
+
+
+Documentation
+=============
+```
+(pair-freq 'help)
+(pair-freq 'describe)
+(pair-stars 'help)
+(pair-stars 'describe)
+```
 
 ========
