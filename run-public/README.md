@@ -18,6 +18,8 @@ guile -l cogserver.scm
 (define cset-stars (add-pair-stars cset-obj))
 (print-matrix-summary-report cset-stars)
 (define cset-freq (add-pair-freq-api cset-stars))
+
+(cog-atomspace-ro!)
 ```
 
 * `run-1-marg-tranche-123.rdb` -- Requires 59GB to load word-pairs,
@@ -25,12 +27,23 @@ guile -l cogserver.scm
 
 * `run-1-t12-tsup-1-1-1.rdb` -- 6.4 GB to load word pairs and
    also disjuncts.  9 minutes to load everything.
+   7 GB after computing (w,d) MI
 
 
 TODO:
+-----
 ```
 (batch-all-pair-mi cset-stars)
+(cog-atomspace-ro!)
 ```
+Needs to be scrubbed, because not all connectors connect
+
+Curr stats:
+-----------
+```
+((PredicateNode . 17) (ListLink . 3504317) (AnyNode . 4) (Connector . 6800) (ConnectorDir . 2) (ConnectorSeq . 65792) (Section . 269822) (EvaluationLink . 3431412) (TypeNode . 3) (SchemaNode . 1) (RocksStorageNode . 1) (WordNode . 7111) (LgLinkNode . 1))
+```
+
 
 User Instructions
 =================
@@ -103,8 +116,6 @@ A lot like the above, except:
 ```
 (cset-stars 'right-stars (WordNode "end"))
 ```
-
-
 
 
 Documentation
