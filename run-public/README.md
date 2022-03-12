@@ -19,6 +19,7 @@ guile -l cogserver.scm
 (print-matrix-summary-report cset-stars)
 (define cset-freq (add-pair-freq-api cset-stars))
 
+(cog-close storage-node)
 (cog-atomspace-ro!)
 ```
 
