@@ -8,8 +8,8 @@ Loading and running the word-pairs and also disjuncts:
 guile -l cogserver.scm
 
 (define pair-obj (make-any-link-api))
-(define pair-stars (add-pair-stars pair-obj))
 (pair-obj 'fetch-pairs)
+(define pair-stars (add-pair-stars pair-obj))
 (print-matrix-summary-report pair-stars)
 (define pair-freq (add-pair-freq-api pair-stars))
 
@@ -20,7 +20,8 @@ guile -l cogserver.scm
 (define cset-freq (add-pair-freq-api cset-stars))
 
 (cog-close storage-node)
-(cog-atomspace-ro!)
+;;; (cog-atomspace-ro!)
+;;; (cog-push-atomspace)
 ```
 
 * `run-1-marg-tranche-123.rdb` -- Requires 59GB to load word-pairs,
