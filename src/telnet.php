@@ -26,10 +26,10 @@
             return "telnet command send error";
         }
 
+        $response = "";
         //read socket
         while (true) {
             usleep(25000);
-            $response = "";
             while (($ret = fgets($fp)) != false) {
                 if ($ret == $prompt) {
                     $response = substr($response, 0, -1);
