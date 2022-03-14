@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<!--?xml version="1.0"?-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <head>
+        <style media="screen">
+            section {
+                position: absolute; top:0; bottom:0; left:0; right:0;
+                overflow: hidden;
+            }
+            
+            html, body
+            {
+                overflow: hidden;
+                height: 100%;
+                width: 100%;
+                margin-top: 0px;
+                margin-left: 0px;
+                pointer-events: auto;
+                background-color: gray;
+                touch-action: none;
+                user-select: none;
+            }
+            
+            a, a.exHover:visited, a.exHover:link {cursor: pointer; color: lightgray; text-decoration:none; border:0px solid #4466DD;}
+            a.exHover:hover {cursor: pointer; color:white; text-decoration:none; border:0px solid #6699FF;}
+            a.exHover:active {cursor: pointer; color:white; text-decoration:none; border:0px solid #DDDDFF;}
+        </style>
+        
+        <script>
+            function setDesign(pr) {
+                var viewport = document.querySelector("meta[name=viewport]");
+                if (!viewport){
+                    viewport=document.createElement('meta');
+                    viewport.name = "viewport";
+                    document.getElementsByTagName('head')[0].appendChild(viewport);
+                }
+                var sc = 1 / pr;
+                viewport.setAttribute('content', "width=device-width, initial-scale=" + sc + ", maximum-scale=" + sc + ", minimum-scale=" + sc + ", user-scalable=no");
+            }
+            
+            setDesign(window.devicePixelRatio);
+        </script>
+        <script src="fract.conf.js"></script>
+        <script src="src/fract-exp.js"></script>
+        <script src="src/exp-log.js"></script>
+    </head>
+    <body>
+      <section>
+        <div id="divContainer" style="position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; visibility: hidden;">
+        </div>
+        <div id="divStats" style="position: absolute; top: 5px; right: 5px; font-family: 'monospace'; font-size: 9px; color: white; text-shadow: 0px 0px 2px rgba(0,0,0,1); /*visibility: hidden;*/">(pair-stars 'left-stars (WordNode "$X"))</div>
+        
+        <script>
+            rules = [
+                [[    "<start>"], ["<s-expr-ws>"                    ]],
+                [["<s-expr-ws>"], ["<ws>", "<s-expr>", "<ws>"       ]],
+                [[   "<s-expr>"], ["<primary>"                      ]],
+                [[   "<s-expr>"], ["<primary>", "<ws>", "<s-expr>"  ]],
+                [[  "<primary>"], ["(", "<ws>", ")"                 ]],
+                [[  "<primary>"], ["/[^\\s();\"]+/"                 ]],
+                [[  "<primary>"], ["/\"([^\"\\\\\\n]|(\\\\.))*\"/"  ]],
+                [[  "<primary>"], ["(", "<s-expr-ws>", ")"          ]],
+                [[       "<ws>"], ["/((\\s+)|(;((.*\\n)|(.*$))))*/" ]]
+            ];
+            
+            String.prototype.parseSexpr = function() {
+	            var t = this.match(/\s*("[^"]*"|\(|\)|"|[^\s()"]+)/g)
+	            for (var o, c=0, i=t.length-1; i>=0; i--) {
+		            var n, ti = t[i].trim()
+		            if (ti == '"') return
+		            else if (ti == '(') t[i]='[', c+=1
+		            else if (ti == ')') t[i]=']', c-=1
+		            else if ((n=+ti) == ti) t[i]=n
+		            else t[i] = '\'' + ti.replace('\'', '\\\'') + '\''
+		            if (i>0 && ti!=']' && t[i-1].trim()!='(' ) t.splice(i,0, ',')
+		            if (!c) if (!o) o=true; else return
+	            }
+	            return c ? undefined : eval(t.join(''))
+            }
+             
+            Array.prototype.toString = function() {
+	            var s=''; for (var i=0, e=this.length; i<e; i++) s+=(s?' ':'')+this[i]
+	            return '('+s+')'
+            }
+             
+            Array.prototype.toPretty = function(s) {
+	            if (!s) s = ''
+	            var r = s + '(<br>'
+	            var s2 = s + Array(6).join('&nbsp;')
+	            for (var i=0, e=this.length; i<e; i+=1) { 
+		            var ai = this[i]
+		            r += ai.constructor != Array ? s2+ai+'<br>' : ai.toPretty(s2)
+	            }
+	            return r + s + ')<br>'
+            }
+            
+            function sendstr (str) {
+                //parsed = parser.getParseTree (rules, str);
+                //sexpr = parsed.sexpr;
+                //if (!sexpr) sexpr = ["", ""];
+                //window.postMessage(JSON.stringify (sexpr[1]), "*");
+                window.postMessage(str, "*");
+            }
+
+            var strPrompt = null;
+            var strHost = null;
+            var strPort = null;
+            function getprompt () {
+                return new Promise(function(resolve, reject) {
+                    var host = encodeURI (strHost);
+                    var port = encodeURI (strPort);
+
+                    var xhttp = new XMLHttpRequest ();
+                    xhttp.onreadystatechange = function () {
+                        if (this.readyState == 4 && this.status == 200) {
+                            resolve (this.responseText);
+                        }
+                    };
+                    
+                    xhttp.open("GET", "src/get-prompt.php?host=" + host + "&port=" + port, true);
+                    xhttp.overrideMimeType("text/plain");
+                    xhttp.send();
+                });
+            }
+
+            var strPrompt = null;
+            var strHost = null;
+            var strPort = null;
+            function setPrompt (fun) {
+                getprompt ().then (
+                    (response) => {
+                        var arr = response.split("\n");
+                        if (arr.length === 0) {
+                            strPrompt = null;
+                            
+                        } else {
+                            strPrompt = arr[arr.length - 1];
+                            if (fun)
+                                fun ();
+                        }
+                    }
+                );
+            }
+
+            function sendcmd (cmd) {
+                return new Promise(function(resolve, reject) {
+                    var host = encodeURI (strHost);
+                    var port = encodeURI (strPort);
+                    var prompt = encodeURI (encodeURIComponent (strPrompt));
+
+                    cmd = encodeURI (encodeURIComponent (cmd));
+
+                    var xhttp = new XMLHttpRequest ();
+                    xhttp.onreadystatechange = function () {
+                        if (this.readyState == 4 && this.status == 200) {
+                            resolve (this.responseText);
+                        }
+                    };
+
+                    xhttp.open("POST", "src/telnet.php");
+                    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                    xhttp.send("host=" + host + "&port=" + port + "&cmd=" + cmd + "&prompt=" + prompt);
+                });
+            }
+
+            function GetURLParameter(sParam) {
+                var sPageURL = window.location.search.substring(1);
+                var sURLVariables = sPageURL.split('&');
+                for (var i = 0; i < sURLVariables.length; i++) 
+                {
+                    var sParameterName = sURLVariables[i].split('=');
+                    if (sParameterName[0] == sParam) 
+                    {
+                        return sParameterName[1];
+                    }
+                }
+            }
+
+            var error;
+            function getDesign() {
+                var design;
+                if (window.matchMedia('only screen and (max-device-width: 320px)').matches) {
+                    design = 'touch';
+                 } else if (window.matchMedia('only screen and (max-device-width: 1024px)').matches) {
+                    design = 'tablet';
+                } else if (window.matchMedia('screen').matches) {
+                    design = 'desktop';
+                } else if (window.matchMedia('handheld').matches) {
+                    design = 'mobile';
+                }
+                return design;
+            }
+
+            function setSize () {
+            }
+
+            function dispatchSize () {
+                divContainer.dispatchEvent(new CustomEvent('resize1', null));
+            }
+            
+            var refr = 0;
+            var evt;
+            var msg = (event) => {
+                function formArray (head, rel) {
+                    var node = {head: head, children: []};
+                    for (var i = 0; i < rel.length; i++) {
+                        var child = {head: rel[i]};
+                        node.children.push (child);
+                    }
+
+                    return node;
+                }
+                //divStats.innerHTML = "cache size: 0 ovals, 0mb";
+
+                evt = event;
+
+                if (event.data === "clear") {
+                    divContainer.style.visibility = "hidden";
+                    //divStats.style.visibility = "hidden";
+                } else {
+                    var d = JSON.parse (event.data);
+                    nodeTree = formArray (d.head, d.rel);
+                    onBusy();
+                    refr++;
+                    setTimeout( function () {
+                        divContainer.dispatchEvent(new CustomEvent('redefineData', {detail: nodeTree}));
+                        divContainer.style.visibility = "visible";
+                        //divStats.style.visibility = "visible";
+                    }, 1);
+                }
+            };
+            
+            window.addEventListener("message", msg, false);
+            
+var str1 = 
+`
+ (EvaluationLink (ctv 1 0 19)
+  (LgLinkNode "ANY")
+  (ListLink (WordNode "cold") (WordNode "end")))
+ (EvaluationLink (ctv 1 0 10)
+  (LgLinkNode "ANY")
+  (ListLink (WordNode "seen") (WordNode "end")))
+ (EvaluationLink (ctv 1 0 34)
+  (LgLinkNode "ANY")
+  (ListLink (WordNode "quick") (WordNode "end")))
+ (EvaluationLink (ctv 1 0 18)
+  (LgLinkNode "ANY")
+  (ListLink (WordNode "horrible") (WordNode "end")))
+`
+            function wonload () {
+                setSize ();
+
+                nodeTree = formArray (unfoldsexpr (""));
+
+                nodes = Orbital (divContainer, nodeTree, env.quant / 100, env.flatArea / 100, 100 / env.scale / window.devicePixelRatio, env.ovalColor, env.backColor, env.shadowRadius? env.shadowRadius: 0, env.shadowRadius? env.shadowColor: null, env.uiscale / 100, onIdle, onBusy);
+
+                setPrompt (function () {
+                    //sendcmd ("(define (firsts number lst) (if (equal? 0 number) '() (cons (car lst) (firsts (- number 1) (cdr lst)))))\n").then (
+                    sendcmd ("(define (firsts number lst) (if (or (equal? lst '()) (equal? 0 number)) '() (cons (car lst) (firsts (- number 1) (cdr lst)))))\n").then (
+                        (response) => {
+                            var s = '{"head": "end", "rel": []}';
+                            //s = '{"head": "end", "rel": ' + extractWords(parser.parse(rules, str1).sexpr) + '}';
+                            sendstr (s);
+                            divContainer.dispatchEvent(new CustomEvent('idle', null));
+                        }
+                    );            
+                });
+                
+                
+                //setPrompt();
+                
+//console.debug(arr.toString());
+//console.debug(arr);
+//sendstr (arr[1][0][1][1][2][2][2][1][1][2][0][1][1][2]);
+//var s = '{"head": "end", "rel": ' + extractWords(parser.getParseTree(rules, str1).sexpr) + '}';
+
+                dispatchSize ();
+                divContainer.style.visibility = "visible";
+
+                var resizeId;
+                window.addEventListener('resize', function () {
+                    document.getElementById("tooltip").style.visibility = "hidden";
+                    divContainer.style.visibility = "hidden";
+                    //divStats.style.visibility = "hidden";
+                    
+                    clearTimeout(resizeId);
+                    resizeId = setTimeout(function () {
+                        setSize ();
+                        dispatchSize ();
+                        divContainer.style.visibility = "visible";
+                        //divStats.style.visibility = "visible";
+                    }, 500);
+                });
+            }
+
+            var pauseLoading = false;
+            
+            function onBusy () {
+                pauseLoading = true;
+            }
+
+            var oldOvals = [];
+            
+            var pauseLoading;
+            var continueLoading;
+            var onIdleRunning;
+            var idleAgain;
+            var interval;
+            
+            function onBusy () {
+                pauseLoading = true;
+                idleAgain = false;
+                continueLoading = false;
+                clearInterval (interval);
+            }
+
+            function onIdle (ovals) {
+                pauseLoading = false;
+                idleAgain = ovals;
+                continueLoading = idleAgain;
+
+                clearInterval (interval);
+                interval = setInterval (async function () {
+                    if (!pauseLoading && !onIdleRunning && idleAgain) {
+                        clearInterval (interval);
+                        refresh (idleAgain);
+                    }
+                }, 50);
+            }
+
+            async function refresh (ovals1) {
+                idleAgain = false;
+                onIdleRunning = true;
+                ovals = [...ovals1];
+                ovals.sort((a, b) => (a.radius > b.radius) ? -1 : 1)
+                for (i = 0; i < ovals.length && continueLoading === ovals1; i++) {
+                    if (!ovals[i].data.done && ovals[i].data.children.length === 0) {
+                        try {
+                            await loadOval (ovals[i], refr);
+                            divContainer.dispatchEvent(new CustomEvent('redraw', null));
+                            divContainer.dispatchEvent(new CustomEvent('idle', null));
+                        } catch (e) {
+                            divContainer.dispatchEvent(new CustomEvent('idle', null));
+                            break;
+                        }
+                    }
+                }
+                
+                onIdleRunning = false;
+            }
+
+            function expand (node, rel) {
+                node.children = [];
+                for (var i = 0; i < rel.length; i++) {
+                    node.children.push ({head: rel[i], parent: node, index: i, children: []});
+                }
+
+                return node;
+            }
+
+            function extractWords (word, arr) {
+                //try {
+                    var ret = "[";
+                    
+                    //arr = arr[1];
+                    arr = arr[1][1][1];
+                    while (Array.isArray(arr[2])) {
+                        ret += arr[0][1][1][2][2][2][1][1][2][0][1][1][2] + ", ";
+                        arr = arr[2];
+                    }
+                    
+                    ret += arr[1][1][2][2][2][1][1][2][0][1][1][2] + "]";
+                    
+                //} catch (e) {
+                //    ret = "[]";
+                //}
+                
+                return ret;
+            }
+            
+            async function loadOval(node, oldrefr) {
+                return new Promise(async function(resolve, reject) {
+                    if (strPrompt && node.data.head) {
+                        //rel=extractWords(parser.parse(rules, str1).sexpr);
+                        sendcmd ("(firsts 10 (pair-stars 'left-stars (WordNode \"" + node.data.head.replace("\"", "\\\"") + "\")))\n").then (
+                            (response) => {
+                                //console.log ("(firsts 10 (pair-stars 'left-stars (WordNode \"" + node.data.head + "\")))");
+                                //console.log (response);
+                                var s1 = parser.parse(rules, response).sexpr;
+                                if (!s1) {
+                                    alert ("error on: (firsts 10 (pair-stars 'left-stars (WordNode \"" + node.data.head + "\")))");
+                                    node.data.done = true;
+                                    reject ();
+
+                                } else {
+                                    if (response !== "()") {
+                                        var s2 = extractWords(node.data.head, s1)
+                                        expand (node.data, JSON.parse (s2));
+                                        resolve ();
+                                        
+                                    } else {
+                                        node.data.done = true;
+                                        resolve ();
+                                    }
+                                }
+                            }
+                        );
+                    } else {
+                        reject ();
+                    }
+                });
+            }
+
+            function isString (str) {
+                return (typeof str === 'string' || str instanceof String);
+            }
+
+            function unfoldsexpr (sexpr) {
+                if (Array.isArray (sexpr)) {
+                    var arr = [];
+                    var idx = 0;
+                    while (Array.isArray (sexpr)) {
+                        if (sexpr[0] === "(") {
+                            arr[idx] = unfoldsexpr (sexpr[1][1]);
+                            if (idx === 0)
+                                return arr[0];
+                            
+                            else
+                                return arr;
+                            
+                        } else {
+                            arr[idx] = unfoldsexpr (sexpr[0]);
+                            sexpr = sexpr[2];
+                            idx++;
+                        }
+                    }
+                    
+                    arr[idx] = sexpr;
+                    
+                    return arr;
+
+                } else {
+                    return sexpr?sexpr:"";
+                }
+            }
+
+            function formArray (sexpr) {
+                var node = {sexpr: sexpr, children: []};
+                if (!isString (sexpr)) {
+                    for (var i = 0; i < sexpr.length; i++) {
+                        node.children.push (formArray (sexpr[i]));
+                    }
+                }
+
+                return node;
+            }
+
+            function setupEnv (data) {
+                /*
+                if (data["contents-flat-area"])
+                    try {
+                        if (data["contents-flat-area"].substr(data["contents-flat-area"].length - 1, 1) !== "%")
+                            throw new error ();
+                        
+                        var flatArea = parseFloat (data["contents-flat-area"].substr(0, data["contents-flat-area"].length - 1));
+                        if (flatArea < 0 || flatArea > 100)
+                            throw new error ();
+                        
+                    } catch (e) {
+                        alert ('Error in fract-exp.json: "contents-flat-area" has to be a percent between "0%" and "100%"');
+                        throw new error ();
+                    }
+                else
+                    flatArea = 0;
+                */
+                
+                if (data["ui-scale"])
+                    try {
+                        if (data["ui-scale"].substr(data["ui-scale"].length - 1, 1) !== "%")
+                            throw new error ();
+                        
+                        var uiscale = parseFloat (data["ui-scale"].substr(0, data["ui-scale"].length - 1));
+                        if (uiscale <= 0)
+                            throw new error ();
+                        
+                    } catch (e) {
+                        alert ('Error in fract-exp.json: "ui-scale" hast to be a percent greater than "0%"');
+                        throw new error ();
+                    }
+                else
+                    uiscale = 100;
+
+                if (data["power-consumption-optimisation"])
+                    try {
+                        if (data["power-consumption-optimisation"].substr(data["power-consumption-optimisation"].length - 1, 1) !== "%")
+                            throw new error ();
+                        
+                        var quant = parseFloat (data["power-consumption-optimisation"].substr(0, data["power-consumption-optimisation"].length - 1));
+                        if (quant <= 0)
+                            throw new error ();
+                        
+                    } catch (e) {
+                        alert ('Error in fract-exp.json: "power-consumption-optimisation" hast to be a percent greater than "0%"');
+                        throw new error ();
+                    }
+                else
+                    quant = 80;
+                /*
+                if (data["shadow-radius"]) {
+                    var sradius = parseFloat (data["shadow-radius"]);
+                    
+                } else {
+                    sradius = 0;
+                }
+                
+                if (data["sexpr-depth"]) {
+                    var sdepth = parseInt (data["sexpr-depth"]);
+                    
+                } else {
+                    sdepth = 0;
+                }
+                */
+                if (data["font-size"]) {
+                    var fsize = parseInt (data["font-size"]);
+                    
+                } else {
+                    fsize = 32;
+                }
+                
+                return {
+                    host: data["host"],
+                    port: data["port"],
+                    fsize: fsize,
+                    //sdepth: sdepth,
+                    ovalColor: data["oval-color"],
+                    textColor: data["text-color"],
+                    backColor: data["background-color"],
+                    //shadowRadius: sradius,
+                    //shadowColor: data["shadow-color"],
+                    //flatArea: flatArea,
+                    uiscale: uiscale,
+                    quant: quant,
+                    scale: 100
+                }
+            }
+
+            var nodes = [];
+
+            var divContainer = document.getElementById ("divContainer")
+            //var divStats = document.getElementById ("divStats")
+            
+            env = setupEnv (init);
+            strHost = env.host;
+            strPort = env.port;
+            
+            document.body.style.backgroundColor = env.backColor;
+            window.addEventListener("load", wonload ());
+            
+            var pixelRatioBox = document.querySelector(".pixel-ratio");
+            var mqString = `(resolution: ${window.devicePixelRatio}dppx)`;
+            matchMedia(mqString).addListener(() => {
+                window.top.document.body.innerHTML = "Please refresh the web page.";
+                return;
+            });
+        </script>
+      </section>
+    </body>
+</html>
