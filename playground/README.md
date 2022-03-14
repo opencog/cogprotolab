@@ -50,8 +50,6 @@ After opening *CogProtoLab* application in web browser, one can perform a simple
 1.
 
     ;Boilerplate code for loading the opencog modules
-    (use-modules (ice-9 readline))
-    (activate-readline)
     (add-to-load-path ".")
     (use-modules (opencog))
     (use-modules (opencog exec))
