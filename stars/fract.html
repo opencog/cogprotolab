@@ -63,7 +63,7 @@
                 [[  "<primary>"], ["(", "<s-expr-ws>", ")"          ]],
                 [[       "<ws>"], ["/((\\s+)|(;((.*\\n)|(.*$))))*/" ]]
             ];
-            
+            /*
             String.prototype.parseSexpr = function() {
 	            var t = this.match(/\s*("[^"]*"|\(|\)|"|[^\s()"]+)/g)
 	            for (var o, c=0, i=t.length-1; i>=0; i--) {
@@ -94,7 +94,7 @@
 	            }
 	            return r + s + ')<br>'
             }
-            
+            */
             function sendstr (str) {
                 //parsed = parser.getParseTree (rules, str);
                 //sexpr = parsed.sexpr;
@@ -473,45 +473,38 @@ var makeNavigator =
             async function loadOval(node, oldrefr) {
                 return new Promise(async function(resolve, reject) {
                     if (strPrompt && node.data.head) {
-//                        sendcmd (currNav + "\n").then (
-//                            (response) => {
-                                //sendcmd ("(firsts 10 (pair-stars 'left-stars (WordNode \"" + node.data.head.replace("\"", "\\\"") + "\")))\n").then (
-                                //sendcmd ("(curr-nav 'forward (Word \"" + node.data.head.replace("\"", "\\\"") + "\"))\n").then (
-                                sendcmd ("(curr-nav 'forward (Word \"$X\"))".replace("$X", node.data.head.replace("\"", "\\\"")) + "\n").then (
-                                    (response) => {
-                                        //console.log ("(firsts 10 (pair-stars 'left-stars (WordNode \"" + node.data.head + "\")))");
-                                        //console.log (response);
-                                        var s1 = parser.parse(rules, response).sexpr;
-                                        if (!s1) {
-                                            alert ("error on: \"" + node.data.head + "\"");
-                                            node.data.done = true;
-                                            reject ();
+                        sendcmd ("(curr-nav 'forward (Word \"$X\"))".replace("$X", node.data.head.replace("\"", "\\\"")) + "\n").then (
+                            (response) => {
+                                //console.log (response);
+                                var s1 = parser.parse(rules, response).sexpr;
+                                if (!s1) {
+                                    alert ("error on: \"" + node.data.head + "\"");
+                                    node.data.done = true;
+                                    reject ();
 
-                                        } else {
-                                            if (response !== "()") {
-                                                var s2 = extractWords(node.data, s1)
-                                                if (s2[0] === "###LEFT-WALL###") s2 = ["###LEFT-WALL###"];
-                                                if (s2[0] === "###RIGHT-WALL###") s2 = ["###RIGHT-WALL###"];
-                                                expand (node.data, s2).then (
+                                } else {
+                                    if (response !== "()") {
+                                        var s2 = extractWords(node.data, s1)
+                                        if (s2[0] === "###LEFT-WALL###") s2 = ["###LEFT-WALL###"];
+                                        if (s2[0] === "###RIGHT-WALL###") s2 = ["###RIGHT-WALL###"];
+                                        expand (node.data, s2).then (
+                                            (response) => {
+                                                setScore (node.data).then (
                                                     (response) => {
-                                                        setScore (node.data).then (
-                                                            (response) => {
-                                                                resolve ();
-                                                            }
-                                                        )
+                                                        resolve ();
                                                     }
                                                 )
-
-                                                
-                                            } else {
-                                                node.data.done = true;
-                                                resolve ();
                                             }
-                                        }
+                                        )
+
+                                        
+                                    } else {
+                                        node.data.done = true;
+                                        resolve ();
                                     }
-                                )
-//                            }
-//                        );
+                                }
+                            }
+                        )
                     } else {
                         reject ();
                     }
@@ -625,7 +618,7 @@ var makeNavigator =
 
             var divContainer = document.getElementById ("divContainer");
             var divStats = document.getElementById ("divStats");
-            divStats.innerHTML = env.query;            
+            divStats.innerHTML = env.setQuery;
             
             document.body.style.backgroundColor = env.backColor;
             window.addEventListener("load", wonload ());

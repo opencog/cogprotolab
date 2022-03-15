@@ -4,4 +4,4 @@ experimental statistical word matching visualization project - requires big onli
 
     // under construction //
 
-![](media/ssh-480.png)
+![](media/ssh-640.png)
