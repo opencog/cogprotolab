@@ -1,6 +1,6 @@
 # Stars
 
-experimental statistical word matching visualization project - requires big online dataset...
+experimental opencog/learn visualization project
 
     // under construction //
 
