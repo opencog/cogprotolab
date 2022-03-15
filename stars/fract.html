@@ -233,22 +233,6 @@
             
             window.addEventListener("message", msg, false);
             
-var str1 = 
-`
- (EvaluationLink (ctv 1 0 19)
-  (LgLinkNode "ANY")
-  (ListLink (WordNode "cold") (WordNode "end")))
- (EvaluationLink (ctv 1 0 10)
-  (LgLinkNode "ANY")
-  (ListLink (WordNode "seen") (WordNode "end")))
- (EvaluationLink (ctv 1 0 34)
-  (LgLinkNode "ANY")
-  (ListLink (WordNode "quick") (WordNode "end")))
- (EvaluationLink (ctv 1 0 18)
-  (LgLinkNode "ANY")
-  (ListLink (WordNode "horrible") (WordNode "end")))
-`
-
 var makeNavigator =
 `
 (use-modules (srfi srfi-1))
@@ -318,7 +302,6 @@ var makeNavigator =
 		))
 )
 `
-
             function wonload () {
                 setSize ();
 
@@ -327,12 +310,10 @@ var makeNavigator =
                 nodes = Orbital (divContainer, nodeTree, env.quant / 100, env.flatArea / 100, 100 / env.scale / window.devicePixelRatio, env.ovalColor, env.backColor, env.shadowRadius? env.shadowRadius: 0, env.shadowRadius? env.shadowColor: null, env.uiscale / 100, onIdle, onBusy);
 
                 setPrompt (function () {
-                    //sendcmd ("(define (firsts number lst) (if (equal? 0 number) '() (cons (car lst) (firsts (- number 1) (cdr lst)))))\n").then (
                     //sendcmd ("(define (firsts number lst) (if (or (equal? lst '()) (equal? 0 number)) '() (cons (car lst) (firsts (- number 1) (cdr lst)))))\n").then (
-                    sendcmd (makeNavigator + "\n").then (
+                    sendcmd (makeNavigator + env.setQuery + "\n").then (
                         (response) => {
                             var s = '{"head": "' + env.startWord + '", "rel": []}';
-                            //s = '{"head": "end", "rel": ' + extractWords(parser.parse(rules, str1).sexpr) + '}';
                             sendstr (s);
                             divContainer.dispatchEvent(new CustomEvent('idle', null));
                         }
@@ -442,32 +423,38 @@ var makeNavigator =
                     return sexpr?sexpr:"";
                 }
             }
-
-            function expand (node, rel) {
-                node.children = [];
-                for (var i = 0; i < rel.length; i++) {
-                    node.children.push ({head: rel[i], parent: node, index: i, children: []});
-                }
-
-                return node;
+            
+            async function getScore (X, Y) {
+                return new Promise(async function(resolve, reject) {
+                    sendcmd ("(curr-nav 'edge-score (Word \"$X\") (Word \"$Y\"))".replace("$X", X.replace("\"", "\\\"")).replace("$Y", Y.replace("\"", "\\\"")) + "\n").then (
+                        (response) => {
+                            resolve (response);
+                        }
+                    );
+                });
             }
 
-            function extractWords (word, arr) {
-                //try {
-                /*
-                    var ret = "[";
-                    
-                    arr = arr[1][1][1];
-                    while (Array.isArray(arr[2])) {
-                        ret += arr[0][1][1][2][2][2][1][1][2][0][1][1][2] + ", ";
-                        arr = arr[2];
+            async function setScore (node) {
+                return new Promise(async function(resolve, reject) {
+                    if (node.parent.parent) node.score = await getScore (node.parent.head, node.head);
+                    resolve();
+                });
+            }
+
+            async function expand (node, rel) {
+                return new Promise(async function(resolve, reject) {
+                    //if (node.parent.parent) node.score = await getScore (node.parent.head, node.head);
+                    node.children = [];
+                    for (var i = 0; i < rel.length; i++) {
+                        node.children.push ({head: rel[i], score: undefined, parent: node, index: i, children: []});
                     }
-                    
-                    ret += arr[1][1][2][2][2][1][1][2][0][1][1][2] + "]";
-                */
-                //} catch (e) {
-                //    ret = "[]";
-                //}
+
+                    //return node;
+                    resolve ();
+                });
+            }
+
+            function extractWords (data, arr) {
                 var ret = [];
                 
                 arr = arr[1][1][1];
@@ -486,21 +473,11 @@ var makeNavigator =
             async function loadOval(node, oldrefr) {
                 return new Promise(async function(resolve, reject) {
                     if (strPrompt && node.data.head) {
-                        //rel=extractWords(parser.parse(rules, str1).sexpr);
-var currNav = `
-; Create a navigator for the given matrix and ranking objects
-; In this case, pair-stars and pair-freq ...
-; All of these arguments should be taken from a config file.
-(define curr-nav
-    (make-navigator
-        pair-stars 'right-duals 'left-duals
-        pair-freq 'pair-fmi 10))
-`
-                        sendcmd (currNav + "\n").then (
-                            (response) => {
+//                        sendcmd (currNav + "\n").then (
+//                            (response) => {
                                 //sendcmd ("(firsts 10 (pair-stars 'left-stars (WordNode \"" + node.data.head.replace("\"", "\\\"") + "\")))\n").then (
                                 //sendcmd ("(curr-nav 'forward (Word \"" + node.data.head.replace("\"", "\\\"") + "\"))\n").then (
-                                sendcmd (env.query.replace("$X", node.data.head.replace("\"", "\\\"")) + "\n").then (
+                                sendcmd ("(curr-nav 'forward (Word \"$X\"))".replace("$X", node.data.head.replace("\"", "\\\"")) + "\n").then (
                                     (response) => {
                                         //console.log ("(firsts 10 (pair-stars 'left-stars (WordNode \"" + node.data.head + "\")))");
                                         //console.log (response);
@@ -512,11 +489,19 @@ var currNav = `
 
                                         } else {
                                             if (response !== "()") {
-                                                var s2 = extractWords(node.data.head, s1)
+                                                var s2 = extractWords(node.data, s1)
                                                 if (s2[0] === "###LEFT-WALL###") s2 = ["###LEFT-WALL###"];
-                                                //expand (node.data, JSON.parse (s2));
-                                                expand (node.data, s2);
-                                                resolve ();
+                                                if (s2[0] === "###RIGHT-WALL###") s2 = ["###RIGHT-WALL###"];
+                                                expand (node.data, s2).then (
+                                                    (response) => {
+                                                        setScore (node.data).then (
+                                                            (response) => {
+                                                                resolve ();
+                                                            }
+                                                        )
+                                                    }
+                                                )
+
                                                 
                                             } else {
                                                 node.data.done = true;
@@ -525,8 +510,8 @@ var currNav = `
                                         }
                                     }
                                 )
-                            }
-                        );
+//                            }
+//                        );
                     } else {
                         reject ();
                     }
@@ -578,24 +563,6 @@ var currNav = `
             }
 
             function setupEnv (data) {
-                /*
-                if (data["contents-flat-area"])
-                    try {
-                        if (data["contents-flat-area"].substr(data["contents-flat-area"].length - 1, 1) !== "%")
-                            throw new error ();
-                        
-                        var flatArea = parseFloat (data["contents-flat-area"].substr(0, data["contents-flat-area"].length - 1));
-                        if (flatArea < 0 || flatArea > 100)
-                            throw new error ();
-                        
-                    } catch (e) {
-                        alert ('Error in fract-exp.json: "contents-flat-area" has to be a percent between "0%" and "100%"');
-                        throw new error ();
-                    }
-                else
-                    flatArea = 0;
-                */
-                
                 if (data["ui-scale"])
                     try {
                         if (data["ui-scale"].substr(data["ui-scale"].length - 1, 1) !== "%")
@@ -627,21 +594,7 @@ var currNav = `
                     }
                 else
                     quant = 80;
-                /*
-                if (data["shadow-radius"]) {
-                    var sradius = parseFloat (data["shadow-radius"]);
-                    
-                } else {
-                    sradius = 0;
-                }
-                
-                if (data["sexpr-depth"]) {
-                    var sdepth = parseInt (data["sexpr-depth"]);
-                    
-                } else {
-                    sdepth = 0;
-                }
-                */
+
                 if (data["font-size"]) {
                     var fsize = parseInt (data["font-size"]);
                     
@@ -653,18 +606,14 @@ var currNav = `
                     host: data["host"],
                     port: data["port"],
                     fsize: fsize,
-                    //sdepth: sdepth,
                     ovalColor: data["oval-color"],
                     textColor: data["text-color"],
                     backColor: data["background-color"],
-                    //shadowRadius: sradius,
-                    //shadowColor: data["shadow-color"],
-                    //flatArea: flatArea,
                     uiscale: uiscale,
                     quant: quant,
                     scale: 100,
                     startWord: data["start-word"],
-                    query: data["query"]
+                    setQuery: data["set-query"]
                 }
             }
 

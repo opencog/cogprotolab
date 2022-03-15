@@ -8,5 +8,5 @@ var init = {
     "power-consumption-optimisation": "80%",
     "ui-scale": "100%",
     "start-word": "start",
-    "query": "(curr-nav 'forward (Word \"$X\"))"
+    "set-query": "(define curr-nav (make-navigator pair-stars 'right-duals 'left-duals pair-freq 'pair-fmi 10))"
 };
