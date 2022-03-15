@@ -63,6 +63,7 @@
                 [[  "<primary>"], ["(", "<s-expr-ws>", ")"          ]],
                 [[       "<ws>"], ["/((\\s+)|(;((.*\\n)|(.*$))))*/" ]]
             ];
+            
             /*
             String.prototype.parseSexpr = function() {
 	            var t = this.match(/\s*("[^"]*"|\(|\)|"|[^\s()"]+)/g)
@@ -95,11 +96,8 @@
 	            return r + s + ')<br>'
             }
             */
+            
             function sendstr (str) {
-                //parsed = parser.getParseTree (rules, str);
-                //sexpr = parsed.sexpr;
-                //if (!sexpr) sexpr = ["", ""];
-                //window.postMessage(JSON.stringify (sexpr[1]), "*");
                 window.postMessage(str, "*");
             }
 
@@ -211,13 +209,12 @@
 
                     return node;
                 }
-                //divStats.innerHTML = "cache size: 0 ovals, 0mb";
 
                 evt = event;
 
                 if (event.data === "clear") {
                     divContainer.style.visibility = "hidden";
-                    //divStats.style.visibility = "hidden";
+                    divStats.style.visibility = "hidden";
                 } else {
                     var d = JSON.parse (event.data);
                     nodeTree = formArray (d.head, d.rel);
@@ -226,92 +223,35 @@
                     setTimeout( function () {
                         divContainer.dispatchEvent(new CustomEvent('redefineData', {detail: nodeTree}));
                         divContainer.style.visibility = "visible";
-                        //divStats.style.visibility = "visible";
+                        divStats.style.visibility = "visible";
                     }, 1);
                 }
             };
             
             window.addEventListener("message", msg, false);
-            
-var makeNavigator =
-`
-(use-modules (srfi srfi-1))
 
-; General terminology:
-; The "stars" are the edges, the duals are the other vertex.
-; So, given a vertex, the left-stars are a list of all edges
-; pointing at the vertex.  The right-stars are all the edges
-; pointing away from the vertex.  The left-duals are all the
-; vertexes that have edges pointing at the target. The right-duals
-; are all the vertexes that have edges pointing away from the target.
-;
-; The MI is the mutual information of an edge. Get it by saying
-; '(pair-freq 'pair-fmi edge-atom)'
-; -----------------------------------------
-
-; Create a simple object with some methods on it ...
-(define (make-navigator STARS-OBJ FWD-METHOD BACK-METHOD
-                         RANK-OBJ RANK-METHOD NUM-TO-SHOW)
-"
-  make-navigator -- Generic graph navigation object
-  See examples for more info.
-"
-	; Make a short list in sorted order.
-	(define (short-list FWD TARGET-VERTEX)
-
-		; Depending on whether FWD is #t or #f,
-		; get the edge pointing towards or away from the target.
-		(define (get-edge OTHER-VERTEX)
-			(if FWD
-				(STARS-OBJ 'get-pair TARGET-VERTEX OTHER-VERTEX)
-				(STARS-OBJ 'get-pair OTHER-VERTEX TARGET-VERTEX)))
-
-		; Define a compare function that compares two
-		; vertexes... assuming both have the target-vertex
-		; in common.
-		(define (more-fun VTX-A VTX-B)
-			(define pair-a (get-edge VTX-A))
-			(define pair-b (get-edge VTX-B))
-   		(> (RANK-OBJ RANK-METHOD pair-a)
-	   		(RANK-OBJ RANK-METHOD pair-b)))
-
-		; Get the list of all vertexes that are joined
-		; by some edge to the target vertex.
-		(define tail-verts
-			(if FWD
-				(STARS-OBJ FWD-METHOD TARGET-VERTEX)
-				(STARS-OBJ BACK-METHOD TARGET-VERTEX)))
-
-		; Sort the list above, and then return the
-		; first NUM-TO-SHOW of that list.
-		(take (sort tail-verts more-fun) NUM-TO-SHOW))
-
-	; Return an edge-score for the given edge.
-	; This is a trivial wrapper.
-	(define (escore LEFT-VTX RIGHT-VTX)
-		(define edge (STARS-OBJ 'get-pair LEFT-VTX RIGHT-VTX))
-   	(RANK-OBJ RANK-METHOD edge))
-
-	; Call the various methods on the object.
-	(lambda (message . args)
-		(case message
-			((forward) (short-list #t args))
-			((backward) (short-list #f args))
-			((edge-score)  (apply escore args))
-			(else "Ooops! unknown method!")
-		))
-)
-`
             function wonload () {
                 setSize ();
 
                 nodeTree = formArray (unfoldsexpr (""));
 
-                nodes = Orbital (divContainer, nodeTree, env.quant / 100, env.flatArea / 100, 100 / env.scale / window.devicePixelRatio, env.ovalColor, env.backColor, env.shadowRadius? env.shadowRadius: 0, env.shadowRadius? env.shadowColor: null, env.uiscale / 100, onIdle, onBusy);
+                nodes = Orbital (
+                    divContainer,
+                    nodeTree,
+                    env.quant / 100,
+                    env.flatArea / 100,
+                    100 / env.scale / window.devicePixelRatio,
+                    env.ovalColor,
+                    env.backColor,
+                    env.shadowRadius? env.shadowRadius: 0,
+                    env.shadowRadius? env.shadowColor: null,
+                    env.uiscale / 100,
+                    onIdle,
+                    onBusy
+                );
 
                 setPrompt (function () {
-                    //sendcmd ("(define (firsts number lst) (if (or (equal? lst '()) (equal? 0 number)) '() (cons (car lst) (firsts (- number 1) (cdr lst)))))\n").then (
-                    sendcmd (makeNavigator + env.setQuery + "\n").then (
+                    sendcmd (env.queryInit + "\n").then (
                         (response) => {
                             var s = '{"head": "' + env.startWord + '", "rel": []}';
                             sendstr (s);
@@ -327,14 +267,14 @@ var makeNavigator =
                 window.addEventListener('resize', function () {
                     document.getElementById("tooltip").style.visibility = "hidden";
                     divContainer.style.visibility = "hidden";
-                    //divStats.style.visibility = "hidden";
+                    divStats.style.visibility = "hidden";
                     
                     clearTimeout(resizeId);
                     resizeId = setTimeout(function () {
                         setSize ();
                         dispatchSize ();
                         divContainer.style.visibility = "visible";
-                        //divStats.style.visibility = "visible";
+                        divStats.style.visibility = "visible";
                     }, 500);
                 });
             }
@@ -426,7 +366,7 @@ var makeNavigator =
             
             async function getScore (X, Y) {
                 return new Promise(async function(resolve, reject) {
-                    sendcmd ("(curr-nav 'edge-score (Word \"$X\") (Word \"$Y\"))".replace("$X", X.replace("\"", "\\\"")).replace("$Y", Y.replace("\"", "\\\"")) + "\n").then (
+                    sendcmd (env.queryScore.replace("$X", X.replace("\"", "\\\"")).replace("$Y", Y.replace("\"", "\\\"")) + "\n").then (
                         (response) => {
                             resolve (response);
                         }
@@ -473,7 +413,7 @@ var makeNavigator =
             async function loadOval(node, oldrefr) {
                 return new Promise(async function(resolve, reject) {
                     if (strPrompt && node.data.head) {
-                        sendcmd ("(curr-nav 'forward (Word \"$X\"))".replace("$X", node.data.head.replace("\"", "\\\"")) + "\n").then (
+                        sendcmd (env.query.replace("$X", node.data.head.replace("\"", "\\\"")) + "\n").then (
                             (response) => {
                                 //console.log (response);
                                 var s1 = parser.parse(rules, response).sexpr;
@@ -515,6 +455,7 @@ var makeNavigator =
                 return (typeof str === 'string' || str instanceof String);
             }
 
+            /*
             function unfoldsexpr (sexpr) {
                 if (Array.isArray (sexpr)) {
                     var arr = [];
@@ -543,6 +484,7 @@ var makeNavigator =
                     return sexpr?sexpr:"";
                 }
             }
+            */
 
             function formArray (sexpr) {
                 var node = {sexpr: sexpr, children: []};
@@ -606,7 +548,9 @@ var makeNavigator =
                     quant: quant,
                     scale: 100,
                     startWord: data["start-word"],
-                    setQuery: data["set-query"]
+                    query: data["query"],
+                    queryInit: data["query-init"],
+                    queryScore: data["query-score"]
                 }
             }
 
@@ -618,7 +562,7 @@ var makeNavigator =
 
             var divContainer = document.getElementById ("divContainer");
             var divStats = document.getElementById ("divStats");
-            divStats.innerHTML = env.setQuery;
+            divStats.innerHTML ="<code><pre>"/* + "init: " + env.queryInit + "\n"*/ + "query: " + env.query + "\n" + "score: " + env.queryScore + "</pre></code>";
             
             document.body.style.backgroundColor = env.backColor;
             window.addEventListener("load", wonload ());

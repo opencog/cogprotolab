@@ -1065,8 +1065,8 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                 if (data.parent.parent){
                     var lr = env.fsize * 2 / 2 * magn;
                     
-                    var x1 = x + r * 1.2 * Math.cos (angle - Math.PI / 2);
-                    var y1 = y + r * 1.2 * Math.sin (angle - Math.PI / 2);
+                    var x1 = x + r * 1.1 * Math.cos (angle - Math.PI / 2);
+                    var y1 = y + r * 1.1 * Math.sin (angle - Math.PI / 2);
                     
                     ctx.beginPath ();
                     ctx.ellipse (
@@ -1084,14 +1084,12 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                     ctx.fillStyle = fill;
                     ctx.fill ();
                     
-                    //ctx.fillStyle = fill;
-                    //ctx.fillRect(x1 * squashX - wm2, y1 * squashY - hm2, 2 * wm2, 2 * hm2);
-                    
                     if (data.score !== undefined) {
                         var text = Math.round (data.score * 100) / 100;
                         var lh = env.fsize / 1.5 * magn;
                         ctx.font = lh + "px monospace";
                         ctx.fillStyle = env.textColor;
+                        ctx.lineWidth = 0;
                         ctx.fillText(text, x1 * squashX - ctx.measureText(text).width / 2, y1 * squashY + lh / 2);
                     }
                 }
