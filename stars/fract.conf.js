@@ -8,9 +8,9 @@ var init = {
     "power-consumption-optimisation": "80%",
     "ui-scale": "100%",
     "start-word": "start",
-//    "set-query": "(define curr-nav (make-navigator pair-stars 'right-duals 'left-duals pair-freq 'pair-fmi 10))"
 };
-init["query-init"] = `
+
+init["query-maker"] = `
 (use-modules (srfi srfi-1))
 
 ; General terminology:
@@ -77,7 +77,9 @@ init["query-init"] = `
 			(else "Ooops! unknown method!")
 		))
 )
+`
 
+init["query-selector"] = `
 ; Create a navigator for the given matrix and ranking objects
 ; In this case, pair-stars and pair-freq ...
 ; All of these arguments should be taken from a config file.
@@ -87,5 +89,5 @@ init["query-init"] = `
 		pair-freq 'pair-fmi 10))
 `;
 
-init["query"] = `(curr-nav 'forward (Word "$X"))`;
-init["query-score"] = `(curr-nav 'edge-score (Word "$X") (Word "$Y"))`
+init["query-call"] = `(curr-nav 'forward (Word "$X"))`;
+init["query-score-call"] = `(curr-nav 'edge-score (Word "$X") (Word "$Y"))`;
