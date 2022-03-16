@@ -128,14 +128,19 @@
             function setPrompt (fun) {
                 getprompt ().then (
                     (response) => {
-                        var arr = response.split("\n");
-                        if (arr.length === 0) {
-                            strPrompt = null;
-                            
+                        if (response.substr(0, "telnet connection error".length) === "telnet connection error") {
+                            alert (response);
+
                         } else {
-                            strPrompt = arr[arr.length - 1];
-                            if (fun)
-                                fun ();
+                            var arr = response.split("\n");
+                            if (arr.length === 0) {
+                                strPrompt = null;
+                                
+                            } else {
+                                strPrompt = arr[arr.length - 1];
+                                if (fun)
+                                    fun ();
+                            }
                         }
                     }
                 );
@@ -374,38 +379,48 @@
                 });
             }
 
-            async function setScore (node) {
+            async function setScore (data) {
                 return new Promise(async function(resolve, reject) {
-                    if (node.parent.parent) node.score = await getScore (node.parent.head, node.head);
+                    if (data.parent.parent) data.score = await getScore (data.parent.head, data.head);
                     resolve();
                 });
             }
 
-            async function expand (node, rel) {
+            async function expand (data, rel) {
                 return new Promise(async function(resolve, reject) {
                     //if (node.parent.parent) node.score = await getScore (node.parent.head, node.head);
-                    node.children = [];
+                    data.children = [];
                     for (var i = 0; i < rel.length; i++) {
-                        node.children.push ({head: rel[i], score: undefined, parent: node, index: i, children: []});
+                        var item = {head: rel[i], score: undefined, parent: data, index: i, children: []};
+                        if (rel[i] === "###ERROR###" || rel[i] === "###LEFT-WALL###" || rel[i] === "###RIGHT-WALL###")
+                            item.done = true;
+                        
+                        data.children.push (item);
+                        //data.children.push ({head: rel[i], score: undefined, done: rel[i] === "###ERROR###"? true: undefined, parent: data, index: i, children: []});
                     }
 
-                    //return node;
                     resolve ();
                 });
             }
 
             function extractWords (data, arr) {
                 var ret = [];
-                
-                arr = arr[1][1][1];
-                while (Array.isArray(arr[2])) {
-                    var txt = arr[0][1][1][2];
+
+                try {                
+                    arr = arr[1][1][1];
+                    while (Array.isArray(arr[2])) {
+                        var txt = arr[0][1][1][2];
+                        ret.push (txt.substr (1, txt.length - 2));
+                        arr = arr[2];
+                    }
+                    
+                    var txt = arr[1][1][2];
                     ret.push (txt.substr (1, txt.length - 2));
-                    arr = arr[2];
-                }
                 
-                var txt = arr[1][1][2];
-                ret.push (txt.substr (1, txt.length - 2));
+                } catch (e) {
+                    alert ("Error expanding: \"" + data.head + "\"");
+                    data.done = true;
+                }
                 
                 return ret;
             }
@@ -413,20 +428,30 @@
             async function loadOval(node, oldrefr) {
                 return new Promise(async function(resolve, reject) {
                     if (strPrompt && node.data.head) {
-                        sendcmd (env.queryCall.replaceAll("$X", escape (node.data.head)) + "\n").then (
+console.log(node.data.head);
+                        cmd = env.queryCall.replaceAll("$X", escape (node.data.head));
+                        sendcmd (cmd + "\n").then (
                             (response) => {
                                 //console.log (response);
                                 var s1 = parser.parse(rules, response).sexpr;
                                 if (!s1) {
-                                    alert ("error on: \"" + node.data.head + "\"");
-                                    node.data.done = true;
-                                    reject ();
+                                    alert ("Error expanding: \"" + node.data.head + "\"\nCommand: " + cmd + "");
+                                    expand (node.data, ["###ERROR###"]).then (
+                                        (response) => {
+                                            resolve ();
+                                        }
+                                    );
 
                                 } else {
                                     if (response !== "()") {
-                                        var s2 = extractWords(node.data, s1)
-                                        if (s2[0] === "###LEFT-WALL###") s2 = ["###LEFT-WALL###"];
-                                        if (s2[0] === "###RIGHT-WALL###") s2 = ["###RIGHT-WALL###"];
+                                        if (s1[1][0] === "Backtrace:") {
+                                            alert ("Error expanding: \"" + node.data.head + "\"\nCommand: " + cmd + "");
+                                            s2 = ["###ERROR###"];
+                                        } else {
+                                            var s2 = extractWords(node.data, s1)
+                                            if (s2[0] === "###LEFT-WALL###") s2 = ["###LEFT-WALL###"];
+                                            if (s2[0] === "###RIGHT-WALL###") s2 = ["###RIGHT-WALL###"];
+                                        }
                                         expand (node.data, s2).then (
                                             (response) => {
                                                 setScore (node.data).then (
@@ -435,8 +460,7 @@
                                                     }
                                                 )
                                             }
-                                        )
-
+                                        );
                                         
                                     } else {
                                         node.data.done = true;
@@ -456,7 +480,7 @@
             }
             
             function escape (str) {
-                return str.replaceAll("\"", "\\\"");
+                return str.replaceAll("\\", "\\\\").replaceAll("\"", "\\\"");
             }
 
             /*

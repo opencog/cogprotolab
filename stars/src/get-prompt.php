@@ -10,8 +10,6 @@
         echo "telnet connection error: $errno $errstr";
 
     } else {
-        //echo "telnet connection test successful\n";
-
         stream_set_blocking($fp, false);
         
         $ret = send($fp, $delay, "scm\n");
