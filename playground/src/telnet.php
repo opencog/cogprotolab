@@ -9,10 +9,11 @@
     $fp = fsockopen($host, $port, $errno, $errstr, 5);
 
     if(!$fp){
-        echo "telnet connection error";
+        echo "telnet connection error: $errno $errstr";
 
     } else {
-        stream_set_blocking($fp, false);
+        //stream_set_blocking($fp, false);
+        stream_set_timeout($fp, 0, 0);
         
         send($fp, $delay, "scm\n", $prompt);
         echo send($fp, $delay, "$cmd", $prompt);
@@ -29,7 +30,7 @@
         $response = "";
         //read socket
         while (true) {
-            usleep(25000);
+            usleep(5000);
             while (($ret = fgets($fp)) != false) {
                 if ($ret == $prompt) {
                     $response = substr($response, 0, -1);

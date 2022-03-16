@@ -7,7 +7,7 @@
     $fp = fsockopen($host, $port, $errno, $errstr, 5);
 
     if(!$fp){
-        echo "telnet connection error: check host and port";
+        echo "telnet connection error: $errno $errstr";
 
     } else {
         echo "telnet connection test successful\n";
@@ -29,7 +29,7 @@
         }
 
         //read socket
-        usleep(500000);
+        usleep(1000000);
         $response = "";
         while (($ret = fgets($fp)) != false) {
             $response .= $ret;

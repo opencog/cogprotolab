@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<!--?xml version="1.0"?-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <head>
+        <style media="screen">
+            section {
+                position: absolute; top:0; bottom:0; left:0; right:0;
+                overflow: hidden;
+            }
+            
+            html, body
+            {
+                overflow: hidden;
+                height: 100%;
+                width: 100%;
+                margin-top: 0px;
+                margin-left: 0px;
+                pointer-events: auto;
+                background-color: gray;
+                touch-action: none;
+                user-select: none;
+            }
+            
+            .rotate {
+              animation: rotation 1s infinite linear;
+            }
+
+            @keyframes rotation {
+              from {
+                transform: rotate(-180deg);
+              }
+              to {
+                transform: rotate(180deg);
+              }
+            }
+            
+
+            a, a.exHover:visited, a.exHover:link {cursor: pointer; color: lightgray; text-decoration:none; border:0px solid #4466DD;}
+            a.exHover:hover {cursor: pointer; color:white; text-decoration:none; border:0px solid #6699FF;}
+            a.exHover:active {cursor: pointer; color:white; text-decoration:none; border:0px solid #DDDDFF;}
+        </style>
+        
+        <script>
+            function setDesign(pr) {
+                var viewport = document.querySelector("meta[name=viewport]");
+                if (!viewport){
+                    viewport=document.createElement('meta');
+                    viewport.name = "viewport";
+                    document.getElementsByTagName('head')[0].appendChild(viewport);
+                }
+                var sc = 1 / pr;
+                viewport.setAttribute('content', "width=device-width, initial-scale=" + sc + ", maximum-scale=" + sc + ", minimum-scale=" + sc + ", user-scalable=no");
+            }
+            
+            setDesign(window.devicePixelRatio);
+        </script>
+        <script src="fract.conf.js"></script>
+        <script src="src/fract-exp.js"></script>
+    </head>
+    <body>
+      <section>
+        <div id="divContainer" style="position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; visibility: hidden;">
+        </div>
+        <div id="divStats" style="position: absolute; top: 5px; right: 5px; font-family: 'monospace'; font-size: 9px; color: white; text-shadow: 0px 0px 2px rgba(0,0,0,1); visibility: hidden;">cache size: 0 ovals, 0 mb</div>
+        
+        <script>
+            function GetURLParameter(sParam) {
+                var sPageURL = window.location.search.substring(1);
+                var sURLVariables = sPageURL.split('&');
+                for (var i = 0; i < sURLVariables.length; i++) 
+                {
+                    var sParameterName = sURLVariables[i].split('=');
+                    if (sParameterName[0] == sParam) 
+                    {
+                        return sParameterName[1];
+                    }
+                }
+            }
+
+            var error;
+            function getDesign() {
+                var design;
+                if (window.matchMedia('only screen and (max-device-width: 320px)').matches) {
+                    design = 'touch';
+                 } else if (window.matchMedia('only screen and (max-device-width: 1024px)').matches) {
+                    design = 'tablet';
+                } else if (window.matchMedia('screen').matches) {
+                    design = 'desktop';
+                } else if (window.matchMedia('handheld').matches) {
+                    design = 'mobile';
+                }
+                return design;
+            }
+
+            function setSize () {
+            }
+
+            function dispatchSize () {
+                var event1 = new CustomEvent('resize1', null);
+                divContainer.dispatchEvent(event1);
+            }
+            
+            var refr = 0;
+            var evt;
+            var msg = (event) => {
+                divStats.innerHTML = "cache size: 0 ovals, 0mb";
+
+                evt = event;
+
+                if (event.data === "clear") {
+                    divContainer.style.visibility = "hidden";
+                    divStats.style.visibility = "hidden";
+                } else {
+                    nodeTree = formArray (unfoldsexpr (JSON.parse (event.data)));
+                    onBusy();
+                    refr++;
+                    setTimeout( function () {
+                        divContainer.dispatchEvent(new CustomEvent('redefineData', {detail: nodeTree}));
+                        divContainer.style.visibility = "visible";
+                        divStats.style.visibility = "visible";
+                    }, 1);
+                }
+            };
+            
+            window.addEventListener("message", msg, false);
+
+            function wonload () {
+                setSize ();
+
+                nodeTree = formArray (unfoldsexpr (""));
+
+                nodes = Orbital (divContainer, nodeTree, env.quant / 100, env.flatArea / 100, 100 / env.scale / window.devicePixelRatio, env.ovalColor, env.backColor, env.shadowRadius, env.shadowRadius? env.shadowColor: null, env.uiscale / 100, onIdle, onBusy);
+                dispatchSize ();
+                divContainer.style.visibility = "visible";
+
+                var resizeId;
+                window.addEventListener('resize', function () {
+                    document.getElementById("tooltip").style.visibility = "hidden";
+                    divContainer.style.visibility = "hidden";
+                    divStats.style.visibility = "hidden";
+                    
+                    clearTimeout(resizeId);
+                    resizeId = setTimeout(function () {
+                        setSize ();
+                        dispatchSize ();
+                        divContainer.style.visibility = "visible";
+                        divStats.style.visibility = "visible";
+                        
+                    }, 500);
+                });
+            }
+            
+            function setupEnv (data) {
+                if (data["contents-flat-area"])
+                    try {
+                        if (data["contents-flat-area"].substr(data["contents-flat-area"].length - 1, 1) !== "%")
+                            throw new error ();
+                        
+                        var flatArea = parseFloat (data["contents-flat-area"].substr(0, data["contents-flat-area"].length - 1));
+                        if (flatArea < 0 || flatArea > 100)
+                            throw new error ();
+                        
+                    } catch (e) {
+                        alert ('Error in fract-exp.json: "contents-flat-area" has to be a percent between "0%" and "100%"');
+                        throw new error ();
+                    }
+                else
+                    flatArea = 0;
+
+                if (data["ui-scale"])
+                    try {
+                        if (data["ui-scale"].substr(data["ui-scale"].length - 1, 1) !== "%")
+                            throw new error ();
+                        
+                        var uiscale = parseFloat (data["ui-scale"].substr(0, data["ui-scale"].length - 1));
+                        if (uiscale <= 0)
+                            throw new error ();
+                        
+                    } catch (e) {
+                        alert ('Error in fract-exp.json: "ui-scale" hast to be a percent greater than "0%"');
+                        throw new error ();
+                    }
+                else
+                    uiscale = 100;
+
+                if (data["power-consumption-optimisation"])
+                    try {
+                        if (data["power-consumption-optimisation"].substr(data["power-consumption-optimisation"].length - 1, 1) !== "%")
+                            throw new error ();
+                        
+                        var quant = parseFloat (data["power-consumption-optimisation"].substr(0, data["power-consumption-optimisation"].length - 1));
+                        if (quant <= 0)
+                            throw new error ();
+                        
+                    } catch (e) {
+                        alert ('Error in fract-exp.json: "power-consumption-optimisation" hast to be a percent greater than "0%"');
+                        throw new error ();
+                    }
+                else
+                    quant = 80;
+                
+                if (data["shadow-radius"]) {
+                    var sradius = parseFloat (data["shadow-radius"]);
+                    
+                } else {
+                    sradius = 0;
+                }
+                
+                if (data["sexpr-depth"]) {
+                    var sdepth = parseInt (data["sexpr-depth"]);
+                    
+                } else {
+                    sdepth = 0;
+                }
+                
+                if (data["font-size"]) {
+                    var fsize = parseInt (data["font-size"]);
+                    
+                } else {
+                    fsize = 32;
+                }
+                
+                return {
+                    fsize: fsize,
+                    sdepth: sdepth,
+                    ovalColor: data["oval-color"],
+                    textColor: data["text-color"],
+                    backColor: data["background-color"],
+                    shadowRadius: sradius,
+                    shadowColor: data["shadow-color"],
+                    flatArea: flatArea,
+                    uiscale: uiscale,
+                    quant: quant,
+                    scale: 100
+                }
+            }
+            
+            function createCanvasImg (img, scale, fill) {
+                var cnvim = document.createElement ("canvas");
+                cnvim.width = ~~(img.width * scale) + 2;
+                cnvim.height = ~~(img.height * scale) + 2;
+                var ctxim = cnvim.getContext ('2d');
+
+                ctxim.fillStyle = fill;
+                ctxim.fillRect(0, 0, cnvim.width, cnvim.height);
+                
+                ctxim.drawImage (img, 1, 1, ~~(img.width * scale), ~~(img.height * scale));
+
+                return cnvim
+            }            
+
+            var pauseLoading = false;
+            
+            function onBusy () {
+                pauseLoading = true;
+            }
+            
+            function calcStats (nodes) {
+                var statNOvals = 0;
+                var statMem = 0;
+                
+                (
+                    function rec (node) {
+                        if (node.img) {
+                            statNOvals++;
+                            statMem += node.img.width * node.img.height * 4;
+                        }
+                        
+                        if (node.cachedCnv) {
+                            statMem +=  node.cachedCnv.width + node.cachedCnv.height * 4 * 2.5
+                        }
+                        
+                        for (var i = 0; i < node.children.length; i++) {
+                            rec (node.children[i]);
+                        }
+                    }
+                ) (nodes)
+                
+                divStats.innerHTML = "cache size: " + statNOvals + " ovals, " + Math.round(statMem / 1024 / 1024)  + "mb";
+            }
+
+            function prepareOval(node) {
+                var canvas = createCanvasImg (node.img, node.scaleImg? env.scale / 100 * node.scaleImg : 1, env.ovalColor);
+                node.scaledBitmap = Crisp.crispBitmapXY(canvas);
+
+                divContainer.dispatchEvent(new CustomEvent('updateOvalAlign', {detail: node}));
+            }
+
+            var oldOvals = [];
+            
+            var pauseLoading;
+            var continueLoading;
+            var onIdleRunning;
+            var idleAgain;
+            var interval;
+            
+            function onBusy () {
+                pauseLoading = true;
+                idleAgain = false;
+                continueLoading = false;
+                clearInterval (interval);
+            }
+
+            function onIdle (ovals) {
+                pauseLoading = false;
+                idleAgain = ovals;
+                continueLoading = idleAgain;
+
+                clearInterval (interval);
+                interval = setInterval (async function () {
+                    if (!pauseLoading && !onIdleRunning && idleAgain) {
+                        clearInterval (interval);
+                        refresh (idleAgain);
+                    }
+                }, 50);
+            }
+
+            async function refresh (ovals1) {
+                idleAgain = false;
+                onIdleRunning = true;
+                ovals = [...ovals1];
+                ovals.sort((a, b) => (a.radius > b.radius) ? -1 : 1)
+                for (i = 0; i < ovals.length && continueLoading === ovals1; i++) {
+                    if (!ovals[i].data.scaledBitmap) {
+                        var node = ovals[i].data;
+                        if (!node.img) {
+                            try {
+                                await loadOval (ovals[i].data, refr);
+                            } catch (e) {
+                                break;
+                            }
+                        }
+
+                        if (node.img) {
+                            prepareOval (node);
+                            divContainer.dispatchEvent(new CustomEvent('redraw', null));
+                        }
+                    }
+                }
+                
+                // update cache
+                for (var i1 = 0; i1 < oldOvals.length; i1++) {
+                    is = false;
+                    for (var i2 = 0; i2 < ovals.length; i2++) {
+                        if (oldOvals[i1].data === ovals[i2].data) {
+                            is = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!is) {
+                        oldOvals[i1].data.img = null;
+                        oldOvals[i1].data.cachedCnv = null;
+                        oldOvals[i1].data.cachedData = null;
+                        oldOvals[i1].data.scaledBitmap = null;
+                    }
+                }
+                oldOvals = ovals;
+
+                calcStats (nodes.data ()); // to be deleted
+
+                onIdleRunning = false;
+            }
+            
+            /*
+            async function onIdle (ovals) {
+                pauseLoading = false;
+                ovals.sort((a, b) => (a.radius > b.radius) ? -1 : 1)
+                for (i = 0; i < ovals.length && !pauseLoading; i++) {
+                    if (!ovals[i].data.cachedCnv || !ovals[i].data.cachedData || !ovals[i].data.scaledBitmap) {
+                        try {
+                            await loadOval (ovals[i].data, refr);
+                        } catch (e) {
+                            i--;
+                        }
+                    }
+                }
+                
+                calcStats (nodes.data ());
+            }
+            */
+            
+            async function loadOval(data, oldrefr) {
+                return new Promise(async function(resolve, reject) {
+                    var node = data;
+                    node.img = new Image ();
+                    node.img.crossOrigin = "anonymous";
+                    node.hyperlinks = [];
+                    
+                    node.img.onload = function (e) {
+                        if (node.img.width > 0 && node.img.height > 0 && !pauseLoading && oldrefr === refr) {
+                            var canvas = createCanvasImg (node.img, node.scaleImg? env.scale / 100 * node.scaleImg : 1, env.ovalColor);
+                            node.scaledBitmap = Crisp.crispBitmapXY(canvas);
+                            divContainer.dispatchEvent(new CustomEvent('redraw', null));
+
+                            if (node.cachedCnv) {
+                                resolve ();
+                                
+                            } else
+                                reject ();
+                                
+                        } else {
+                            divContainer.dispatchEvent(new CustomEvent('redraw', null));
+                            reject ();
+                        }
+                    }
+                    
+                    node.img.onerror = function (e) {
+                        if (!error) {
+                            error = true
+                            console.debug (`Error loading oval`);
+                        }
+                        divContainer.dispatchEvent(new CustomEvent('redraw', null));
+                        reject ();
+                    }
+                    
+
+                    //node.scaleImg = window.devicePixelRatio;
+                    var cnv = document.createElement ("canvas")
+                    
+                    var ctx = cnv.getContext('2d');
+                    var lh = env.fsize;
+
+                    function drawtext (text, x, y) {
+                        ctx.font = lh + "px monospace";
+                        ctx.fillStyle = env.textColor;
+                        ctx.fillText(text, x, y + lh);
+                        var m = ctx.measureText(text);
+                        var w = m.width;
+                        
+                        return {width: w, height: lh};
+                    }
+                    
+                    function drawsexpr (sexpr, x, y, rec, parent) {
+                        var yy = y;
+                        var ww = 0;
+                        var xx = 0;
+                        var w, h, m;
+                        if (!rec) rec = 0;
+                        
+                        if (parent) {
+                            m = drawtext("...", 0, 0);
+                            xx = m.width;
+                        }
+                        
+                        for (var i = 0; i < sexpr.length; i++) {
+                            if (isString (sexpr[i])) {
+                                m = drawtext(sexpr[i], xx + x, yy);
+                                ww = Math.max (xx + x + m.width, ww);
+                                h = m.height;
+                            
+                            } else {
+                                if (rec < env.sdepth) {
+                                    h = drawtext("(", xx + x, yy).height;
+                                    m = drawsexpr (sexpr[i], xx + x + lh * 2, yy + h, rec + 1);
+                                    ww = Math.max (xx + m.width, ww);
+                                    h += m.height;
+                                    h += drawtext(")", xx + x, yy + h).height;
+                                } else {
+                                    m = drawtext("(...)", xx + x, yy);
+                                    ww = Math.max (xx + m.width, ww);
+                                    h = m.height;
+                                }
+                            }
+                            
+                            yy += h;
+                            if (yy > 16192) throw "too tall to fit";
+                        }
+                        
+                        return {width: ww, height: yy - y + lh / 4};
+                    }
+
+                    try {
+                        if (isString (node.sexpr)) {
+                            var x = 0, yy = 0, m, ww = 0;
+                            var txt = ""
+                            
+                            if (node.parent.sexpr)
+                                var txt = "..."
+                            
+                            txt += node.sexpr;
+                            m = drawtext (txt, x, yy, 0, node.parent);
+                            ww = Math.max (x + m.width, ww);
+                            cnv.width = ww + 1;
+                            cnv.height = yy + lh * 5 / 4;
+
+                            drawtext (txt, x, yy, 0, node.parent);;
+                            
+                        } else {
+                            m = drawsexpr (node.sexpr, 0, 0, 0, node.parent.sexpr);
+                            cnv.width = m.width;
+                            cnv.height = m.height;
+                            drawsexpr (node.sexpr, 0, 0, 0, node.parent.sexpr);
+                        }
+                        
+                    } catch (e) {
+                        cnv.width = 0;
+                        cnv.height = 0;
+
+                        txt = [
+                            "Huh...", 
+                            "",
+                            "Contents seems too big to",
+                            "fit in this oval. Please",
+                            "refer to orbiting ovals for",
+                            "the actual contents."
+                        ];
+                        m = drawsexpr (txt, 0, 0, 0, null);
+                        cnv.width = m.width;
+                        cnv.height = m.height;
+                        drawsexpr (txt, 0, 0, 0, null);
+                    }
+
+                    node.img.src = cnv.toDataURL('image/png');
+                });
+            }
+
+            function isString (str) {
+                return (typeof str === 'string' || str instanceof String);
+            }
+
+            function unfoldsexpr (sexpr) {
+                if (Array.isArray (sexpr)) {
+                    var arr = [];
+                    var idx = 0;
+                    while (Array.isArray (sexpr)) {
+                        if (sexpr[0] === "(") {
+                            arr[idx] = unfoldsexpr (sexpr[1][1]);
+                            if (idx === 0)
+                                return arr[0];
+                            
+                            else
+                                return arr;
+                            
+                        } else {
+                            arr[idx] = unfoldsexpr (sexpr[0]);
+                            sexpr = sexpr[2];
+                            idx++;
+                        }
+                    }
+                    
+                    arr[idx] = sexpr;
+                    
+                    return arr;
+
+                } else {
+                    return sexpr?sexpr:"";
+                }
+            }
+
+            function formArray (sexpr) {
+                var node = {sexpr: sexpr, children: []};
+                if (!isString (sexpr)) {
+                    for (var i = 0; i < sexpr.length; i++) {
+                        node.children.push (formArray (sexpr[i]));
+                    }
+                }
+
+                return node;
+            }
+            
+            var nodes = [];
+
+            var divContainer = document.getElementById ("divContainer")
+            var divStats = document.getElementById ("divStats")
+            
+            env = setupEnv (init);
+            document.body.style.backgroundColor = env.backColor;
+            window.addEventListener("load", wonload ());
+            
+            var pixelRatioBox = document.querySelector(".pixel-ratio");
+            var mqString = `(resolution: ${window.devicePixelRatio}dppx)`;
+            matchMedia(mqString).addListener(() => {
+                window.top.document.body.innerHTML = "Please refresh the web page.";
+                return;
+            });
+        </script>
+      </section>
+    </body>
+</html>

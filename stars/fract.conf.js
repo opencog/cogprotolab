@@ -7,8 +7,9 @@ var init = {
     "text-color": "black",
     "power-consumption-optimisation": "80%",
     "ui-scale": "100%",
-    "start-word": "start",
 };
+
+init["start-word"] = `start`,
 
 init["query-maker"] = `
 (use-modules (srfi srfi-1))
