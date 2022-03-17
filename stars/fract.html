@@ -39,7 +39,7 @@
                 viewport.setAttribute('content', "width=device-width, initial-scale=" + sc + ", maximum-scale=" + sc + ", minimum-scale=" + sc + ", user-scalable=no");
             }
             
-            setDesign(window.devicePixelRatio);
+            //setDesign(window.devicePixelRatio);
         </script>
         <script src="fract.conf.js"></script>
         <script src="src/fract-exp.js"></script>
@@ -157,7 +157,7 @@
                     var xhttp = new XMLHttpRequest ();
                     xhttp.onreadystatechange = function () {
                         if (this.readyState == 4 && this.status == 200) {
-                            resolve (this.responseText.replaceAll("\x16", "");
+                            resolve (this.responseText.replaceAll("\x16", ""));
                         }
                     };
 
