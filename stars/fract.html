@@ -132,7 +132,7 @@
                             alert (response);
 
                         } else {
-                            var arr = response.split("\n");
+                            var arr = response.replaceAll("\x16", "").split("\n");
                             if (arr.length === 0) {
                                 strPrompt = null;
                                 
@@ -157,7 +157,7 @@
                     var xhttp = new XMLHttpRequest ();
                     xhttp.onreadystatechange = function () {
                         if (this.readyState == 4 && this.status == 200) {
-                            resolve (this.responseText);
+                            resolve (this.responseText.replaceAll("\x16", "");
                         }
                     };
 

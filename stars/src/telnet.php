@@ -13,7 +13,7 @@
 
     } else {
         //stream_set_blocking($fp, false);
-        stream_set_timeout($fp, 0, 5000);
+        stream_set_timeout($fp, 0, 2500);
         
         send($fp, $delay, "scm\n", $prompt);
         echo send($fp, $delay, "$cmd", $prompt);
