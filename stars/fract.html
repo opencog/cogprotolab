@@ -248,6 +248,7 @@
                     100 / env.scale / window.devicePixelRatio,
                     env.ovalColor,
                     env.backColor,
+                    env.textColor,
                     env.shadowRadius? env.shadowRadius: 0,
                     env.shadowRadius? env.shadowColor: null,
                     env.uiscale / 100,
@@ -256,7 +257,7 @@
                 );
 
                 setPrompt (function () {
-                    sendcmd (env.queryMaker + env.querySelector + "\n").then (
+                    sendcmd (env.queryMaker + "\n" + env.querySelector + "\n").then (
                         (response) => {
                             var s = '{"head": "' + env.startWord + '", "rel": []}';
                             sendstr (s);
@@ -319,13 +320,14 @@
                 }, 50);
             }
 
+            var minrad = 0;
             async function refresh (ovals1) {
                 idleAgain = false;
                 onIdleRunning = true;
                 ovals = [...ovals1];
                 ovals.sort((a, b) => (a.radius > b.radius) ? -1 : 1)
                 for (i = 0; i < ovals.length && continueLoading === ovals1; i++) {
-                    if (!ovals[i].data.done && ovals[i].data.children.length === 0) {
+                    if (ovals[i].radius > minrad && !ovals[i].data.done && ovals[i].data.children.length === 0) {
                         try {
                             await loadOval (ovals[i], refr);
                             divContainer.dispatchEvent(new CustomEvent('redraw', null));
@@ -371,7 +373,7 @@
             
             async function getScore (X, Y) {
                 return new Promise(async function(resolve, reject) {
-                    sendcmd (env.queryScoreCall .replaceAll("$X", escape (X)).replaceAll("$Y", escape (Y)) + "\n").then (
+                    sendcmd (env.queryScoreCall.replaceAll("$X", escape (X)).replaceAll("$Y", escape (Y)) + "\n").then (
                         (response) => {
                             resolve (response);
                         }
@@ -381,8 +383,61 @@
 
             async function setScore (data) {
                 return new Promise(async function(resolve, reject) {
-                    if (data.parent.parent) data.score = await getScore (data.parent.head, data.head);
-                    resolve();
+                    /*
+                    if (data.parent.parent)
+                        data.score = await getScore (data.parent.head, data.head);
+                        
+                    resolve ();
+                    */
+                    
+                    if (data.head) {
+                        if (data.children[0] && data.children[0].head !== "###ERROR###") {
+                            //var parent = data.head;
+                            query = "(display (list ";
+                            for (var i = 0; i < data.children.length; i++) 
+                                query += env.queryScoreCall.replaceAll("$X", escape (data.head)).replaceAll("$Y", escape (data.children[i].head)) + " ";
+                                
+                            query += "))\n";
+                            
+                            sendcmd (query).then (
+                                (response) => {
+                                    try {
+                                        var nums = [];
+                                        var arr = parser.parse(rules, response).sexpr;
+                                        //var arr = parser.parse(rules, "(1)").sexpr;
+
+                                        arr = arr[1][1][1];
+                                        if (!isNaN (arr[2])) {
+                                            nums.push(arr[2]);
+                                        
+                                        } else {
+                                            do {
+                                                nums.push (arr[0]);
+                                                arr = arr[2];
+                                            } while (Array.isArray(arr));
+                                            
+                                            nums.push (arr);
+                                        }
+                                        
+                                        for (var j = 0; j < data.children.length; j++)
+                                            data.children[j].score = nums[j];
+
+                                    } catch (e) {
+                                        alert ("Error extracting rank below: \"" + data.head + "\"");
+                                        data.done = true;
+                                    }
+
+                                    resolve ();
+                                }
+                            );
+                            
+                        } else {
+                            resolve ();
+                        }
+                        
+                    } else {
+                        resolve ();
+                    }
                 });
             }
 
@@ -396,7 +451,6 @@
                             item.done = true;
                         
                         data.children.push (item);
-                        //data.children.push ({head: rel[i], score: undefined, done: rel[i] === "###ERROR###"? true: undefined, parent: data, index: i, children: []});
                     }
 
                     resolve ();
@@ -406,7 +460,7 @@
             function extractWords (data, arr) {
                 var ret = [];
 
-                try {                
+                try {
                     arr = arr[1][1][1];
                     while (Array.isArray(arr[2])) {
                         var txt = arr[0][1][1][2];
@@ -428,7 +482,6 @@
             async function loadOval(node, oldrefr) {
                 return new Promise(async function(resolve, reject) {
                     if (strPrompt && node.data.head) {
-console.log(node.data.head);
                         cmd = env.queryCall.replaceAll("$X", escape (node.data.head));
                         sendcmd (cmd + "\n").then (
                             (response) => {
@@ -452,16 +505,32 @@ console.log(node.data.head);
                                             if (s2[0] === "###LEFT-WALL###") s2 = ["###LEFT-WALL###"];
                                             if (s2[0] === "###RIGHT-WALL###") s2 = ["###RIGHT-WALL###"];
                                         }
+                                        
                                         expand (node.data, s2).then (
                                             (response) => {
+                                                divContainer.dispatchEvent(new CustomEvent('redraw', null));
                                                 setScore (node.data).then (
                                                     (response) => {
+                                                        divContainer.dispatchEvent(new CustomEvent('redraw', null));
                                                         resolve ();
                                                     }
-                                                )
+                                                );
                                             }
                                         );
                                         
+                                        /*
+                                        setScore (node.data).then (
+                                            (response) => {
+                                                divContainer.dispatchEvent(new CustomEvent('redraw', null));
+                                                expand (node.data, s2).then (
+                                                    (response) => {
+                                                        resolve ();
+                                                    }
+                                                );
+                                            }
+                                        );
+                                        */
+
                                     } else {
                                         node.data.done = true;
                                         resolve ();
@@ -480,7 +549,8 @@ console.log(node.data.head);
             }
             
             function escape (str) {
-                return str.replaceAll("\\", "\\\\").replaceAll("\"", "\\\"");
+                //return str.replaceAll("\\", "\\\\").replaceAll("\"", "\\\"");
+                return str;
             }
 
             /*

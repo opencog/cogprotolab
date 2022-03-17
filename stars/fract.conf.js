@@ -4,7 +4,7 @@ var init = {
     "font-size": "50",
     "background-color": "gray",
     "oval-color": "rgb(208,208,208)",
-    "text-color": "black",
+    "text-color": "rgb(48,48,48)",
     "power-consumption-optimisation": "80%",
     "ui-scale": "100%",
 };
@@ -81,9 +81,6 @@ init["query-maker"] = `
 `
 
 init["query-selector"] = `
-; Create a navigator for the given matrix and ranking objects
-; In this case, pair-stars and pair-freq ...
-; All of these arguments should be taken from a config file.
 (define curr-nav
 	(make-navigator
 		pair-stars 'right-duals 'left-duals

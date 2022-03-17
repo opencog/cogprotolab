@@ -21,15 +21,22 @@
     }
 
     function send ($fp, $delay, $command) {
+        //$delay = 1000000;
+        $delay = 1;
+        $timeout = 5;
+        $starttime = time();
+        
         //write to socket
         if (fwrite($fp, $command) == false) {
             return "telnet enter shell error";
         }
 
         //read socket
-        usleep(1000000);
+        //usleep($delay);
+        sleep($delay);
+
         $response = "";
-        while (($ret = fgets($fp)) != false) {
+        while (($ret = fgets($fp)) != false && (time() - $starttime) < $timeout) {
             $response .= $ret;
         }
         

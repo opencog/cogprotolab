@@ -13,7 +13,7 @@
 
     } else {
         //stream_set_blocking($fp, false);
-        stream_set_timeout($fp, 0, 0);
+        stream_set_timeout($fp, 0, 5000);
         
         send($fp, $delay, "scm\n", $prompt);
         echo send($fp, $delay, "$cmd", $prompt);
@@ -22,6 +22,9 @@
     }
 
     function send ($fp, $delay, $command, $prompt) {
+        $timeout = 5;
+        $starttime = time();
+
         //write to socket
         if (fwrite($fp, $command) == false) {
             return "telnet command send error";
@@ -29,8 +32,7 @@
 
         $response = "";
         //read socket
-        while (true) {
-            usleep(5000);
+        while ((time() - $starttime) < $timeout) {
             while (($ret = fgets($fp)) != false) {
                 if ($ret == $prompt) {
                     $response = substr($response, 0, -1);
@@ -40,5 +42,7 @@
                 $response .= $ret;
             }
         }
+        
+        return "timed out";
     }
 ?>
