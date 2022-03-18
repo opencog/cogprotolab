@@ -88,3 +88,25 @@
 ; From the backwards list
 (curr-nav 'edge-score (Word "rear") (Word "end"))
 (curr-nav 'edge-score (Word "far") (Word "end"))
+
+; =========================================================
+
+
+;; print documentation:
+(pair-stars 'describe)
+(pair-freq 'describe)
+
+;; Examples of vertex weights:
+(pair-freq 'left-wild-logli (Word "start"))
+(pair-freq 'right-wild-logli (Word "start"))
+(pair-freq 'right-wild-fentropy (Word "start"))
+(pair-freq 'left-wild-fentropy (Word "start"))
+(pair-freq 'left-wild-fmi (Word "start"))
+(pair-freq 'right-wild-fmi (Word "start"))
+
+; The above could be placed in a popup menu over a vertex
+; (for example) or elsewhere.
+
+;; Examples of edge weights:
+(pair-freq 'pair-logli (pair-stars 'get-pair (Word "start") (Word "playing")))
+(pair-freq 'pair-fmi (pair-stars 'get-pair (Word "start") (Word "playing")))
