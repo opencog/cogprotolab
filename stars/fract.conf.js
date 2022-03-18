@@ -1,15 +1,34 @@
 var init = {
     "host": "localhost",
     "port": "17014",
+
     "font-size": "50",
     "background-color": "gray",
     "oval-color": "rgb(208,208,208)",
     "text-color": "rgb(48,48,48)",
     "power-consumption-optimisation": "80%",
     "ui-scale": "100%",
-};
 
-init["start-word"] = `start`,
+    "start-word": "start",
+    "num-to-show": 10,
+    "queries": [
+        {
+            "query-name": "pair (duals)",
+            "query-type": "Word",
+            "query-navigator": "(make-navigator pair-stars 'right-duals 'left-duals pair-freq 'pair-fmi $num-to-show)",
+        },
+        {
+            "query-name": "pair (stars)",
+            "query-type": "Word",
+            "query-navigator": "(make-navigator pair-stars 'right-stars 'left-stars pair-freq 'pair-fmi $num-to-show)",
+        },
+        {
+            "query-name": "cset",
+            "query-type": "ConnectorSet",
+            "query-navigator": "(make-navigator cset-stars 'right-stars 'left-stars pair-freq 'pair-fmi $num-to-show)",
+        }
+    ]
+};
 
 init["query-maker"] = `
 (use-modules (srfi srfi-1))
@@ -79,13 +98,3 @@ init["query-maker"] = `
 		))
 )
 `
-
-init["query-selector"] = `
-(define curr-nav
-	(make-navigator
-		pair-stars 'right-duals 'left-duals
-		pair-freq 'pair-fmi 10))
-`;
-
-init["query-call"] = `(curr-nav 'forward (Word "$X"))`;
-init["query-score-call"] = `(curr-nav 'edge-score (Word "$X") (Word "$Y"))`;

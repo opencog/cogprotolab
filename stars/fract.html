@@ -49,7 +49,7 @@
       <section>
         <div id="divContainer" style="position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; visibility: hidden;">
         </div>
-        <div id="divStats" style="position: absolute; top: 5px; right: 5px; font-family: 'monospace'; font-size: 9px; color: white; text-shadow: 0px 0px 2px rgba(0,0,0,1); /*visibility: hidden;*/">(pair-stars 'left-stars (WordNode "$X"))</div>
+        <div id="divStats" style="position: absolute; top: 5px; left: 5px; font-family: 'monospace'; font-size: 9px; color: white; text-shadow: 0px 0px 2px rgba(0,0,0,1); /*visibility: hidden;*/"></div>
         
         <script>
             rules = [
@@ -125,25 +125,30 @@
             var strPrompt = null;
             var strHost = null;
             var strPort = null;
-            function setPrompt (fun) {
-                getprompt ().then (
-                    (response) => {
-                        if (response.substr(0, "telnet connection error".length) === "telnet connection error") {
-                            alert (response);
+            async function setPrompt (fun) {
+                return new Promise(function(resolve, reject) {
+                    getprompt ().then (
+                        (response) => {
+                            if (response.substr(0, "telnet connection error".length) === "telnet connection error") {
+                                alert (response);
+                                reject ();
 
-                        } else {
-                            var arr = response.replaceAll("\x16", "").split("\n");
-                            if (arr.length === 0) {
-                                strPrompt = null;
-                                
                             } else {
-                                strPrompt = arr[arr.length - 1];
-                                if (fun)
-                                    fun ();
+                                var arr = response.replaceAll("\x16", "").split("\n");
+                                if (arr.length === 0) {
+                                    strPrompt = null;
+                                    
+                                } else {
+                                    strPrompt = arr[arr.length - 1];
+                                    //if (fun)
+                                    //    fun ();
+                                }
+                                
+                                resolve ();
                             }
                         }
-                    }
-                );
+                    );
+                });
             }
 
             function sendcmd (cmd) {
@@ -256,16 +261,18 @@
                     onBusy
                 );
 
-                setPrompt (function () {
-                    sendcmd (env.queryMaker + "\n" + env.querySelector + "\n").then (
-                        (response) => {
-                            var s = '{"head": "' + env.startWord + '", "rel": []}';
-                            sendstr (s);
-                            divContainer.dispatchEvent(new CustomEvent('idle', null));
-                        }
-                    );            
-                });
-                
+                setPrompt ().then (
+                    (response) => {
+                        sendcmd (env.queryMaker + "\n").then (
+                            (response) => {
+                                var s = '{"head": "' + env.startWord + '", "rel": []}';
+                                sendstr (s);
+                                divContainer.dispatchEvent(new CustomEvent('idle', null));
+                            }
+                        );
+                    }
+                );
+
                 dispatchSize ();
                 divContainer.style.visibility = "visible";
 
@@ -370,36 +377,36 @@
                     return sexpr?sexpr:"";
                 }
             }
-            
-            async function getScore (X, Y) {
-                return new Promise(async function(resolve, reject) {
-                    sendcmd (env.queryScoreCall.replaceAll("$X", escape (X)).replaceAll("$Y", escape (Y)) + "\n").then (
-                        (response) => {
-                            resolve (response);
-                        }
-                    );
-                });
-            }
 
+            function constructQueryCall (qname, word, direction) {
+                for (var i = 0; i < env.queries.length; i++)
+                    if (env.queries[i]["query-name"] === qname)
+                        return "($query-navigator '$query-direction (Word \"$word\"))"
+                            .replaceAll("$query-navigator", env.queries[i]["query-navigator"].replaceAll("$num-to-show", env.numToShow))
+                            .replaceAll("$query-direction", direction)
+                            .replaceAll("$word", escape (word));
+            }
+            
+            function constructRankingCall (qname, word1, word2) {
+                for (var i = 0; i < env.queries.length; i++)
+                    if (env.queries[i]["query-name"] === qname)
+                        return "($query-navigator 'edge-score (Word \"$word1\") (Word \"$word2\"))"
+                            .replaceAll("$query-navigator", env.queries[i]["query-navigator"].replaceAll("$num-to-show", env.numToShow))
+                            .replaceAll("$word1", escape (word1))
+                            .replaceAll("$word2", escape (word2));
+            }
+            
             async function setScore (data) {
                 return new Promise(async function(resolve, reject) {
-                    /*
-                    if (data.parent.parent)
-                        data.score = await getScore (data.parent.head, data.head);
-                        
-                    resolve ();
-                    */
-                    
                     if (data.head) {
                         if (data.children[0] && data.children[0].head !== "###ERROR###") {
-                            //var parent = data.head;
                             query = "(display (list ";
-                            for (var i = 0; i < data.children.length; i++) 
-                                query += env.queryScoreCall.replaceAll("$X", escape (data.head)).replaceAll("$Y", escape (data.children[i].head)) + " ";
+                            for (var i = 0; i < data.children.length; i++)
+                                query += constructRankingCall ("pair (duals)", data.head, data.children[i].head) + " ";
                                 
-                            query += "))\n";
+                            query += "))";
                             
-                            sendcmd (query).then (
+                            sendcmd (query + "\n").then (
                                 (response) => {
                                     try {
                                         var nums = [];
@@ -423,7 +430,7 @@
                                             data.children[j].score = nums[j];
 
                                     } catch (e) {
-                                        alert ("Error extracting rank below: \"" + data.head + "\"");
+                                        //alert ("Error extracting rank below: \"" + data.head + "\"");
                                         data.done = true;
                                     }
 
@@ -443,7 +450,6 @@
 
             async function expand (data, rel) {
                 return new Promise(async function(resolve, reject) {
-                    //if (node.parent.parent) node.score = await getScore (node.parent.head, node.head);
                     data.children = [];
                     for (var i = 0; i < rel.length; i++) {
                         var item = {head: rel[i], score: undefined, parent: data, index: i, children: []};
@@ -472,7 +478,7 @@
                     ret.push (txt.substr (1, txt.length - 2));
                 
                 } catch (e) {
-                    alert ("Error expanding: \"" + data.head + "\"");
+                    //alert ("Error expanding: \"" + data.head + "\"");
                     data.done = true;
                 }
                 
@@ -482,13 +488,13 @@
             async function loadOval(node, oldrefr) {
                 return new Promise(async function(resolve, reject) {
                     if (strPrompt && node.data.head) {
-                        cmd = env.queryCall.replaceAll("$X", escape (node.data.head));
+                        cmd = constructQueryCall ("pair (duals)", escape (node.data.head), "forward");
                         sendcmd (cmd + "\n").then (
                             (response) => {
                                 //console.log (response);
                                 var s1 = parser.parse(rules, response).sexpr;
                                 if (!s1) {
-                                    alert ("Error expanding: \"" + node.data.head + "\"\nCommand: " + cmd + "");
+                                    //alert ("Error expanding: \"" + node.data.head + "\"\nCommand: " + cmd + "");
                                     expand (node.data, ["###ERROR###"]).then (
                                         (response) => {
                                             resolve ();
@@ -498,10 +504,11 @@
                                 } else {
                                     if (response !== "()") {
                                         if (s1[1][0] === "Backtrace:") {
-                                            alert ("Error expanding: \"" + node.data.head + "\"\nCommand: " + cmd + "");
+                                            //alert ("Error expanding: \"" + node.data.head + "\"\nCommand: " + cmd + "");
                                             s2 = ["###ERROR###"];
                                         } else {
                                             var s2 = extractWords(node.data, s1)
+                                            if (node.data.done) s2 = ["###ERROR###"];
                                             if (s2[0] === "###LEFT-WALL###") s2 = ["###LEFT-WALL###"];
                                             if (s2[0] === "###RIGHT-WALL###") s2 = ["###RIGHT-WALL###"];
                                         }
@@ -517,20 +524,6 @@
                                                 );
                                             }
                                         );
-                                        
-                                        /*
-                                        setScore (node.data).then (
-                                            (response) => {
-                                                divContainer.dispatchEvent(new CustomEvent('redraw', null));
-                                                expand (node.data, s2).then (
-                                                    (response) => {
-                                                        resolve ();
-                                                    }
-                                                );
-                                            }
-                                        );
-                                        */
-
                                     } else {
                                         node.data.done = true;
                                         resolve ();
@@ -647,9 +640,9 @@
                     scale: 100,
                     startWord: data["start-word"],
                     queryMaker: data["query-maker"],
-                    querySelector: data["query-selector"],
-                    queryCall: data["query-call"],
-                    queryScoreCall: data["query-score-call"]
+                    queries: data["queries"],
+                    rankings: data["rankings"],
+                    numToShow: data["num-to-show"],
                 }
             }
 
@@ -661,7 +654,10 @@
 
             var divContainer = document.getElementById ("divContainer");
             var divStats = document.getElementById ("divStats");
-            divStats.innerHTML ="<code><pre>" + "start-word: \n\"" + env.startWord + "\"\n\n" + "query-selector: " + env.querySelector + "\n" + "query-call: \n" + env.queryCall + "\n\n" + "query-score-call: \n" + env.queryScoreCall  + "</pre></code>";
+            divStats.innerHTML ="<code><pre>" +
+                "\"start-word\": \"" + env.startWord + "\",\n" +
+                "\"queries\": " + JSON.stringify (env.queries, null, 2) + "\n" +
+                "</pre></code>";
             
             document.body.style.backgroundColor = env.backColor;
             window.addEventListener("load", wonload ());

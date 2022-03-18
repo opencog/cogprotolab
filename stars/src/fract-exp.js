@@ -923,7 +923,7 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
 
     var minRadius;
     var shadowr = shadowRadius;
-    var recCount = 4;
+    var recCount = 3;
 
     var dragPrecision = Math.pow (2, 8);
 
@@ -1014,14 +1014,28 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                 */
             } else {
                 var magn = r / (rr * ratio);
-                
+                //parentR = r / ratio;
+
                 var ra = r * circleSize;
+                var xa = x + (r - ra) * Math.cos (angle - Math.PI / 2)
+                var ya = y + (r - ra) * Math.sin (angle - Math.PI / 2)
+
+                data.currXa = xa;
+                data.currYa = ya;
+                data.currRa = ra;
+                if (!data.parent.currXa) {
+                    data.parent.currXa = xx;
+                    data.parent.currYa = yy * ratio;
+                    data.parent.currRa = rr * ratio;
+                }
+
+                var anglea = Math.atan2(ya - data.parent.currYa, xa - data.parent.currXa);
                 
                 // whole oval
                 ctx.beginPath ();
                 ctx.ellipse (
-                    x * squashX,
-                    y * squashY,
+                    xa * squashX,
+                    ya * squashY,
                     ra * squashX - 1,
                     ra * squashY - 1,
                     0,
@@ -1034,6 +1048,7 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                 ctx.fillStyle = ovalColor;
                 ctx.fill ();
                 
+
                 if (data.head) {
                     /*
                     // top part
@@ -1054,50 +1069,78 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                     ctx.fill ();
                     */
 
-                    // bottom part
-                    try {
-                        // top line
-                        var x1 = x + circleSize * r * Math.cos (-Math.PI / 4);
-                        var y1 = y + circleSize * r * Math.sin (-Math.PI / 4);
-                        var x2 = x + circleSize * r * Math.cos (-3 * Math.PI / 4);
-                        var y2 = y + circleSize * r * Math.sin (-3 * Math.PI / 4);
-                        ctx.beginPath ();
-                        ctx.moveTo(x1 * squashX, y1 * squashY);
-                        ctx.lineTo(x2 * squashX, y2 * squashY);
-                        ctx.closePath ();
-                        ctx.lineWidth = 0.25 * magn;
-                        ctx.strokeStyle = backColor;
-                        ctx.stroke ();
-                        
-                        // bottom line
-                        var x1 = x + circleSize * r * Math.cos (Math.PI / 4);
-                        var y1 = y + circleSize * r * Math.sin (Math.PI / 4);
-                        var x2 = x + circleSize * r * Math.cos (3 * Math.PI / 4);
-                        var y2 = y + circleSize * r * Math.sin (3 * Math.PI / 4);
-                        ctx.beginPath ();
-                        ctx.moveTo(x1 * squashX, y1 * squashY);
-                        ctx.lineTo(x2 * squashX, y2 * squashY);
-                        ctx.closePath ();
-                        ctx.lineWidth = 0.25 * magn;
-                        ctx.strokeStyle = backColor;
-                        ctx.stroke ();
+                    if (data.head !== "###ERROR###") {
+                        try {
+                            ctx.globalCompositeOperation = "source-atop";
 
-                        var x0 = x;
-                        var y0 = y + circleSize * r * Math.sin (Math.PI / 4);;
+                            // top line
+                            var x1 = xa + ra * Math.cos (-Math.PI / 4);
+                            var y1 = ya + ra * Math.sin (-Math.PI / 4);
+                            var x2 = xa + ra * Math.cos (-3 * Math.PI / 4);
+                            var y2 = ya + ra * Math.sin (-3 * Math.PI / 4);
+                            ctx.beginPath ();
+                            ctx.moveTo(x1 * squashX, Math.round (y1 * squashY) + 0.5);
+                            ctx.lineTo(x2 * squashX, Math.round (y2 * squashY) + 0.5);
+                            ctx.closePath ();
+                            ctx.lineWidth = 1 * magn;
+                            ctx.strokeStyle = env.textColor;
+                            ctx.stroke ();
+                            
+                            // bottom line
+                            var x1 = xa + ra * Math.cos (Math.PI / 4);
+                            var y1 = ya + ra * Math.sin (Math.PI / 4);
+                            var x2 = xa + ra * Math.cos (3 * Math.PI / 4);
+                            var y2 = ya + ra * Math.sin (3 * Math.PI / 4);
+                            ctx.beginPath ();
+                            ctx.moveTo(x1 * squashX, Math.round (y1 * squashY) + 0.5);
+                            ctx.lineTo(x2 * squashX, Math.round (y2 * squashY) + 0.5);
+                            ctx.closePath ();
+                            ctx.lineWidth = 1 * magn;
+                            ctx.strokeStyle = env.textColor;
+                            ctx.stroke ();
+                            
+                            /*
+                            // top text
+                            
+                            var x0 = xa;
+                            var y0 = ya - ra * Math.sin (Math.PI / 4);
+                                       
+                            var text = "stat0: 0.0; stat1: 0.0;";
+                            var lh1 = env.fsize * 0.28 * r / 250;
+                            ctx.font = lh1 + "px monospace";
+                            ctx.fillStyle = env.textColor;
+                            ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY - lh1 * 2);
 
-                        var text = "branching forward by: duals";
-                        var lh1 = env.fsize * magn * 0.3;
-                        ctx.font = lh1 + "px monospace";
-                        ctx.fillStyle = env.textColor;
-                        ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY + lh1 * 1.5);
+                            var text = "stat2: 0.0; stat3: 0.0; stat4: 0.0";
+                            var lh1 = env.fsize * 0.3 * r / 250;
+                            ctx.font = lh1 + "px monospace";
+                            ctx.fillStyle = env.textColor;
+                            ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY - lh1 * 0.5);
+                            */
+                            
+                            // bottom text
+                            
+                            var x0 = xa;
+                            var y0 = ya + ra * Math.sin (Math.PI / 4);;
 
-                        var text = "ranking score: MI";
-                        var lh2 = env.fsize * magn * 0.28;
-                        ctx.font = lh2 + "px monospace";
-                        ctx.fillStyle = env.textColor;
-                        ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY + lh1 * 1.5 + lh2 * 1.5);
-                    } catch (e) {}
+                            var text = "query by pair (duals), ranking by MI";
+                            var lh1 = env.fsize * 0.3 * r / 250;
+                            ctx.font = lh1 + "px monospace";
+                            ctx.fillStyle = env.textColor;
+                            ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY + lh1 * 1.5);
 
+                            var text = "forward direction";
+                            var lh2 = env.fsize * 0.28 * r / 250;
+                            ctx.font = lh2 + "px monospace";
+                            ctx.fillStyle = env.textColor;
+                            ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY + lh1 * 1.5 + lh2 * 1.5);
+
+                            ctx.globalCompositeOperation = "source-over";
+                        } catch (e) {
+                        }
+                    }
+
+                    /*
                     // upper out of screen
                     if (level === 1 && data.parent.parent){
                         var x0 = xx;
@@ -1116,33 +1159,48 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                         ctx.stroke();
                         ctx.globalCompositeOperation = "source-over";
                     }
+                    */
+                    
+                    // head
+                    ctx.globalCompositeOperation = "source-atop";
 
+                    var text = data.head;
+                    if (text) {
+                        var lh = env.fsize * magn;
+                        ctx.font = "bold " + lh + "px monospace";
+                        ctx.fillStyle = env.textColor;
+                        ctx.fillText(text, xa * squashX - ctx.measureText(text).width / 2, ya * squashY + lh / 2 * 0.7);
+                    }
                     
-                    
-                    var x1 = x + circleSize * (r - lineWidth * magn) * Math.cos (angle - Math.PI / 2);
-                    var y1 = y + circleSize * (r - lineWidth * magn) * Math.sin (angle - Math.PI / 2);
-                    var x2 = x + (r + (1 - circleSize) * parentR * ratio + lineWidth * magn) * Math.cos (angle - Math.PI / 2);
-                    var y2 = y + (r + (1 - circleSize) * parentR * ratio + lineWidth * magn) * Math.sin (angle - Math.PI / 2);
-                    ctx.lineWidth = lineWidth * magn;
-                    ctx.beginPath ();
-                    ctx.moveTo(x1 * squashX, y1 * squashY);
-                    ctx.lineTo(x2 * squashX, y2 * squashY);
-                    ctx.closePath ();
-                    ctx.globalCompositeOperation = "destination-over";
-                    ctx.strokeStyle = ovalColor;
-                    ctx.stroke();
                     ctx.globalCompositeOperation = "source-over";
-                    
-                    if (data.parent.parent){
-                        var lr = env.fsize * 2 / 2 * magn;
+
+                    // score
+                    if (level !== 1 && data.parent.parent){
+                        ctx.globalCompositeOperation = "source-over";
+                        var x1 = xa + (ra - lineWidth * magn) * Math.cos (anglea - Math.PI);
+                        var y1 = ya + (ra - lineWidth * magn) * Math.sin (anglea - Math.PI);
+                        var x2 = data.parent.currXa + (data.parent.currRa - lineWidth * magn) * Math.cos (anglea);
+                        var y2 = data.parent.currYa + (data.parent.currRa - lineWidth * magn) * Math.sin (anglea);
+                        ctx.lineWidth = lineWidth * rr / 500 * magn;
+                        ctx.beginPath ();
+                        ctx.moveTo(x1 * squashX, y1 * squashY);
+                        ctx.lineTo(x2 * squashX, y2 * squashY);
+                        ctx.closePath ();
+                        ctx.globalCompositeOperation = "destination-over";
+                        ctx.strokeStyle = ovalColor;
+                        ctx.stroke();
+                        ctx.globalCompositeOperation = "source-over";
                         
-                        var x1 = x + r * 1.1 * Math.cos (angle - Math.PI / 2);
-                        var y1 = y + r * 1.1 * Math.sin (angle - Math.PI / 2);
+                        var fs = env.fsize * rr / 500 * magn;
+                        var lr = env.fsize * rr / 500 * magn;// env.fsize * 2 / 1.8 * magn / squashX;// * (squashX > squashY? squashX / squashY: squashY / squashX);
+                        
+                        var lx = (x1 + x2) / 2;
+                        var ly = (y1 + y2) / 2;
                         
                         ctx.beginPath ();
                         ctx.ellipse (
-                            x1 * squashX,
-                            y1 * squashY,
+                            lx * squashX,
+                            ly * squashY,
                             lr * squashX,
                             lr * squashY,
                             0,
@@ -1156,23 +1214,15 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                         ctx.fill ();
 
                         if (data.score !== undefined) {
-                            var text = Math.round (data.score * 100) / 100;
-                            var lh = env.fsize / 1.5 * magn;
+                            var text = Number(data.score).toFixed (2);
+                            var lh = fs / 1.4;
                             ctx.font = "bold " + lh + "px monospace";
                             ctx.fillStyle = textColor;
                             ctx.lineWidth = 0;
-                            ctx.fillText(text, x1 * squashX - ctx.measureText(text).width / 2, y1 * squashY + lh / 2);
+                            ctx.fillText(text, lx * squashX - ctx.measureText(text).width / 2, ly * squashY + lh / 2);
                         }
                     }
-
-                    var text = data.head;
-                    if (text) {
-                        var lh = env.fsize * magn;
-                        ctx.font = "bold " + lh + "px monospace";
-                        ctx.fillStyle = env.textColor;
-                        ctx.fillText(text, x * squashX - ctx.measureText(text).width / 2, y * squashY + lh / 2);
-                    }
-                    
+                                        
                     /*
                     if (animating === "level")
                         ctx.globalAlpha = r / (levelrr * ratio * Math.pow(1 - ratio, level - 1));
@@ -1501,17 +1551,17 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                     
                 isOnParent = isOnParent.parent
             }
-            
+
             var minR, maxR, mouseDistance;
             if (!isOnParent) {
                 if (select.parent) {
                     minR = select.parent.smallR;
-                    maxR = select.parent.smallR + 2 * select.parent.getCircle(ang1).r * ratio - (1 - circleSize) * select.parent.getCircle(ang1).r * ratio;//select.smallR;
+                    maxR = select.parent.smallR + 2 * select.parent.getCircle(ang1).r * ratio;//select.smallR;
                     mouseDistance = Math.sqrt (Math.pow (select.parent.smallX - mouse.x / squashX, 2) + Math.pow(select.parent.smallY - mouse.y / squashY, 2));
 
                 } else {
                     minR = 0;
-                    maxR = select.smallR * circleSize;
+                    maxR = select.smallR;
                     mouseDistance = Math.sqrt (Math.pow (select.smallX - mouse.x / squashX, 2) + Math.pow(select.smallY - mouse.y / squashY, 2))
                 }
             }
