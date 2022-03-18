@@ -12,15 +12,12 @@ experimental opencog/learn visualization project
 
 - Apache HTTP Server
 - PHP
-- opencog/learn database
 
-## Use Instructions
+## Instructions
 
 1. Copy this directory to a local web server directory, usually under `var/www/html/`
-2. `// under construction //` prepare opencog/learn database `// under construction //`
-3. Configure connection host and port parameters in `fract.conf.js`
-4. Load `index.html` in browser to browse the database
-5. refer to built-in instructions on navigating the contents (big questionmark in bottom-right corner)
+2. Then enter this to Linux shell: `ssh -f -N -p 224 atomspace@gnucash.org -L 17014:10.0.3.90:19014`
+3. Lastly, load `index.html` in browser to browse the online database
 
     // under construction //
 
