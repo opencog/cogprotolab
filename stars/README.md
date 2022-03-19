@@ -24,11 +24,11 @@ experimental opencog/learn visualization project
 
 ## Project Status
 
-- To do list:
-    - [ ] word-pairs
-    - [ ] configurable-parameters
-    - [ ] word-similarities
-    - [ ] disjuncts
+To do list:
+- [ ] word-pairs
+- [ ] configurable-parameters
+- [ ] word-similarities
+- [ ] disjuncts
+
 
     // under construction //
-
