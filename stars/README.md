@@ -24,7 +24,7 @@ experimental opencog/learn visualization project
 
 ## Project Status
 
-To do list:
+- To do list:
     - [ ] word-pairs
     - [ ] configurable-parameters
     - [ ] word-similarities
