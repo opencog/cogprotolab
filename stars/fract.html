@@ -453,7 +453,7 @@
                     data.children = [];
                     for (var i = 0; i < rel.length; i++) {
                         var item = {head: rel[i], score: undefined, parent: data, index: i, children: []};
-                        if (rel[i] === "###ERROR###" || rel[i] === "###LEFT-WALL###" || rel[i] === "###RIGHT-WALL###")
+                        if (rel[i] === "###ERROR###" || rel[i] === "###LEFT-WALL###")
                             item.done = true;
                         
                         data.children.push (item);
@@ -510,7 +510,6 @@
                                             var s2 = extractWords(node.data, s1)
                                             if (node.data.done) s2 = ["###ERROR###"];
                                             if (s2[0] === "###LEFT-WALL###") s2 = ["###LEFT-WALL###"];
-                                            if (s2[0] === "###RIGHT-WALL###") s2 = ["###RIGHT-WALL###"];
                                         }
                                         
                                         expand (node.data, s2).then (

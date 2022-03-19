@@ -610,7 +610,8 @@ function fractalOvals(ctx, ratio, xx, yy, ww, hh, rr, squashX, squashY, drawCirc
                     }
                 }
                 
-                var cond = selectedCursor? (cursor === selectedCursor) : (mouse && Math.sqrt(Math.pow(mouse.x / squashX - x0, 2) + Math.pow(mouse.y / squashY - y0, 2)) <= r0);
+                //var cond = selectedCursor? (cursor === selectedCursor) : (mouse && Math.sqrt(Math.pow(mouse.x / squashX - x0, 2) + Math.pow(mouse.y / squashY - y0, 2)) <= r0);
+                var cond = selectedCursor? (cursor === selectedCursor) : (mouse && Math.sqrt(Math.pow(mouse.x / squashX - data.currXA, 2) + Math.pow(mouse.y / squashY - data.currYA, 2)) <= data.currRA);
                 
                 if (cursor) {
                     cursor.data = data;
@@ -1020,16 +1021,23 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                 var xa = x + (r - ra) * Math.cos (angle - Math.PI / 2)
                 var ya = y + (r - ra) * Math.sin (angle - Math.PI / 2)
 
-                data.currXa = xa;
-                data.currYa = ya;
-                data.currRa = ra;
-                if (!data.parent.currXa) {
-                    data.parent.currXa = xx;
-                    data.parent.currYa = yy * ratio;
-                    data.parent.currRa = rr * ratio;
+                data.currXA = xa;
+                data.currYA = ya;
+                data.currRA = ra;
+                if (!data.parent.currXA) {
+                    data.parent.currXA = xx;
+                    data.parent.currYA = yy * ratio;
+                    data.parent.currRA = rr * ratio;
+                    data.parent.currAngleA = Math.PI / 2;
                 }
 
-                var anglea = Math.atan2(ya - data.parent.currYa, xa - data.parent.currXa);
+                var anglea = Math.atan2(ya - data.parent.currYA, xa - data.parent.currXA);
+                data.currAnglea = anglea;
+
+                data.currXA2 = (xa + x) / 2;
+                data.currYA2 = (ya + y) / 2;
+                data.currRA2 = (ra + r) / 2;
+                data.currAnglea2 = (anglea + angle / 2);
                 
                 // whole oval
                 ctx.beginPath ();
@@ -1179,8 +1187,8 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                         ctx.globalCompositeOperation = "source-over";
                         var x1 = xa + (ra - lineWidth * magn) * Math.cos (anglea - Math.PI);
                         var y1 = ya + (ra - lineWidth * magn) * Math.sin (anglea - Math.PI);
-                        var x2 = data.parent.currXa + (data.parent.currRa - lineWidth * magn) * Math.cos (anglea);
-                        var y2 = data.parent.currYa + (data.parent.currRa - lineWidth * magn) * Math.sin (anglea);
+                        var x2 = data.parent.currXA + (data.parent.currRA - lineWidth * magn) * Math.cos (anglea);
+                        var y2 = data.parent.currYA + (data.parent.currRA - lineWidth * magn) * Math.sin (anglea);
                         ctx.lineWidth = lineWidth * rr / 500 * magn;
                         ctx.beginPath ();
                         ctx.moveTo(x1 * squashX, y1 * squashY);
@@ -1546,7 +1554,8 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
 
             var isOnParent = select.parent;
             while (isOnParent) {
-                if (isOnParent.smallR - 1 > Math.sqrt (Math.pow (isOnParent.smallX - mouse.x / squashX, 2) + Math.pow (isOnParent.smallY - mouse.y / squashY, 2)))
+                //if (isOnParent.smallR - 1 > Math.sqrt (Math.pow (isOnParent.smallX - mouse.x / squashX, 2) + Math.pow (isOnParent.smallY - mouse.y / squashY, 2)))
+                if (isOnParent.data.currRA2 - 1 > Math.sqrt (Math.pow (isOnParent.data.currXA2 - mouse.x / squashX, 2) + Math.pow (isOnParent.data.currYA2 - mouse.y / squashY, 2)))
                     break;
                     
                 isOnParent = isOnParent.parent
@@ -1555,14 +1564,74 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
             var minR, maxR, mouseDistance;
             if (!isOnParent) {
                 if (select.parent) {
+                    
                     minR = select.parent.smallR;
-                    maxR = select.parent.smallR + 2 * select.parent.getCircle(ang1).r * ratio;//select.smallR;
+                    maxR = select.parent.smallR + 2 * select.data.currRA2;//2 * select.parent.getCircle(ang1).r * ratio;//select.smallR;
                     mouseDistance = Math.sqrt (Math.pow (select.parent.smallX - mouse.x / squashX, 2) + Math.pow(select.parent.smallY - mouse.y / squashY, 2));
+                    /*
+                    minR = select.parent.data.currRA2;
+                    maxR = select.parent.data.currRA2 + 2 * select.data.currRA2 ;//2 * select.parent.getCircle(ang1).r;//select.smallR;
+                    mouseDistance = Math.sqrt (Math.pow (select.parent.data.currXA2 - mouse.x / squashX, 2) + Math.pow(select.parent.data.currYA2 - mouse.y / squashY, 2));
+                    */
+/*
+ctx.beginPath ();
+ctx.ellipse (
+    select.data.currXA2 * squashX,
+    select.data.currYA2 * squashY,
+    select.data.currRA2 * squashX - 1,
+    select.data.currRA2 * squashY - 1,
+    0,
+    0,
+    2 * Math.PI,
+    false
+);
+ctx.closePath ();
+ctx.lineWidth = 0;
+ctx.fillStyle = "red";
+ctx.fill ();
 
+ctx.beginPath ();
+ctx.ellipse (
+    select.parent.smallX * squashX,
+    select.parent.smallY * squashY,
+    select.parent.smallR * squashX - 1,
+    select.parent.smallR * squashY - 1,
+    0,
+    0,
+    2 * Math.PI,
+    false
+);
+ctx.closePath ();
+ctx.lineWidth = 0;
+ctx.fillStyle = "blue";
+ctx.fill ();
+*/
                 } else {
+                    /*
                     minR = 0;
                     maxR = select.smallR;
                     mouseDistance = Math.sqrt (Math.pow (select.smallX - mouse.x / squashX, 2) + Math.pow(select.smallY - mouse.y / squashY, 2))
+                    */
+                    minR = 0;
+                    maxR = select.data.currRA2;
+                    mouseDistance = Math.sqrt (Math.pow (select.data.currXA2 - mouse.x / squashX, 2) + Math.pow(select.data.currYA2 - mouse.y / squashY, 2))
+/*
+ctx.beginPath ();
+ctx.ellipse (
+    select.data.currXA2 * squashX,
+    select.data.currYA2 * squashY,
+    select.data.currRA2 * squashX - 1,
+    select.data.currRA2 * squashY - 1,
+    0,
+    0,
+    2 * Math.PI,
+    false
+);
+ctx.closePath ();
+ctx.lineWidth = 0;
+ctx.fillStyle = "red";
+ctx.fill ();
+*/
                 }
             }
 

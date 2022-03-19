@@ -22,5 +22,13 @@ experimental opencog/learn visualization project
 4. Load `index.html` in browser to browse the database
 5. refer to built-in instructions on navigating the contents (big questionmark in bottom-right corner)
 
+## Project Status
+
+To do list:
+    - [ ] word-pairs
+    - [ ] configurable-parameters
+    - [ ] word-similarities
+    - [ ] disjuncts
+
     // under construction //
 
