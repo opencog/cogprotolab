@@ -139,6 +139,23 @@ Similarity examples
 (sim-obj 'pair-similarity (sim-stars 'get-pair (Word "end") (Word "well")))
 ```
 The above is nasty in it's native form, so ... use the wrapper in `navigate.scm`
+like so:
+
+```
+(define (sim-fmi EDGE) (cog-value-ref (sim-obj 'pair-similarity EDGE) 0))
+
+(define sim-fmi-nav (make-nav sim-stars 'right-duals 'left-duals sim-fmi 10))
+```
+and use it like so:
+```
+(sim-fmi-nav 'forward (Word "end"))
+(sim-fmi-nav 'edge-score (Word "end")  (WordNode "out"))
+```
+
+Also interesting is the variational MI:
+```
+(define (sim-vmi EDGE) (cog-value-ref (sim-obj 'pair-similarity EDGE) 1))
+```
 
 
 Documentation
