@@ -19,6 +19,15 @@ guile -l cogserver.scm
 (print-matrix-summary-report cset-stars)
 (define cset-freq (add-pair-freq-api cset-stars))
 
+
+(define (do-add-similarity-api LLOBJ)
+   (define SIM-ID "shape-mi")
+   (add-similarity-api LLOBJ #f SIM-ID))
+
+(define sim-obj (do-add-similarity-api cset-obj))
+(sim-obj 'fetch-pairs)
+(define sim-stars (add-pair-stars sim-obj))
+
 (cog-close storage-node)
 ;;; (cog-atomspace-ro!)
 ;;; (cog-push-atomspace)
@@ -31,14 +40,16 @@ guile -l cogserver.scm
    also disjuncts.  9 minutes to load everything.
    7 GB after computing (w,d) MI
 
+* r13-one-sim200.rdb -- 8.2GB to load word-pairs, word-disjunct
+   pairs and similarities.
+
 
 TODO:
 -----
 ```
 (batch-all-pair-mi cset-stars)
-(cog-atomspace-ro!)
+;;; (cog-atomspace-ro!)  ;; No this fails somehow.
 ```
-Needs to be scrubbed, because not all connectors connect
 
 Curr stats:
 -----------
@@ -118,6 +129,16 @@ A lot like the above, except:
 ```
 (cset-stars 'right-stars (WordNode "end"))
 ```
+
+Similarity examples
+-------------------
+```
+(sim-stars 'left-basis-size)
+(sim-stars 'right-duals (Word "end"))
+(sim-obj 'describe) ;; XXX
+(sim-obj 'pair-similarity (sim-stars 'get-pair (Word "end") (Word "well")))
+```
+The above is nasty in it's native form,
 
 
 Documentation

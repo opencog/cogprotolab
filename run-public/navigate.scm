@@ -67,46 +67,48 @@
 		))
 )
 
-
-; Create a navigator for the given matrix and ranking objects
-; In this case, pair-stars and pair-freq ...
-; All of these arguments should be taken from a config file.
-(define curr-nav
-	(make-navigator
-		pair-stars 'right-duals 'left-duals
-		pair-freq 'pair-fmi 10))
-
-; Examples
-(curr-nav 'forward (Word "end"))
-(curr-nav 'backward (Word "end"))
-
-; Scores, from the forwards-list
-(curr-nav 'edge-score (Word "end") (Word "chapter"))
-(curr-nav 'edge-score (Word "end") (Word "notes"))
-(curr-nav 'edge-score (Word "end") (Word "badly"))
-
-; From the backwards list
-(curr-nav 'edge-score (Word "rear") (Word "end"))
-(curr-nav 'edge-score (Word "far") (Word "end"))
-
 ; =========================================================
-
-
-;; print documentation:
-(pair-stars 'describe)
-(pair-freq 'describe)
-
-;; Examples of vertex weights:
-(pair-freq 'left-wild-logli (Word "start"))
-(pair-freq 'right-wild-logli (Word "start"))
-(pair-freq 'right-wild-fentropy (Word "start"))
-(pair-freq 'left-wild-fentropy (Word "start"))
-(pair-freq 'left-wild-fmi (Word "start"))
-(pair-freq 'right-wild-fmi (Word "start"))
-
-; The above could be placed in a popup menu over a vertex
-; (for example) or elsewhere.
-
-;; Examples of edge weights:
-(pair-freq 'pair-logli (pair-stars 'get-pair (Word "start") (Word "playing")))
-(pair-freq 'pair-fmi (pair-stars 'get-pair (Word "start") (Word "playing")))
+;; Examples
+;;
+;; Create a navigator for the given matrix and ranking objects
+;; In this case, pair-stars and pair-freq ...
+;; All of these arguments should be taken from a config file.
+;(define curr-nav
+;	(make-navigator
+;		pair-stars 'right-duals 'left-duals
+;		pair-freq 'pair-fmi 10))
+;
+;; Examples
+;   (curr-nav 'forward (Word "end"))
+;   (curr-nav 'backward (Word "end"))
+;
+;; Scores, from the forwards-list
+;   (curr-nav 'edge-score (Word "end") (Word "chapter"))
+;   (curr-nav 'edge-score (Word "end") (Word "notes"))
+;   (curr-nav 'edge-score (Word "end") (Word "badly"))
+;
+;; From the backwards list
+;   (curr-nav 'edge-score (Word "rear") (Word "end"))
+;   (curr-nav 'edge-score (Word "far") (Word "end"))
+;
+;; =========================================================
+;
+;
+;;; print documentation:
+;   (pair-stars 'describe)
+;   (pair-freq 'describe)
+;
+;;; Examples of vertex weights:
+;   (pair-freq 'left-wild-logli (Word "start"))
+;   (pair-freq 'right-wild-logli (Word "start"))
+;   (pair-freq 'right-wild-fentropy (Word "start"))
+;   (pair-freq 'left-wild-fentropy (Word "start"))
+;   (pair-freq 'left-wild-fmi (Word "start"))
+;   (pair-freq 'right-wild-fmi (Word "start"))
+;
+;; The above could be placed in a popup menu over a vertex
+;; (for example) or elsewhere.
+;
+;;; Examples of edge weights:
+;   (pair-freq 'pair-logli (pair-stars 'get-pair (Word "start") (Word "playing")))
+;   (pair-freq 'pair-fmi (pair-stars 'get-pair (Word "start") (Word "playing")))
