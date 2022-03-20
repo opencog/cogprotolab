@@ -1,6 +1,6 @@
 
-Experiment public
-=================
+Word-pairs Visualization Server
+===============================
 
 
 Loading and running the word-pairs and also disjuncts:
@@ -47,8 +47,7 @@ guile -l cogserver.scm
 TODO:
 -----
 ```
-(batch-all-pair-mi cset-stars)
-;;; (cog-atomspace-ro!)  ;; No this fails somehow.
+;;; (cog-atomspace-ro!)  ;; No ... this fails somehow.
 ```
 
 Curr stats:
