@@ -91,24 +91,46 @@
 ;; Create a navigator for the given matrix and ranking objects
 ;; In this case, pair-stars and pair-freq ...
 ;; All of these arguments should be taken from a config file.
-;(define curr-nav
-;	(make-navigator
-;		pair-stars 'right-duals 'left-duals
-;		pair-freq 'pair-fmi 10))
+;;
+;  (define (pair-score EDGE) (pair-freq 'pair-fmi EDGE))
+;  (define pair-nav
+;     (make-nav pair-stars 'right-duals 'left-duals pair-score 10))
 ;
 ;; Examples
-;   (curr-nav 'forward (Word "end"))
-;   (curr-nav 'backward (Word "end"))
+;   (pair-nav 'forward (Word "end"))
+;   (pair-nav 'backward (Word "end"))
 ;
 ;; Scores, from the forwards-list
-;   (curr-nav 'edge-score (Word "end") (Word "chapter"))
-;   (curr-nav 'edge-score (Word "end") (Word "notes"))
-;   (curr-nav 'edge-score (Word "end") (Word "badly"))
+;   (pair-nav 'edge-score (Word "end") (Word "chapter"))
+;   (pair-nav 'edge-score (Word "end") (Word "notes"))
+;   (pair-nav 'edge-score (Word "end") (Word "badly"))
 ;
 ;; From the backwards list
-;   (curr-nav 'edge-score (Word "rear") (Word "end"))
-;   (curr-nav 'edge-score (Word "far") (Word "end"))
+;   (pair-nav 'edge-score (Word "rear") (Word "end"))
+;   (pair-nav 'edge-score (Word "far") (Word "end"))
 ;
+;; =========================================================
+;; Like above, but for word similarity.
+;;
+;;  First, build the API:
+;;
+;   (define (sim-fmi EDGE)
+;       (cog-value-ref (sim-obj 'pair-similarity EDGE) 0))
+;   (define (sim-vmi EDGE)
+;       (cog-value-ref (sim-obj 'pair-similarity EDGE) 1))
+;
+;   (define sim-fmi-nav
+;      (make-nav sim-stars 'right-duals 'left-duals sim-fmi 10))
+;   (define sim-vmi-nav
+;      (make-nav sim-stars 'right-duals 'left-duals sim-vmi 10))
+;
+;; Now, actually use the API:
+;;
+;   (sim-fmi-nav 'forward (Word "end"))
+;   (sim-fmi-nav 'edge-score (Word "end") (Word "out"))
+;
+;
+;; =========================================================
 ;; =========================================================
 ;
 ;
