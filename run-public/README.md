@@ -135,10 +135,10 @@ Similarity examples
 ```
 (sim-stars 'left-basis-size)
 (sim-stars 'right-duals (Word "end"))
-(sim-obj 'describe) ;; XXX
+(sim-obj 'describe)
 (sim-obj 'pair-similarity (sim-stars 'get-pair (Word "end") (Word "well")))
 ```
-The above is nasty in it's native form,
+The above is nasty in it's native form, so ... use the wrapper in `navigate.scm`
 
 
 Documentation

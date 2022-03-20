@@ -1,3 +1,9 @@
+;
+; navigate.scm
+; Quick-n-dirty wrapper for getting word-pair similarity.
+; Assumes that there are matrix objets and loaded data
+; as descrbied in README.md
+;
 
 
 (use-modules (srfi srfi-1))
