@@ -1,5 +1,6 @@
 ;
 ; navigate.scm
+;
 ; Quick-n-dirty wrapper for getting word-pair similarity.
 ; Assumes that there are matrix objets and loaded data
 ; as descrbied in README.md
@@ -21,8 +22,8 @@
 ; -----------------------------------------
 
 ; Create a simple object with some methods on it ...
-(define (make-navigator STARS-OBJ FWD-METHOD BACK-METHOD
-                         RANK-OBJ RANK-METHOD NUM-TO-SHOW)
+(define (make-nav STARS-OBJ FWD-METHOD BACK-METHOD
+                  SCORE-EDGE NUM-TO-SHOW)
 "
   make-navigator -- Generic graph navigation object
   See examples for more info.
@@ -40,11 +41,9 @@
 		; Define a compare function that compares two
 		; vertexes... assuming both have the target-vertex
 		; in common.
-		(define (more-fun VTX-A VTX-B)
-			(define pair-a (get-edge VTX-A))
-			(define pair-b (get-edge VTX-B))
-   		(> (RANK-OBJ RANK-METHOD pair-a)
-	   		(RANK-OBJ RANK-METHOD pair-b)))
+		(define (compare-fun VTX-A VTX-B)
+			(> (SCORE-EDGE (get-edge VTX-A))
+			   (SCORE-EDGE (get-edge VTX-B))))
 
 		; Get the list of all vertexes that are joined
 		; by some edge to the target vertex.
@@ -55,13 +54,12 @@
 
 		; Sort the list above, and then return the
 		; first NUM-TO-SHOW of that list.
-		(take (sort tail-verts more-fun) NUM-TO-SHOW))
+		(take (sort tail-verts compare-fun) NUM-TO-SHOW))
 
 	; Return an edge-score for the given edge.
 	; This is a trivial wrapper.
 	(define (escore LEFT-VTX RIGHT-VTX)
-		(define edge (STARS-OBJ 'get-pair LEFT-VTX RIGHT-VTX))
-   	(RANK-OBJ RANK-METHOD edge))
+		(SCORE-EDGE (STARS-OBJ 'get-pair LEFT-VTX RIGHT-VTX)))
 
 	; Call the various methods on the object.
 	(lambda (message . args)
@@ -71,6 +69,20 @@
 			((edge-score)  (apply escore args))
 			(else "Ooops! unknown method!")
 		))
+)
+
+; -----------------------------------------
+
+; Create a simple object with some methods on it ...
+(define (make-navigator STARS-OBJ FWD-METHOD BACK-METHOD
+                        RANK-OBJ RANK-METHOD NUM-TO-SHOW)
+"
+  make-navigator -- Generic graph navigation object
+  See examples for more info.
+"
+	(define (score-edge EDGE) (RANK-OBJ RANK-METHOD EDGE))
+
+	(make-nav STARS-OBJ FWD-METHOD BACK-METHOD score-edge NUM-TO-SHOW)
 )
 
 ; =========================================================
