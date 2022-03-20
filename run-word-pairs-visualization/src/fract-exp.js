@@ -1132,7 +1132,7 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                             var y0 = ya + ra * Math.sin (Math.PI / 4);;
 
                             var text = "query by pair (duals), ranking by MI";
-                            var lh1 = env.fsize * 0.3 * r / 250;
+                            var lh1 = env.fsize * 0.28 * r / 250;
                             ctx.font = lh1 + "px monospace";
                             ctx.fillStyle = env.textColor;
                             ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY + lh1 * 1.5);
@@ -1200,7 +1200,7 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                         ctx.globalCompositeOperation = "source-over";
                         
                         var fs = env.fsize * rr / 500 * magn;
-                        var lr = env.fsize * rr / 500 * magn;// env.fsize * 2 / 1.8 * magn / squashX;// * (squashX > squashY? squashX / squashY: squashY / squashX);
+                        var lr = env.fsize * rr / 500 * magn;
                         
                         var lx = (x1 + x2) / 2;
                         var ly = (y1 + y2) / 2;

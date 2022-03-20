@@ -41,7 +41,7 @@
             
             //setDesign(window.devicePixelRatio);
         </script>
-        <script src="fract.conf.js"></script>
+        <script src="stars.conf.js"></script>
         <script src="src/fract-exp.js"></script>
         <script src="src/exp-log.js"></script>
     </head>
@@ -263,13 +263,13 @@
 
                 setPrompt ().then (
                     (response) => {
-                        sendcmd (env.queryMaker + "\n").then (
-                            (response) => {
-                                var s = '{"head": "' + env.startWord + '", "rel": []}';
+                        //sendcmd (env.queryMaker + "\n").then (
+                        //    (response) => {
+                                var s = '{"head": "' + env.topNode + '", "rel": []}';
                                 sendstr (s);
                                 divContainer.dispatchEvent(new CustomEvent('idle', null));
-                            }
-                        );
+                        //    }
+                        //);
                     }
                 );
 
@@ -637,10 +637,10 @@
                     uiscale: uiscale,
                     quant: quant,
                     scale: 100,
-                    startWord: data["start-word"],
-                    queryMaker: data["query-maker"],
+                    topNode: data["top-node"],
+                    //queryMaker: data["query-maker"],
                     queries: data["queries"],
-                    rankings: data["rankings"],
+                    //rankings: data["rankings"],
                     numToShow: data["num-to-show"],
                 }
             }
@@ -654,7 +654,7 @@
             var divContainer = document.getElementById ("divContainer");
             var divStats = document.getElementById ("divStats");
             divStats.innerHTML ="<code><pre>" +
-                "\"start-word\": \"" + env.startWord + "\",\n" +
+                "\"top-node\": \"" + env.topNode + "\",\n" +
                 "\"queries\": " + JSON.stringify (env.queries, null, 2) + "\n" +
                 "</pre></code>";
             

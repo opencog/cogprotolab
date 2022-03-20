@@ -9,7 +9,7 @@ var init = {
     "power-consumption-optimisation": "80%",
     "ui-scale": "100%",
 
-    "start-word": "start",
+    "top-node": "start",
     "num-to-show": 10,
     "queries": [
         {
@@ -29,7 +29,7 @@ var init = {
         }
     ]
 };
-
+/*
 init["query-maker"] = `
 (use-modules (srfi srfi-1))
 
@@ -98,3 +98,4 @@ init["query-maker"] = `
 		))
 )
 `
+*/
