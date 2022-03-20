@@ -1,37 +1,15 @@
 
 Word-pairs Visualization Server
 ===============================
+The code in this directory configures and runs an AtomSpace
+providing access to word-pair correlation data, word-disjunct
+data, and word similarity scores.
 
-
-Loading and running the word-pairs and also disjuncts:
-```
-guile -l cogserver.scm
-
-(define pair-obj (make-any-link-api))
-(pair-obj 'fetch-pairs)
-(define pair-stars (add-pair-stars pair-obj))
-(print-matrix-summary-report pair-stars)
-(define pair-freq (add-pair-freq-api pair-stars))
-
-(define cset-obj (make-pseudo-cset-api))
-(cset-obj 'fetch-pairs)
-(define cset-stars (add-pair-stars cset-obj))
-(print-matrix-summary-report cset-stars)
-(define cset-freq (add-pair-freq-api cset-stars))
-
-
-(define (do-add-similarity-api LLOBJ)
-   (define SIM-ID "shape-mi")
-   (add-similarity-api LLOBJ #f SIM-ID))
-
-(define sim-obj (do-add-similarity-api cset-obj))
-(sim-obj 'fetch-pairs)
-(define sim-stars (add-pair-stars sim-obj))
-
-(cog-close storage-node)
-;;; (cog-atomspace-ro!)
-;;; (cog-push-atomspace)
-```
+Instructions
+------------
+Get your hands on one of these datasets (or create your own; see
+the opencog/learn project for instructions how.) Contact Linas
+to get these datasets.
 
 * `run-1-marg-tranche-123.rdb` -- Requires 59GB to load word-pairs,
     60 GB to be usable, so not eligible.
@@ -43,6 +21,26 @@ guile -l cogserver.scm
 * r13-one-sim200.rdb -- 8.2GB to load word-pairs, word-disjunct
    pairs and similarities.
 
+* r13-all-in-one.rdb --
+
+Then the usual: git clone and compile and install cogutils, the
+atomspace, the cogserver, atomspace-rocks and the learn project.
+
+Next, configure the config files to suit your tastes: edit the
+files `0-pipeline.sh`  and `pairs-en-conf.sh` in this directory.
+Source them, they set environment variables. To source, say this:
+```
+. 0-pipeline.sh
+. pairs-en-conf.sh
+```
+
+Next, start the cogserver. Doing this will automatically load
+the datasets:
+```
+guile -l scm/cogserver-nav.scm
+```
+When the above gets to the guile prompt, it will be ready to serve
+data to the visualizer.
 
 TODO:
 -----
