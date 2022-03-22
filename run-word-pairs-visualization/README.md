@@ -1,6 +1,6 @@
     // under construction //
 
-# Stars
+# Word Pairs Visualization
 
 experimental word pairs visualization project
 
@@ -28,6 +28,3 @@ experimental word pairs visualization project
     - [ ] configurable-parameters
     - [ ] word-similarities
     - [ ] disjuncts
-
-
-    // under construction //
