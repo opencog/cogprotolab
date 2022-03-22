@@ -28,6 +28,3 @@ experimental word pairs visualization project
     - [ ] configurable-parameters
     - [ ] word-similarities
     - [ ] disjuncts
-
-
-    // under construction //
