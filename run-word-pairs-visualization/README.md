@@ -1,6 +1,6 @@
     // under construction //
 
-# Stars
+# Word Pairs Visualization
 
 experimental word pairs visualization project
 
