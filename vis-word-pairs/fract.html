@@ -286,8 +286,8 @@
                 function elimCursor (cursor, data) {
                     if (cursor.data === data) {
                         cursor.children = [];
-                        //cursor.index = 0;
-                        //cursor.angle = 0;
+                        cursor.index = 0;
+                        cursor.angle = 0;
                         return true;
                     }
                     
@@ -339,7 +339,7 @@
                 var dropDown = document.getElementById ("myDropdown");
                 var txta = ""
                 for (var i = 0; i < env.database["queries"].length; i++) {
-                    txta += '<a href="javascript:setBranching(' + i + ');">' + env.database["queries"][i]["description1"] + '</a>'
+                    txta += '<a href="javascript:setBranching(' + i + ');">' + env.database["queries"][i]["description1"] + '<br>' + env.database["queries"][i]["description2"] + '</a>'
                 }
                 dropDown.innerHTML = txta;
                 
