@@ -1131,17 +1131,21 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                             var x0 = xa;
                             var y0 = ya + ra * Math.sin (Math.PI / 4);;
 
-                            var text = "query by pair (duals), ranking by MI";
-                            var lh1 = env.fsize * 0.28 * r / 250;
-                            ctx.font = lh1 + "px monospace";
-                            ctx.fillStyle = env.textColor;
-                            ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY + lh1 * 1.5);
+                            if (data.description1) {
+                                var text = data.description1;
+                                var lh1 = env.fsize * 0.28 * r / 250;
+                                ctx.font = lh1 + "px monospace";
+                                ctx.fillStyle = env.textColor;
+                                ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY + lh1 * 1.5);
+                            }
 
-                            var text = "forward direction";
-                            var lh2 = env.fsize * 0.28 * r / 250;
-                            ctx.font = lh2 + "px monospace";
-                            ctx.fillStyle = env.textColor;
-                            ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY + lh1 * 1.5 + lh2 * 1.5);
+                            if (data.description2) {
+                                var text = data.description2;
+                                var lh2 = env.fsize * 0.28 * r / 250;
+                                ctx.font = lh2 + "px monospace";
+                                ctx.fillStyle = env.textColor;
+                                ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY + lh1 * 1.5 + lh2 * 1.5);
+                            }
 
                             ctx.globalCompositeOperation = "source-over";
                         } catch (e) {

@@ -396,7 +396,7 @@
                             query = "(display (list ";
                             for (var i = 0; i < data.children.length; i++)
                                 query += constructRankingCall (env.database["queries"][env.showQuery]["ranking"], data.head, data.children[i].head) + " ";
-                                
+
                             query += "))";
                             
                             sendcmd (query + "\n").then (
@@ -481,6 +481,8 @@
             async function loadOval(node, oldrefr) {
                 return new Promise(async function(resolve, reject) {
                     if (strPrompt && node.data.head) {
+                        node.data.description1 = env.database["queries"][env.showQuery]["description1"];
+                        node.data.description2 = env.database["queries"][env.showQuery]["description2"];
                         cmd = constructQueryCall (env.database["queries"][env.showQuery]["query"], escape (node.data.head));
                         sendcmd (cmd + "\n").then (
                             (response) => {

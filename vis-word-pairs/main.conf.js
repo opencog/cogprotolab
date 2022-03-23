@@ -18,13 +18,13 @@ var init = {
                 "ranking": "(pair-nav 'edge-score (Word \"$word1\") (Word \"$word2\"))",
             },
             {
-                "description": "query sim-stars 0, ranking by sim-fmi",
+                "description1": "query sim-stars 0, ranking by sim-fmi",
                 "description2": "forward direction",
                 "query": "(sim-fmi-nav 'forward (Word \"$word\"))",
                 "ranking": "(sim-fmi-nav 'edge-score (Word \"$word1\") (Word \"$word2\"))"
             },
             {
-                "description": "query sim-stars 1, ranking by sim-vmi",
+                "description1": "query sim-stars 1, ranking by sim-vmi",
                 "description2": "forward direction",
                 "query": "(sim-vmi-nav 'forward (Word \"$word\"))",
                 "ranking": "(sim-vmi-nav 'edge-score (Word \"$word1\") (Word \"$word2\"))"
