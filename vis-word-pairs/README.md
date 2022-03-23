@@ -27,7 +27,7 @@ experimental word pairs visualization project
     - [x] word-pairs
     - [x] word-similarities
     - [x] right click context menu
-    - [x] statistics click context menu
+    - [x] statistics
     - [ ] configurable-parameters
     - [ ] disjuncts
 
