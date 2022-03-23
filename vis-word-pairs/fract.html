@@ -25,6 +25,39 @@
             a, a.exHover:visited, a.exHover:link {cursor: pointer; color: lightgray; text-decoration:none; border:0px solid #4466DD;}
             a.exHover:hover {cursor: pointer; color:white; text-decoration:none; border:0px solid #6699FF;}
             a.exHover:active {cursor: pointer; color:white; text-decoration:none; border:0px solid #DDDDFF;}
+
+            .dropdown-content {
+              font: 14px monospace;
+              border-radius: 7px;
+              display: none;
+              position: absolute;
+              background-color: #333333;
+              min-width: 300px;
+              overflow: auto;
+              box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+              z-index: 65525;
+            }
+
+            .dropdown-content a {
+              text-align: left;
+              color: #EEEEEE;
+              padding: 12px 12px;
+              text-decoration: none;
+              display: block;
+            }
+
+            .dropdown-content div {
+              text-align: left;
+              color: #AAAAAA;
+              padding: 12px 12px;
+              text-decoration: none;
+              display: block;
+            }
+
+            .dropdown-content a:hover {background-color: #999999;}
+            .dropdown-content a:active {cursor: pointer; background-color: #DDDDDD; color:#FFFFFF; text-decoration:none;}
+
+            .show {display: block;}
         </style>
         
         <script>
@@ -46,6 +79,12 @@
         <script src="src/exp-log.js"></script>
     </head>
     <body>
+    <div id="myDropdown" class="dropdown-content">
+        <!--a href="javascript:populate('math-exp');">&nbsp;&nbsp;&nbsp; math expression</a>
+        <a href="javascript:populate('NLP');">&nbsp;&nbsp;&nbsp; natural language</a>
+        <a href="javascript:populate('s-expr');">&nbsp;&nbsp;&nbsp; s-expression</a>
+        <a href="javascript:populate('ambig');">&nbsp;&nbsp;&nbsp; ambiguity test</a-->
+    </div>
       <section>
         <div id="divContainer" style="position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; visibility: hidden;">
         </div>
@@ -240,8 +279,81 @@
             
             window.addEventListener("message", msg, false);
 
+            var curSel, curCur;
+            function setBranching (i) {
+                curSel.data.children = [];
+                
+                function elimCursor (cursor, data) {
+                    if (cursor.data === data) {
+                        cursor.children = [];
+                        //cursor.index = 0;
+                        //cursor.angle = 0;
+                        return true;
+                    }
+                    
+                    for (var i = 0; i < cursor.children.length; i++)
+                        if (cursor.children[i])
+                            if (elimCursor (cursor.children[i], data))
+                                return true
+                    
+                    return false;
+                }
+                
+                elimCursor (curCur, curSel.data);
+
+                curSel.data.description1 = env.database["queries"][i]["description1"];
+                curSel.data.description2 = env.database["queries"][i]["description2"];
+                curSel.data.query = env.database["queries"][i]["query"];
+                curSel.data.ranking = env.database["queries"][i]["ranking"];
+                divContainer.dispatchEvent(new CustomEvent('redraw', null));
+                divContainer.dispatchEvent(new CustomEvent('idle', null));
+            }
+            
             function wonload () {
                 setSize ();
+                
+                function showDropDown(evt) {
+                  document.getElementById("myDropdown").draggable = false;
+                  document.getElementById("myDropdown").ondragstart = function () {return false};
+                        
+                  document.getElementById("myDropdown").style.left = evt.clientX + "px";
+                  document.getElementById("myDropdown").style.top = evt.clientY + "px";
+                  
+                  document.getElementById("myDropdown").classList.toggle("show");
+                }
+                
+                // Close the dropdown if the user clicks outside of it
+                window.onclick = function(event) {
+                  if (!event.target.matches('.dropbtn') && !event.target.matches('.droplbl')) {
+                    var dropdowns = document.getElementsByClassName("dropdown-content");
+                    var i;
+                    for (i = 0; i < dropdowns.length; i++) {
+                      var openDropdown = dropdowns[i];
+                      if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                      }
+                    }
+                  }
+                }
+                
+                var dropDown = document.getElementById ("myDropdown");
+                var txta = ""
+                for (var i = 0; i < env.database["queries"].length; i++) {
+                    txta += '<a href="javascript:setBranching(' + i + ');">' + env.database["queries"][i]["description1"] + '</a>'
+                }
+                dropDown.innerHTML = txta;
+                
+
+                function callMouseUp (evt, sel, cur) {
+                    var tmpsel = sel;
+                    while (tmpsel.child)
+                        tmpsel = tmpsel.child;
+                        
+                    curSel = tmpsel;
+                    curCur = cur;
+                    if (curSel.data.head !== "###ERROR###")
+                        showDropDown(evt, cur);
+                }
 
                 nodeTree = formArray (unfoldsexpr (""));
 
@@ -258,7 +370,9 @@
                     env.shadowRadius? env.shadowColor: null,
                     env.uiscale / 100,
                     onIdle,
-                    onBusy
+                    onBusy,
+                    null,
+                    callMouseUp
                 );
 
                 setPrompt ().then (
@@ -336,6 +450,19 @@
                 for (i = 0; i < ovals.length && continueLoading === ovals1; i++) {
                     if (ovals[i].radius > minrad && !ovals[i].data.done && ovals[i].data.children.length === 0) {
                         try {
+                            if (!ovals[i].data.query) {
+                                if (!ovals[i].data.parent.parent) {
+                                    ovals[i].data.description1 = env.database["queries"][0]["description1"];
+                                    ovals[i].data.description2 = env.database["queries"][0]["description2"];
+                                    ovals[i].data.query = env.database["queries"][0]["query"];
+                                    ovals[i].data.ranking = env.database["queries"][0]["ranking"];
+                                } else {
+                                    ovals[i].data.description1 = ovals[i].data.parent.description1;
+                                    ovals[i].data.description2 = ovals[i].data.parent.description2;
+                                    ovals[i].data.query = ovals[i].data.parent.query;
+                                    ovals[i].data.ranking = ovals[i].data.parent.ranking;
+                                }
+                            }
                             await loadOval (ovals[i], refr);
                             divContainer.dispatchEvent(new CustomEvent('redraw', null));
                             divContainer.dispatchEvent(new CustomEvent('idle', null));
@@ -395,7 +522,8 @@
                         if (data.children[0] && data.children[0].head !== "###ERROR###") {
                             query = "(display (list ";
                             for (var i = 0; i < data.children.length; i++)
-                                query += constructRankingCall (env.database["queries"][env.showQuery]["ranking"], data.head, data.children[i].head) + " ";
+                                //query += constructRankingCall (env.database["queries"][env.showQuery]["ranking"], data.head, data.children[i].head) + " ";
+                                query += constructRankingCall (data.ranking, data.head, data.children[i].head) + " ";
 
                             query += "))";
                             
@@ -481,9 +609,8 @@
             async function loadOval(node, oldrefr) {
                 return new Promise(async function(resolve, reject) {
                     if (strPrompt && node.data.head) {
-                        node.data.description1 = env.database["queries"][env.showQuery]["description1"];
-                        node.data.description2 = env.database["queries"][env.showQuery]["description2"];
-                        cmd = constructQueryCall (env.database["queries"][env.showQuery]["query"], escape (node.data.head));
+                        //cmd = constructQueryCall (env.database["queries"][env.showQuery]["query"], escape (node.data.head));
+                        cmd = constructQueryCall (node.data.query, escape (node.data.head));
                         sendcmd (cmd + "\n").then (
                             (response) => {
                                 //console.log (response);
@@ -642,7 +769,7 @@
             strPort = env.port;
 
             var nodes = [];
-
+            
             var divContainer = document.getElementById ("divContainer");
             var divStats = document.getElementById ("divStats");
             divStats.innerHTML ="<code><pre>" +
