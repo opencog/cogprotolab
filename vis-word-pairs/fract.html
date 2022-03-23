@@ -516,6 +516,35 @@
                         .replaceAll("$word2", escape (word2));
             }
             
+            function constructStats (stats, word) {
+                return stats.replaceAll("$word", escape (word));
+            }
+            
+            async function setStats (data) {
+                return new Promise(async function(resolve, reject) {
+                    query = "(display (list ";
+                    var entries = Object.entries (env.database["stats"]);
+                    for (var i = 0; i < entries.length; i++)
+                        query += constructStats (entries[i][1], data.head) + " ";
+
+                    query += "))";
+                    
+                    sendcmd (query + "\n").then (
+                        (response) => {
+                            var arr = response.substring (1, response.length - 2).split (" ");
+                            var j = 0;
+                            data.stats = [];
+                            for (i in env.database["stats"]) {
+                                data.stats[i] = arr[j];
+                                j++
+                            }
+
+                            resolve ();
+                        }
+                    );
+                });
+            }
+
             async function setScore (data) {
                 return new Promise(async function(resolve, reject) {
                     if (data.head) {
@@ -634,13 +663,18 @@
                                             if (s2[0] === "###LEFT-WALL###") s2 = ["###LEFT-WALL###"];
                                         }
                                         
-                                        expand (node.data, s2).then (
+                                        setStats (node.data).then (
                                             (response) => {
                                                 divContainer.dispatchEvent(new CustomEvent('redraw', null));
-                                                setScore (node.data).then (
-                                                    (response) => {
+                                                expand (node.data, s2).then (
+                                                    (response) => {                                                        
                                                         divContainer.dispatchEvent(new CustomEvent('redraw', null));
-                                                        resolve ();
+                                                        setScore (node.data).then (
+                                                            (response) => {
+                                                                divContainer.dispatchEvent(new CustomEvent('redraw', null));
+                                                                resolve ();
+                                                            }
+                                                        );
                                                     }
                                                 );
                                             }
@@ -651,7 +685,7 @@
                                     }
                                 }
                             }
-                        )
+                        );
                     } else {
                         reject ();
                     }

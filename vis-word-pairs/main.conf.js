@@ -28,6 +28,14 @@ var init = {
                 "query": "(sim-vmi-nav 'forward (Word \"$word\"))",
                 "ranking": "(sim-vmi-nav 'edge-score (Word \"$word1\") (Word \"$word2\"))"
             }
-        ]
+        ],
+        "stats": {
+            "left-wild-logli": "(pair-freq 'left-wild-logli (Word \"$word\"))",
+            "right-wild-logli": "(pair-freq 'right-wild-logli (Word \"$word\"))",
+            "right-wild-fentropy": "(pair-freq 'right-wild-fentropy (Word \"$word\"))",
+            "left-wild-fentropy": "(pair-freq 'left-wild-fentropy (Word \"$word\"))",
+            "left-wild-fmi": "(pair-freq 'left-wild-fmi (Word \"$word\"))",
+            "right-wild-fmi": "(pair-freq 'right-wild-fmi (Word \"$word\"))"
+        }
     }
 };

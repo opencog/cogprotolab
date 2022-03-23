@@ -693,11 +693,13 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                         try {
                             ctx.globalCompositeOperation = "source-atop";
 
+                            var delta = Math.PI / 3.2
+
                             // top line
-                            var x1 = xa + ra * Math.cos (-Math.PI / 4);
-                            var y1 = ya + ra * Math.sin (-Math.PI / 4);
-                            var x2 = xa + ra * Math.cos (-3 * Math.PI / 4);
-                            var y2 = ya + ra * Math.sin (-3 * Math.PI / 4);
+                            var x1 = xa + ra * Math.cos (-Math.PI / 2 - delta);
+                            var y1 = ya + ra * Math.sin (-Math.PI / 2 - delta);
+                            var x2 = xa + ra * Math.cos (-Math.PI / 2 + delta);
+                            var y2 = ya + ra * Math.sin (-Math.PI / 2 + delta);
                             ctx.beginPath ();
                             ctx.moveTo(x1 * squashX, Math.round (y1 * squashY) + 0.5);
                             ctx.lineTo(x2 * squashX, Math.round (y2 * squashY) + 0.5);
@@ -707,10 +709,10 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                             ctx.stroke ();
                             
                             // bottom line
-                            var x1 = xa + ra * Math.cos (Math.PI / 4);
-                            var y1 = ya + ra * Math.sin (Math.PI / 4);
-                            var x2 = xa + ra * Math.cos (3 * Math.PI / 4);
-                            var y2 = ya + ra * Math.sin (3 * Math.PI / 4);
+                            var x1 = xa + ra * Math.cos (Math.PI / 2 - delta);
+                            var y1 = ya + ra * Math.sin (Math.PI / 2 - delta);
+                            var x2 = xa + ra * Math.cos (Math.PI / 2 + delta);
+                            var y2 = ya + ra * Math.sin (Math.PI / 2 + delta);
                             ctx.beginPath ();
                             ctx.moveTo(x1 * squashX, Math.round (y1 * squashY) + 0.5);
                             ctx.lineTo(x2 * squashX, Math.round (y2 * squashY) + 0.5);
@@ -719,71 +721,60 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                             ctx.strokeStyle = env.textColor;
                             ctx.stroke ();
                             
-                            /*
+                            
                             // top text
                             
                             var x0 = xa;
-                            var y0 = ya - ra * Math.sin (Math.PI / 4);
-                                       
-                            var text = "stat0: 0.0; stat1: 0.0;";
-                            var lh1 = env.fsize * 0.28 * r / 250;
-                            ctx.font = lh1 + "px monospace";
-                            ctx.fillStyle = env.textColor;
-                            ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY - lh1 * 2);
+                            var y0 = ya - ra * Math.sin (Math.PI / 2 - delta);
+                            
+                            var cnt = 0;
+                            var text1 = "";
+                            var text2 = "";
+                            var text3 = "";
+                            for (var st in data.stats) {
+                                if (cnt === 0) {
+                                    text1 += st + ": " + Number(data.stats[st]).toFixed (2) + "; ";
+        
+                                } else if (cnt > 0 && cnt < 3) {
+                                    text2 += st + ": " + Number(data.stats[st]).toFixed (2) + "; ";
 
-                            var text = "stat2: 0.0; stat3: 0.0; stat4: 0.0";
-                            var lh1 = env.fsize * 0.3 * r / 250;
-                            ctx.font = lh1 + "px monospace";
+                                } else {
+                                    text3 += st + ": " + Number(data.stats[st]).toFixed (2) + "; ";
+                                }
+                                cnt++;
+                            }
+                            var lh = env.fsize * 0.22 * r / 250;
+                            var lhy = lh * 1.8;
+                            ctx.font = lh + "px monospace";
                             ctx.fillStyle = env.textColor;
-                            ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY - lh1 * 0.5);
-                            */
+                            ctx.fillText(text1, x0 * squashX - ctx.measureText(text1).width / 2, y0 * squashY - lh * 4.5);
+                            ctx.fillText(text2, x0 * squashX - ctx.measureText(text2).width / 2, y0 * squashY - lh * 4.5 + lhy);
+                            ctx.fillText(text3, x0 * squashX - ctx.measureText(text3).width / 2, y0 * squashY - lh * 4.5 + lhy * 2);
                             
                             // bottom text
                             
                             var x0 = xa;
-                            var y0 = ya + ra * Math.sin (Math.PI / 4);;
+                            var y0 = ya + ra * Math.sin (Math.PI / 2 + delta);;
 
+                            var lh = env.fsize * 0.28 * r / 250;
                             if (data.description1) {
                                 var text = data.description1;
-                                var lh1 = env.fsize * 0.28 * r / 250;
-                                ctx.font = lh1 + "px monospace";
+                                ctx.font = lh + "px monospace";
                                 ctx.fillStyle = env.textColor;
-                                ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY + lh1 * 1.5);
+                                ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY + lh * 1.5);
                             }
 
                             if (data.description2) {
                                 var text = data.description2;
-                                var lh2 = env.fsize * 0.28 * r / 250;
-                                ctx.font = lh2 + "px monospace";
+                                ctx.font = lh + "px monospace";
                                 ctx.fillStyle = env.textColor;
-                                ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY + lh1 * 1.5 + lh2 * 1.5);
+                                ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY + lh * 1.5 + lhy * 1.5);
                             }
 
                             ctx.globalCompositeOperation = "source-over";
                         } catch (e) {
                         }
                     }
-
-                    /*
-                    // upper out of screen
-                    if (level === 1 && data.parent.parent){
-                        var x0 = xx;
-                        var y0 = y;
-                        var x1 = x0 + circleSize * (rr * ratio * circleSize - lineWidth * magn) * Math.cos (-Math.PI / 2);
-                        var y1 = y0 + circleSize * (rr * ratio - lineWidth * magn) * Math.sin (-Math.PI / 2);
-                        var x2 = xx;
-                        var y2 = 0;
-                        ctx.lineWidth = lineWidth * magn;
-                        ctx.beginPath ();
-                        ctx.moveTo(x1 * squashX, y1 * squashY);
-                        ctx.lineTo(x2 * squashX, y2 * squashY);
-                        ctx.closePath ();
-                        ctx.globalCompositeOperation = "destination-over";
-                        ctx.strokeStyle = ovalColor;
-                        ctx.stroke();
-                        ctx.globalCompositeOperation = "source-over";
-                    }
-                    */
                     
                     // head
                     ctx.globalCompositeOperation = "source-atop";
