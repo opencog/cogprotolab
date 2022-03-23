@@ -380,13 +380,11 @@
 
             function constructQueryCall (query, word) {
                 return query
-                    .replaceAll("$num-to-show", env.database["num-to-show"])
                     .replaceAll("$word", escape (word));
             }
             
             function constructRankingCall (ranking, word1, word2) {
                     return ranking
-                        .replaceAll("$num-to-show", env.database["num-to-show"])
                         .replaceAll("$word1", escape (word1))
                         .replaceAll("$word2", escape (word2));
             }
@@ -633,7 +631,7 @@
                     quant: quant,
                     scale: 100,
                     database: data["database"],
-                    showQuery: data["database"]["show-query"]
+                    showQuery: data["database"]["query-to-show"]
                 }
             }
 
