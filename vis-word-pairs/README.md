@@ -15,9 +15,9 @@ experimental word pairs visualization project
 
 ## Use Instructions
 
-1. Copy this directory to a local web server directory, usually under `var/www/html/`
+1. Copy this directory to a local web server directory, usually under `/var/www/html/`
 2. prepare the database following instructions from directory `../run-word-pairs/`
-3. Configure connection host and port parameters in `fract.conf.js`
+3. Configure connection host and port parameters in `main.conf.js`
 4. Load `index.html` in browser to browse the database `// under construction //`
 5. refer to built-in instructions on navigating the contents (big questionmark in bottom-right corner) `// under construction //`
 
@@ -28,3 +28,6 @@ experimental word pairs visualization project
     - [ ] configurable-parameters
     - [ ] word-similarities
     - [ ] disjuncts
+
+
+    // under construction //

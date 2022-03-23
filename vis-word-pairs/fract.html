@@ -41,7 +41,7 @@
             
             //setDesign(window.devicePixelRatio);
         </script>
-        <script src="stars.conf.js"></script>
+        <script src="main.conf.js"></script>
         <script src="src/fract-exp.js"></script>
         <script src="src/exp-log.js"></script>
     </head>
@@ -265,7 +265,7 @@
                     (response) => {
                         //sendcmd (env.queryMaker + "\n").then (
                         //    (response) => {
-                                var s = '{"head": "' + env.topNode + '", "rel": []}';
+                                var s = '{"head": "' + env.database["top-node"] + '", "rel": []}';
                                 sendstr (s);
                                 divContainer.dispatchEvent(new CustomEvent('idle', null));
                         //    }
@@ -378,22 +378,17 @@
                 }
             }
 
-            function constructQueryCall (qname, word, direction) {
-                for (var i = 0; i < env.queries.length; i++)
-                    if (env.queries[i]["query-name"] === qname)
-                        return "($query-navigator '$query-direction (Word \"$word\"))"
-                            .replaceAll("$query-navigator", env.queries[i]["query-navigator"].replaceAll("$num-to-show", env.numToShow))
-                            .replaceAll("$query-direction", direction)
-                            .replaceAll("$word", escape (word));
+            function constructQueryCall (query, word) {
+                return query
+                    .replaceAll("$num-to-show", env.database["num-to-show"])
+                    .replaceAll("$word", escape (word));
             }
             
-            function constructRankingCall (qname, word1, word2) {
-                for (var i = 0; i < env.queries.length; i++)
-                    if (env.queries[i]["query-name"] === qname)
-                        return "($query-navigator 'edge-score (Word \"$word1\") (Word \"$word2\"))"
-                            .replaceAll("$query-navigator", env.queries[i]["query-navigator"].replaceAll("$num-to-show", env.numToShow))
-                            .replaceAll("$word1", escape (word1))
-                            .replaceAll("$word2", escape (word2));
+            function constructRankingCall (ranking, word1, word2) {
+                    return ranking
+                        .replaceAll("$num-to-show", env.database["num-to-show"])
+                        .replaceAll("$word1", escape (word1))
+                        .replaceAll("$word2", escape (word2));
             }
             
             async function setScore (data) {
@@ -402,7 +397,7 @@
                         if (data.children[0] && data.children[0].head !== "###ERROR###") {
                             query = "(display (list ";
                             for (var i = 0; i < data.children.length; i++)
-                                query += constructRankingCall ("pair (duals)", data.head, data.children[i].head) + " ";
+                                query += constructRankingCall (env.database["queries"][env.showQuery]["ranking"], data.head, data.children[i].head) + " ";
                                 
                             query += "))";
                             
@@ -488,7 +483,7 @@
             async function loadOval(node, oldrefr) {
                 return new Promise(async function(resolve, reject) {
                     if (strPrompt && node.data.head) {
-                        cmd = constructQueryCall ("pair (duals)", escape (node.data.head), "forward");
+                        cmd = constructQueryCall (env.database["queries"][env.showQuery]["query"], escape (node.data.head));
                         sendcmd (cmd + "\n").then (
                             (response) => {
                                 //console.log (response);
@@ -637,11 +632,8 @@
                     uiscale: uiscale,
                     quant: quant,
                     scale: 100,
-                    topNode: data["top-node"],
-                    //queryMaker: data["query-maker"],
-                    queries: data["queries"],
-                    //rankings: data["rankings"],
-                    numToShow: data["num-to-show"],
+                    database: data["database"],
+                    showQuery: data["database"]["show-query"]
                 }
             }
 
@@ -654,8 +646,7 @@
             var divContainer = document.getElementById ("divContainer");
             var divStats = document.getElementById ("divStats");
             divStats.innerHTML ="<code><pre>" +
-                "\"top-node\": \"" + env.topNode + "\",\n" +
-                "\"queries\": " + JSON.stringify (env.queries, null, 2) + "\n" +
+                 JSON.stringify (env.database, null, 2) +
                 "</pre></code>";
             
             document.body.style.backgroundColor = env.backColor;
