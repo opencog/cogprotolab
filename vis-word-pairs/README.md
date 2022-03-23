@@ -26,6 +26,7 @@ experimental word pairs visualization project
 - To do list:
     - [x] word-pairs
     - [x] word-similarities
+    - [x] right click context menu
     - [ ] configurable-parameters
     - [ ] disjuncts
 
