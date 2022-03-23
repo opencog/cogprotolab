@@ -9,7 +9,7 @@ var init = {
     "ui-scale": "100%",
     "database": {
         "top-node": "end",
-        "query-to-show": 1,
+        "query-to-show": 0,
         "queries": [
             {
                 "description1": "query pair-stars, ranking by pair-fmi",
