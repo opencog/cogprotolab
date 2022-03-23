@@ -10,7 +10,7 @@ var init = {
     "database": {
         "top-node": "end",
         "num-to-show": 10,
-        "show-query": 0,
+        "query-to-show": 0,
         "queries": [
             {
                 "description1": "query pair-stars, ranking by pair-fmi",
