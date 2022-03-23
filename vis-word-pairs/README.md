@@ -24,10 +24,8 @@ experimental word pairs visualization project
 ## Project Status
 
 - To do list:
-    - [ ] word-pairs
+    - [x] word-pairs
+    - [x] word-similarities
     - [ ] configurable-parameters
-    - [ ] word-similarities
     - [ ] disjuncts
 
-
-    // under construction //
