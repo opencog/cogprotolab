@@ -727,7 +727,7 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                                 }
                                 cnt++;
                             }
-                            var lh = env.fsize * 0.22 * r / 250;
+                            var lh = env.fsize * 0.25 * r / 250;
                             var lhy = lh * 1.8;
                             ctx.font = lh + "px monospace";
                             ctx.fillStyle = env.textColor;
