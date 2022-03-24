@@ -174,8 +174,6 @@
                                     
                                 } else {
                                     strPrompt = arr[arr.length - 1];
-                                    //if (fun)
-                                    //    fun ();
                                 }
                                 
                                 resolve ();
@@ -534,187 +532,91 @@
                         .replaceAll("$word2", escape (word2));
             }
             
-            function constructStats (stats, word) {
+            function constructStatsCall (stats, word) {
                 return stats.replaceAll("$word", escape (word));
             }
 
             async function setOval (data) {
                 return new Promise(async function(resolve, reject) {
-                    // stats
-                    query = "(display (list ";
-
-                    for (var i = 0; i < env.database["stats"].length; i++)
-                        query += constructStats (Object.values(env.database["stats"])[i][Object.keys(env.database["stats"][i])[0]], data.head) + " ";
-
-                    query += "))" + "\n";
-                        
-                    // children
-                    query += constructQueryCall (data.query, escape (data.head));
+                    query = "(display "
                     
-                    multisendcmd (query).then (
+                        query += "(list ";
+                            query += "(list ";
+
+                                // stats
+                                for (var i = 0; i < env.database["stats"].length; i++)
+                                    query += constructStatsCall (Object.values(env.database["stats"])[i][Object.keys(env.database["stats"][i])[0]], '(Word "' + data.head + '")') + " ";
+
+                            query += ")" + " ";
+                                
+                            // children and scores
+                            //query += `((lambda ($w2) (list $w2 (map (lambda ($w3) (pair-nav 'edge-score (Word "top") $w3)) $w2))) (pair-nav 'forward (Word "top")))`
+                            query += `((lambda ($w2) (list $w2 (map (lambda ($w3) ` + constructRankingCall (data.ranking, '(Word "' + data.head + '")', "$w3") + `) $w2))) ` + constructQueryCall (data.query, '(Word "' + data.head + '")') + `)`
+
+                        query += ")";
+                    query += ")";
+                    
+                    sendcmd (query + "\n").then (
                         (response) => {
                             // stats
-                            var resp = JSON.parse (response)
-                            var arr = resp[0].substring (1, resp[0].length - 2).split (" ");
-                            var j = 0;
-                            data.stats = [];
-                            for (i in env.database["stats"]) {
-                                data.stats[Object.keys(env.database["stats"][i])[0]] = arr[j];
-                                j++
-                            }
+                            var resp = parser.parse(rules, response).sexpr;
                             
-                            // children
-                            var s1 = parser.parse(rules, resp[1]).sexpr;
-                            if (!s1) {
-                                //alert ("Error setOval: \"" + data.head + "\"\nCommand: " + response + "");
-                                setChildren (data, ["###ERROR###"]);
+                            if (resp[1][0] === "Backtrace:") {
+                                console.log (response);
+                                data.children.push ({head: "###ERROR###", done: true, score: undefined, parent: data, index: i, children: []});
+                                resolve ()
 
                             } else {
-                                if (resp[1] !== "()") {
-                                    if (s1[1][0] === "Backtrace:") {
-                                        //alert ("Error setOval: \"" + data.head + "\"\nCommand: " + response + "");
-                                        s2 = ["###ERROR###"];
-                                    } else {
-                                        var s2 = extractChildren(data, s1)
-                                        if (data.done) s2 = ["###ERROR###"];
-                                        if (s2[0] === "###LEFT-WALL###") s2 = ["###LEFT-WALL###"];
-                                    }
-                                    
-                                    setChildren (data, s2)
-                                    resolve ();
-                                } else {
-                                    data.done = true;
-                                    resolve ();
-                                }
+                                setStats (data, resp[1][1][1][0][1][1]);
+                                setChildren (data, resp[1][1][1][2][1][1][0][1][1])
+                                setScores (data, resp[1][1][1][2][1][1][2][1][1]);
+                                resolve ();
                             }
                         }
                     )
                 });
-                    //alert(query);
             }
             
-            async function setStats (data) {
-                return new Promise(async function(resolve, reject) {
-                    query = "(display (list ";
-
-                    for (var i = 0; i < env.database["stats"].length; i++)
-                        query += constructStats (Object.values(env.database["stats"])[i][Object.keys(env.database["stats"][i])[0]], data.head) + " ";
-
-                    query += "))";
-
-                    sendcmd (query + "\n").then (
-                        (response) => {
-                            var arr = response.substring (1, response.length - 2).split (" ");
-                            var j = 0;
-                            data.stats = [];
-                            for (i in env.database["stats"]) {
-                                data.stats[Object.keys(env.database["stats"][i])[0]] = arr[j];
-                                j++
-                            }
-
-                            resolve ();
-                        }
-                    );
-                });
+            function setStats (data, arr) {
+                data.stats = [];
+                for (var i in env.database["stats"]) {
+                    data.stats[Object.keys(env.database["stats"][i])[0]] = (Array.isArray(arr)? arr[0]: arr);
+                    arr = arr[2];
+                }
             }
-
-            async function setScore (data) {
-                return new Promise(async function(resolve, reject) {
-                    if (data.head) {
-                        if (data.children[0] && data.children[0].head !== "###ERROR###") {
-                            query = "(display (list ";
-                            for (var i = 0; i < data.children.length; i++)
-                                //query += constructRankingCall (env.database["queries"][env.showQuery]["ranking"], data.head, data.children[i].head) + " ";
-                                query += constructRankingCall (data.ranking, data.head, data.children[i].head) + " ";
-
-                            query += "))";
-                            
-                            sendcmd (query + "\n").then (
-                                (response) => {
-                                    try {
-                                        var nums = [];
-                                        var arr = parser.parse(rules, response).sexpr;
-                                        //var arr = parser.parse(rules, "(1)").sexpr;
-
-                                        arr = arr[1][1][1];
-                                        if (!isNaN (arr[2])) {
-                                            nums.push(arr[2]);
-                                        
-                                        } else {
-                                            do {
-                                                nums.push (arr[0]);
-                                                arr = arr[2];
-                                            } while (Array.isArray(arr));
-                                            
-                                            nums.push (arr);
-                                        }
-                                        
-                                        for (var j = 0; j < data.children.length; j++)
-                                            data.children[j].score = nums[j];
-
-                                    } catch (e) {
-                                        //alert ("Error extracting rank below: \"" + data.head + "\"");
-                                        data.done = true;
-                                    }
-
-                                    resolve ();
-                                }
-                            );
-                            
-                        } else {
-                            resolve ();
-                        }
-                        
-                    } else {
-                        resolve ();
-                    }
-                });
-            }
-
+            
             function setChildren (data, rel) {
+                var ret = [];
+                while (Array.isArray(rel[2])) {
+                    var txt = rel[0][1][1][2];
+                    ret.push (txt.substr (1, txt.length - 2));
+                    rel = rel[2];
+                }
+                
+                var txt = rel[1][1][2];
+                ret.push (txt.substr (1, txt.length - 2));
+
                 data.children = [];
-                for (var i = 0; i < rel.length; i++) {
-                    var item = {head: rel[i], score: undefined, parent: data, index: i, children: []};
-                    if (rel[i] === "###ERROR###" || rel[i] === "###LEFT-WALL###")
-                        item.done = true;
+                for (var i = 0; i < ret.length; i++) {
+                    var item = {head: ret[i], score: undefined, parent: data, index: i, children: []};
                     
                     data.children.push (item);
                 }
             }
 
-            function extractChildren (data, arr) {
-                var ret = [];
-
-                try {
-                    arr = arr[1][1][1];
-                    while (Array.isArray(arr[2])) {
-                        var txt = arr[0][1][1][2];
-                        ret.push (txt.substr (1, txt.length - 2));
-                        arr = arr[2];
-                    }
-                    
-                    var txt = arr[1][1][2];
-                    ret.push (txt.substr (1, txt.length - 2));
-                
-                } catch (e) {
-                    //alert ("Error extractChildren: \"" + data.head + "\"");
-                    data.done = true;
+            function setScores (data, arr) {
+                for (i = 0; i < data.children.length; i++) {
+                    data.children[i].score = (Array.isArray(arr)? arr[0]: arr);
+                    arr = arr[2];
                 }
-                
-                return ret;
             }
-            
+
             async function loadOval(node, oldrefr) {
                 return new Promise(async function(resolve, reject) {
                     if (strPrompt && node.data.head) {
                         setOval (node.data).then (
                             (response) => {
-                                divContainer.dispatchEvent(new CustomEvent('redraw', null));
-                                setScore (node.data).then (
-                                    (response) => {
-                                        resolve ();
-                                    }
-                                );
+                                resolve ();
                             }
                         );
                     } else {
