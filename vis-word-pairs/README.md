@@ -6,7 +6,7 @@ experimental word pairs visualization project
 
 ## Info
 
-![](media/ssh-640.png)
+![](media/ssh-960.png)
 
 ## Requirements
 
