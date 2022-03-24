@@ -9,7 +9,7 @@ var init = {
     "power-consumption-optimisation": "80%",
     "ui-scale": "100%",
     "database": {
-        "top-node": "playing",
+        "top-node": "top",
         "queries": [
             {
                 "description1": "query pair-nav, ranking by pair-fmi",
