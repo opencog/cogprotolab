@@ -502,15 +502,26 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
     tooltip.innerText = "";
     document.body.appendChild(tooltip);
     
-    
-    //ctx.mozImageSmoothingEnabled    = true
+    /*
+    ctx.mozImageSmoothingEnabled    = true
     ctx.webkitImageSmoothingEnabled = true
     ctx.msImageSmoothingEnabled     = true
     ctx.imageSmoothingEnabled       = true
     ctx.imageSmoothingQuality       = "high"
-    
-    
+    */
+    ctx.mozImageSmoothingEnabled    = false
+    ctx.webkitImageSmoothingEnabled = false
+    ctx.msImageSmoothingEnabled     = false
+    ctx.imageSmoothingEnabled       = false
+    ctx.imageSmoothingQuality       = "low"
+    //cnv.style.imageRendering = "pixelated";
+    //cnv.style.fontSmooth = "never";
+    //cnv.style.webkitFontSmoothing = "none";
+    //cnv.setAttribute("font-smooth", "never");
+    //cnv.setAttribute("image-rendering", "pixelated");
+    //cnv.setAttribute("-webkit-font-smoothing", "none");
     var superSampling = 1;
+    var globalScale = 1;
 
 
     var ratio = 1 / 1.61803398875; //0.7;//575;
@@ -577,38 +588,12 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
     if (renderHint === "1") diff = 2; else diff = 1;
     if (r * squashX - diff <= 0 || r * squashY - diff <= 0) return;
     //////////////////////
-        if (r * squashX > 0.5 && r * squashY > 0.5) {
+        if (/*Math.sqrt((x - xx) * (x - xx) + (y - yy) * (y - yy)) < rr + r &&*/ r * squashX > 0.5 && r * squashY > 0.5) {
 
             ctx.globalAlpha = 1;
             
 
             if (shadow) {
-                /*
-                if (shadowColor) {
-
-                    ctx.beginPath ();
-                    ctx.moveTo (x * squashX, y * squashY);
-                    ctx.ellipse (
-                        x * squashX,
-                        y * squashY,
-                        r * squashX - 1,
-                        r * squashY - 1,
-                        0,
-                        0,
-                        2 * Math.PI,
-                        false
-                    );
-                    ctx.closePath ();
-
-                    ctx.shadowBlur = shadowr;
-                    ctx.shadowColor = shadowColor;
-                    ctx.lineWidth = 0;
-                    ctx.fillStyle = fill;
-                    ctx.fill ();
-
-                    ctx.shadowBlur = 0;
-                }
-                */
             } else {
                 var magn = r / (rr * ratio);
                 //parentR = r / ratio;
@@ -672,9 +657,15 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                     ctx.fillStyle = textColor;
                     ctx.fill ();
                     */
+                    
+                    function fillText (text, xb, yb) {
+                        if (Math.sqrt((xa - xx) * (xa - xx) + (ya - yy) * (ya - yy)) < rr) {
+                            ctx.fillText(text, xb - ctx.measureText(text).width / 2, yb);
+                        }
+                    }
 
                     if (data.head !== "###ERROR###") {
-                        try {
+                        //try {
                             ctx.globalCompositeOperation = "source-atop";
 
                             var delta = Math.PI / 3.2
@@ -731,10 +722,15 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                             var lhy = lh * 1.8;
                             ctx.font = lh + "px monospace";
                             ctx.fillStyle = env.textColor;
+                            /*
                             ctx.fillText(text1, x0 * squashX - ctx.measureText(text1).width / 2, y0 * squashY - lh * 4.3);
                             ctx.fillText(text2, x0 * squashX - ctx.measureText(text2).width / 2, y0 * squashY - lh * 4.3 + lhy);
                             ctx.fillText(text3, x0 * squashX - ctx.measureText(text3).width / 2, y0 * squashY - lh * 4.3 + lhy * 2);
-                            
+                            */
+                            fillText(text1, x0 * squashX, y0 * squashY - lh * 4.3);
+                            fillText(text2, x0 * squashX, y0 * squashY - lh * 4.3 + lhy);
+                            fillText(text3, x0 * squashX, y0 * squashY - lh * 4.3 + lhy * 2);
+
                             // bottom text
                             
                             var x0 = xa;
@@ -746,19 +742,21 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                                 var text = data.description1;
                                 ctx.font = lh + "px monospace";
                                 ctx.fillStyle = env.textColor;
-                                ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY + lh * 2);
+                                //ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY + lh * 2);
+                                fillText(text, x0 * squashX, y0 * squashY + lh * 2);
                             }
 
                             if (data.description2) {
                                 var text = data.description2;
                                 ctx.font = lh + "px monospace";
                                 ctx.fillStyle = env.textColor;
-                                ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY + lh * 4);
+                                //ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY + lh * 4);
+                                fillText(text, x0 * squashX, y0 * squashY + lh * 4);
                             }
 
                             ctx.globalCompositeOperation = "source-over";
-                        } catch (e) {
-                        }
+                        //} catch (e) {
+                        //}
                     }
                     
                     // head
@@ -769,7 +767,10 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                         var lh = env.fsize * magn;
                         ctx.font = "bold " + lh + "px monospace";
                         ctx.fillStyle = env.textColor;
+                        /*
                         ctx.fillText(text, xa * squashX - ctx.measureText(text).width / 2, ya * squashY + lh / 2 * 0.7);
+                        */
+                        fillText (text, xa * squashX, ya * squashY + lh / 2 * 0.7);
                     }
                     
                     ctx.globalCompositeOperation = "source-over";
@@ -819,7 +820,8 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                             ctx.font = "bold " + lh + "px monospace";
                             ctx.fillStyle = textColor;
                             ctx.lineWidth = 0;
-                            ctx.fillText(text, lx * squashX - ctx.measureText(text).width / 2, ly * squashY + lh / 2);
+                            //ctx.fillText(text, lx * squashX - ctx.measureText(text).width / 2, ly * squashY + lh / 2);
+                            fillText(text, lx * squashX, ly * squashY + lh / 2);
                         }
                     }
                                         
@@ -982,7 +984,7 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
       xpos -= obj_left;
       ypos -= obj_top;
       
-      return {x: Math.floor (xpos), y: Math.floor (ypos)};
+      return {x: Math.floor (xpos / globalScale), y: Math.floor (ypos / globalScale)};
     }
     
     function setCenter (select, x, y) {
@@ -1980,7 +1982,7 @@ ctx.fill ();
     }
 
     function resize(width, height) {
-        setDimensions (width, height);
+        setDimensions (width / globalScale, height / globalScale);
         alignX = 0;
         alignY = squashY * rr * 1 / 2;
     
@@ -1991,16 +1993,19 @@ ctx.fill ();
         minRadius = rr * squashX * squashY * Math.pow((1 - ratio), recCount) * ratio;
         minrad = minRadius / squashX / squashY; // if strict mode error, delete this line
 
-        clip.setAttribute('cx', x1 * squashX);
-        clip.setAttribute('cy', y1 * squashY);
-        clip.setAttribute('rx', (r1) * squashX + shadowr);
-        clip.setAttribute('ry', (r1) * squashY + shadowr);
+        clip.setAttribute('cx', x1 * globalScale * squashX);
+        clip.setAttribute('cy', y1 * globalScale * squashY);
+        clip.setAttribute('rx', (r1) * globalScale * squashX + shadowr);
+        clip.setAttribute('ry', (r1) * globalScale * squashY + shadowr);
         clip.setAttribute('stroke-width',  1);
         
         cnv.width = ww;
         cnv.height = hh;
-        cnv.setAttribute ("width", ww);
-        cnv.setAttribute ("height", hh);
+
+        //cnv.setAttribute ("width", ww * 2 + "px");
+        //cnv.setAttribute ("height", hh * 2 + "px");
+        cnv.style.width = ww * globalScale + "px";
+        cnv.style.height = hh * globalScale + "px";
         cnv.style.clipPath = "url(#clip128)";
         
         function clearData (data) {

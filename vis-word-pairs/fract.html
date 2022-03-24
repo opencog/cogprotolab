@@ -4,6 +4,13 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <head>
         <style media="screen">
+            canvas {
+                image-rendering: pixelated;
+                image-rendering: crisp-edges;
+                font-smooth: never;
+                -webkit-font-smoothing : none;
+            }
+         
             section {
                 position: absolute; top:0; bottom:0; left:0; right:0;
                 overflow: hidden;
@@ -559,18 +566,17 @@
                     sendcmd (query + "\n").then (
                         (response) => {
                             // stats
-                            var resp = parser.parse(rules, response).sexpr;
+                            try {
+                                var resp = parser.parse(rules, response).sexpr;
                             
-                            if (resp[1][0] === "Backtrace:") {
-                                console.log (response);
-                                data.children.push ({head: "###ERROR###", done: true, score: undefined, parent: data, index: i, children: []});
-                                resolve ()
-
-                            } else {
                                 setStats (data, resp[1][1][1][0][1][1]);
                                 setChildren (data, resp[1][1][1][2][1][1][0][1][1])
                                 setScores (data, resp[1][1][1][2][1][1][2][1][1]);
                                 resolve ();
+                            } catch (e) {
+                                console.log (response);
+                                data.children.push ({head: "###ERROR###", done: true, score: undefined, parent: data, index: i, children: []});
+                                resolve ()
                             }
                         }
                     )
