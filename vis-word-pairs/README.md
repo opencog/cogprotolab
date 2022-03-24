@@ -28,6 +28,6 @@ experimental word pairs visualization project
     - [x] word-similarities
     - [x] right click context menu
     - [x] statistics
-    - [x] configurable-parameters
+    - [x] configurable parameters
     - [ ] disjuncts
 
