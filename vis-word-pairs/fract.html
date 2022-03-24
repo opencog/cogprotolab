@@ -206,6 +206,27 @@
                 });
             }
 
+            function multisendcmd (cmd) {
+                return new Promise(function(resolve, reject) {
+                    var host = encodeURI (strHost);
+                    var port = encodeURI (strPort);
+                    var prompt = encodeURI (encodeURIComponent (strPrompt));
+
+                    cmd = encodeURI (encodeURIComponent (cmd));
+
+                    var xhttp = new XMLHttpRequest ();
+                    xhttp.onreadystatechange = function () {
+                        if (this.readyState == 4 && this.status == 200) {
+                            resolve (this.responseText.replaceAll("\x16", ""));
+                        }
+                    };
+
+                    xhttp.open("POST", "src/multitelnet.php");
+                    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                    xhttp.send("host=" + host + "&port=" + port + "&cmd=" + cmd + "&prompt=" + prompt);
+                });
+            }
+
             function GetURLParameter(sParam) {
                 var sPageURL = window.location.search.substring(1);
                 var sURLVariables = sPageURL.split('&');
@@ -516,6 +537,61 @@
             function constructStats (stats, word) {
                 return stats.replaceAll("$word", escape (word));
             }
+
+            async function setOval (data) {
+                return new Promise(async function(resolve, reject) {
+                    // stats
+                    query = "(display (list ";
+
+                    for (var i = 0; i < env.database["stats"].length; i++)
+                        query += constructStats (Object.values(env.database["stats"])[i][Object.keys(env.database["stats"][i])[0]], data.head) + " ";
+
+                    query += "))" + "\n";
+                        
+                    // children
+                    query += constructQueryCall (data.query, escape (data.head));
+                    
+                    multisendcmd (query).then (
+                        (response) => {
+                            // stats
+                            var resp = JSON.parse (response)
+                            var arr = resp[0].substring (1, resp[0].length - 2).split (" ");
+                            var j = 0;
+                            data.stats = [];
+                            for (i in env.database["stats"]) {
+                                data.stats[Object.keys(env.database["stats"][i])[0]] = arr[j];
+                                j++
+                            }
+                            
+                            // children
+                            var s1 = parser.parse(rules, resp[1]).sexpr;
+                            if (!s1) {
+                                //alert ("Error setOval: \"" + data.head + "\"\nCommand: " + response + "");
+                                setChildren (data, ["###ERROR###"]);
+
+                            } else {
+                                if (resp[1] !== "()") {
+                                    if (s1[1][0] === "Backtrace:") {
+                                        //alert ("Error setOval: \"" + data.head + "\"\nCommand: " + response + "");
+                                        s2 = ["###ERROR###"];
+                                    } else {
+                                        var s2 = extractChildren(data, s1)
+                                        if (data.done) s2 = ["###ERROR###"];
+                                        if (s2[0] === "###LEFT-WALL###") s2 = ["###LEFT-WALL###"];
+                                    }
+                                    
+                                    setChildren (data, s2)
+                                    resolve ();
+                                } else {
+                                    data.done = true;
+                                    resolve ();
+                                }
+                            }
+                        }
+                    )
+                });
+                    //alert(query);
+            }
             
             async function setStats (data) {
                 return new Promise(async function(resolve, reject) {
@@ -595,22 +671,18 @@
                 });
             }
 
-            async function expand (data, rel) {
-                return new Promise(async function(resolve, reject) {
-                    data.children = [];
-                    for (var i = 0; i < rel.length; i++) {
-                        var item = {head: rel[i], score: undefined, parent: data, index: i, children: []};
-                        if (rel[i] === "###ERROR###" || rel[i] === "###LEFT-WALL###")
-                            item.done = true;
-                        
-                        data.children.push (item);
-                    }
-
-                    resolve ();
-                });
+            function setChildren (data, rel) {
+                data.children = [];
+                for (var i = 0; i < rel.length; i++) {
+                    var item = {head: rel[i], score: undefined, parent: data, index: i, children: []};
+                    if (rel[i] === "###ERROR###" || rel[i] === "###LEFT-WALL###")
+                        item.done = true;
+                    
+                    data.children.push (item);
+                }
             }
 
-            function extractWords (data, arr) {
+            function extractChildren (data, arr) {
                 var ret = [];
 
                 try {
@@ -625,7 +697,7 @@
                     ret.push (txt.substr (1, txt.length - 2));
                 
                 } catch (e) {
-                    //alert ("Error expanding: \"" + data.head + "\"");
+                    //alert ("Error extractChildren: \"" + data.head + "\"");
                     data.done = true;
                 }
                 
@@ -635,52 +707,14 @@
             async function loadOval(node, oldrefr) {
                 return new Promise(async function(resolve, reject) {
                     if (strPrompt && node.data.head) {
-                        //cmd = constructQueryCall (env.database["queries"][env.showQuery]["query"], escape (node.data.head));
-                        cmd = constructQueryCall (node.data.query, escape (node.data.head));
-                        sendcmd (cmd + "\n").then (
+                        setOval (node.data).then (
                             (response) => {
-                                //console.log (response);
-                                var s1 = parser.parse(rules, response).sexpr;
-                                if (!s1) {
-                                    //alert ("Error expanding: \"" + node.data.head + "\"\nCommand: " + cmd + "");
-                                    expand (node.data, ["###ERROR###"]).then (
-                                        (response) => {
-                                            resolve ();
-                                        }
-                                    );
-
-                                } else {
-                                    if (response !== "()") {
-                                        if (s1[1][0] === "Backtrace:") {
-                                            //alert ("Error expanding: \"" + node.data.head + "\"\nCommand: " + cmd + "");
-                                            s2 = ["###ERROR###"];
-                                        } else {
-                                            var s2 = extractWords(node.data, s1)
-                                            if (node.data.done) s2 = ["###ERROR###"];
-                                            if (s2[0] === "###LEFT-WALL###") s2 = ["###LEFT-WALL###"];
-                                        }
-                                        
-                                        setStats (node.data).then (
-                                            (response) => {
-                                                divContainer.dispatchEvent(new CustomEvent('redraw', null));
-                                                expand (node.data, s2).then (
-                                                    (response) => {                                                        
-                                                        divContainer.dispatchEvent(new CustomEvent('redraw', null));
-                                                        setScore (node.data).then (
-                                                            (response) => {
-                                                                divContainer.dispatchEvent(new CustomEvent('redraw', null));
-                                                                resolve ();
-                                                            }
-                                                        );
-                                                    }
-                                                );
-                                            }
-                                        );
-                                    } else {
-                                        node.data.done = true;
+                                divContainer.dispatchEvent(new CustomEvent('redraw', null));
+                                setScore (node.data).then (
+                                    (response) => {
                                         resolve ();
                                     }
-                                }
+                                );
                             }
                         );
                     } else {
