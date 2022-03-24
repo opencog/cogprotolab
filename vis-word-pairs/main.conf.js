@@ -12,31 +12,43 @@ var init = {
         "top-node": "top",
         "queries": [
             {
-                "description1": "query pair-nav, ranking by pair-fmi",
-                "description2": "forward direction",
+                "description-1": "query pair-nav, ranking by pair-fmi",
+                "description-2": "forward direction",
                 "query": "(pair-nav 'forward (Word \"$word\"))",
                 "ranking": "(pair-nav 'edge-score (Word \"$word1\") (Word \"$word2\"))",
             },
             {
-                "description1": "query sim-fmi-nav, ranking by sim-fmi",
-                "description2": "backward direction",
+                "description-1": "query sim-fmi-nav, ranking by sim-fmi",
+                "description-2": "backward direction",
                 "query": "(sim-fmi-nav 'backward (Word \"$word\"))",
                 "ranking": "(sim-fmi-nav 'edge-score (Word \"$word1\") (Word \"$word2\"))"
             },
             {
-                "description1": "query sim-vmi-nav, ranking by sim-vmi",
-                "description2": "forward direction",
+                "description-1": "query sim-vmi-nav, ranking by sim-vmi",
+                "description-2": "forward direction",
                 "query": "(sim-vmi-nav 'forward (Word \"$word\"))",
                 "ranking": "(sim-vmi-nav 'edge-score (Word \"$word1\") (Word \"$word2\"))"
             }
         ],
-        "stats": {
-            "left-wild-fmi": "(pair-freq 'left-wild-fmi (Word \"$word\"))",
-            "right-wild-fmi": "(pair-freq 'right-wild-fmi (Word \"$word\"))",
-            "left-wild-logli": "(pair-freq 'left-wild-logli (Word \"$word\"))",
-            "right-wild-logli": "(pair-freq 'right-wild-logli (Word \"$word\"))",
-            "right-wild-fentropy": "(pair-freq 'right-wild-fentropy (Word \"$word\"))",
-            "left-wild-fentropy": "(pair-freq 'left-wild-fentropy (Word \"$word\"))"
-        }
+        "stats": [
+            {
+                "left-wild-fmi": "(pair-freq 'left-wild-fmi (Word \"$word\"))"
+            },
+            {
+                "right-wild-fmi": "(pair-freq 'right-wild-fmi (Word \"$word\"))"
+            },
+            {
+                "left-wild-logli": "(pair-freq 'left-wild-logli (Word \"$word\"))"
+            },
+            {
+                "right-wild-logli": "(pair-freq 'right-wild-logli (Word \"$word\"))"
+            },
+            {
+                "right-wild-fentropy": "(pair-freq 'right-wild-fentropy (Word \"$word\"))"
+            },
+            {
+                "left-wild-fentropy": "(pair-freq 'left-wild-fentropy (Word \"$word\"))"
+            }
+        ]
     }
 };

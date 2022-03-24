@@ -48,7 +48,7 @@
         <div id="divContainer" style="overflow: hidden; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; border-sytle: none; padding:0; margin:0;">
             <div id="params" style="border-style: none; padding:0; margin:0; padding-left: 5px; padding-top: 5px; padding-bottom: 5px; font-family: 'monospace'; color: white; background-color: black">
                 <div>
-                    <strong id="title">word pairs configuration</strong><br/>
+                    <strong id="title">word pairs configuration</strong> <span style="font-size: 10px;">(edit top node, queries, statistics)</span><br/>
                 </div>
             </div>
             <div id="divContainer1" style="border-style: none; padding:0; margin:0;">
@@ -119,8 +119,12 @@
             window.addEventListener("load", wonload ());
 
             function sendstr () {
-                init["database"] = JSON.parse (conf.value)
-                window.parent.frames[1].postMessage("[" + JSON.stringify (init["database"]) + ", " +'{"head": "' + init["database"]["top-node"] + '", "rel": []}' + "]" , "*");
+                try {
+                    init["database"] = JSON.parse (conf.value)
+                    window.parent.frames[1].postMessage("[" + JSON.stringify (init["database"]) + ", " +'{"head": "' + init["database"]["top-node"] + '", "rel": []}' + "]" , "*");
+                } catch (e) {
+                    window.parent.frames[1].postMessage("clear", "*");
+                }
             }
             
             function clearstr () {

@@ -299,8 +299,8 @@
                 
                 elimCursor (curCur, curSel.data);
 
-                curSel.data.description1 = env.database["queries"][i]["description1"];
-                curSel.data.description2 = env.database["queries"][i]["description2"];
+                curSel.data.description1 = env.database["queries"][i]["description-1"];
+                curSel.data.description2 = env.database["queries"][i]["description-2"];
                 curSel.data.query = env.database["queries"][i]["query"];
                 curSel.data.ranking = env.database["queries"][i]["ranking"];
                 divContainer.dispatchEvent(new CustomEvent('redraw', null));
@@ -311,7 +311,7 @@
                 var dropDown = document.getElementById ("myDropdown");
                 var txta = ""
                 for (var i = 0; i < env.database["queries"].length; i++) {
-                    txta += '<a href="javascript:setBranching(' + i + ');">' + env.database["queries"][i]["description1"] + '<br>' + env.database["queries"][i]["description2"] + '</a>'
+                    txta += '<a href="javascript:setBranching(' + i + ');">' + env.database["queries"][i]["description-1"] + '<br>' + env.database["queries"][i]["description-2"] + '</a>'
                 }
                 dropDown.innerHTML = txta;
             }
@@ -449,8 +449,8 @@
                         try {
                             if (!ovals[i].data.query) {
                                 if (!ovals[i].data.parent.parent) {
-                                    ovals[i].data.description1 = env.database["queries"][0]["description1"];
-                                    ovals[i].data.description2 = env.database["queries"][0]["description2"];
+                                    ovals[i].data.description1 = env.database["queries"][0]["description-1"];
+                                    ovals[i].data.description2 = env.database["queries"][0]["description-2"];
                                     ovals[i].data.query = env.database["queries"][0]["query"];
                                     ovals[i].data.ranking = env.database["queries"][0]["ranking"];
                                 } else {
@@ -520,19 +520,19 @@
             async function setStats (data) {
                 return new Promise(async function(resolve, reject) {
                     query = "(display (list ";
-                    var entries = Object.entries (env.database["stats"]);
-                    for (var i = 0; i < entries.length; i++)
-                        query += constructStats (entries[i][1], data.head) + " ";
+
+                    for (var i = 0; i < env.database["stats"].length; i++)
+                        query += constructStats (Object.values(env.database["stats"])[i][Object.keys(env.database["stats"][i])[0]], data.head) + " ";
 
                     query += "))";
-                    
+
                     sendcmd (query + "\n").then (
                         (response) => {
                             var arr = response.substring (1, response.length - 2).split (" ");
                             var j = 0;
                             data.stats = [];
                             for (i in env.database["stats"]) {
-                                data.stats[i] = arr[j];
+                                data.stats[Object.keys(env.database["stats"][i])[0]] = arr[j];
                                 j++
                             }
 
