@@ -31,12 +31,12 @@ var init = {
             }
         ],
         "stats": {
+            "left-wild-fmi": "(pair-freq 'left-wild-fmi (Word \"$word\"))",
+            "right-wild-fmi": "(pair-freq 'right-wild-fmi (Word \"$word\"))",
             "left-wild-logli": "(pair-freq 'left-wild-logli (Word \"$word\"))",
             "right-wild-logli": "(pair-freq 'right-wild-logli (Word \"$word\"))",
             "right-wild-fentropy": "(pair-freq 'right-wild-fentropy (Word \"$word\"))",
-            "left-wild-fentropy": "(pair-freq 'left-wild-fentropy (Word \"$word\"))",
-            "left-wild-fmi": "(pair-freq 'left-wild-fmi (Word \"$word\"))",
-            "right-wild-fmi": "(pair-freq 'right-wild-fmi (Word \"$word\"))"
+            "left-wild-fentropy": "(pair-freq 'left-wild-fentropy (Word \"$word\"))"
         }
     }
 };

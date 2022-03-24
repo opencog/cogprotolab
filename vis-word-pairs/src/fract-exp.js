@@ -10,22 +10,6 @@ function fractalOvals(ctx, ratio, xx, yy, ww, hh, rr, squashX, squashY, drawCirc
     var shadow;
 
     var renders = function (minRadius, x1, y1, r1, angle, rec, mouse, data, index, cursor, selectedCursor, renderHint, renderData) {
-        if (renderHint !== "1") {
-            //ctx1.beginPath ();
-            //shadow = true;
-            //render1 (minRadius, x1, y1, r1, angle, rec, mouse, data, index, cursor, selectedCursor, renderHint, renderData);
-            //shadow = false;
-            /*
-            ctx1.closePath ();
-            ctx1.shadowBlur = shadowr1;
-            ctx1.shadowColor = shadowColor1;
-            ctx1.lineWidth = 0;
-            ctx1.fillStyle = shadowColor1;
-            ctx1.fill ();
-            ctx.shadowBlur = 0;
-            */
-        }
-        
         return render1 (minRadius, x1, y1, r1, angle, rec, mouse, data, index, cursor, selectedCursor, renderHint, renderData);
     }
     
@@ -733,13 +717,13 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                             var text3 = "";
                             for (var st in data.stats) {
                                 if (cnt >= 0 && cnt < 2) {
-                                    text2 += st + ": " + Number(data.stats[st]).toFixed (2) + "; ";
+                                    text1 += st + ": " + Number(data.stats[st]).toFixed (2) + "; ";
         
                                 } else if (cnt >=2 && cnt < 4) {
-                                    text3 += st + ": " + Number(data.stats[st]).toFixed (2) + "; ";
+                                    text2 += st + ": " + Number(data.stats[st]).toFixed (2) + "; ";
 
                                 } else {
-                                    text1 += st + ": " + Number(data.stats[st]).toFixed (2) + "; ";
+                                    text3 += st + ": " + Number(data.stats[st]).toFixed (2) + "; ";
                                 }
                                 cnt++;
                             }
