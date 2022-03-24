@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<!--?xml version="1.0"?-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <head>
+        <style media="screen">
+            section {
+                position: absolute; top:0; bottom:0; left:0; right:0;
+                overflow: hidden;
+            }
+            
+            html, body
+            {
+                overflow: hidden;
+                height: 100%;
+                width: 100%;
+                margin-top: 0px;
+                margin-left: 0px;
+                pointer-events: auto;
+                background-color: gray;
+                touch-action: none;
+                user-select: none;
+            }
+
+            a, a.exHover:visited, a.exHover:link {cursor: pointer; color: lightgray; text-decoration:none; border:0px solid #4466DD;}
+            a.exHover:hover {cursor: pointer; color:white; text-decoration:none; border:0px solid #6699FF;}
+            a.exHover:active {cursor: pointer; color:white; text-decoration:none; border:0px solid #DDDDFF;}
+        </style>
+        
+        <script>
+            function setDesign(pr) {
+                var viewport = document.querySelector("meta[name=viewport]");
+                if (!viewport){
+                    viewport=document.createElement('meta');
+                    viewport.name = "viewport";
+                    document.getElementsByTagName('head')[0].appendChild(viewport);
+                }
+                var sc = 1 / pr;
+                viewport.setAttribute('content', "width=device-width, initial-scale=" + sc + ", maximum-scale=" + sc + ", minimum-scale=" + sc + ", user-scalable=no");
+            }
+            
+            setDesign(window.devicePixelRatio);
+        </script>
+        <script src="main.conf.js"></script>
+    </head>
+    <body>
+      <section>
+        <div id="divContainer" style="overflow: hidden; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; border-sytle: none; padding:0; margin:0;">
+            <div id="params" style="border-style: none; padding:0; margin:0; padding-left: 5px; padding-top: 5px; padding-bottom: 5px; font-family: 'monospace'; color: white; background-color: black">
+                <div>
+                    <strong id="title">word pairs configuration</strong><br/>
+                </div>
+            </div>
+            <div id="divContainer1" style="border-style: none; padding:0; margin:0;">
+                <textarea id="conf" wrap="off" spellcheck="false" style="border-style: none; display: block; width: 100%; resize: none; overflow: auto; outline: none; box-sizing: border-box; padding: 0; margin: 0;"></textarea>
+            </div>
+        </div>
+        
+        <script>
+            
+            function getDesign() {
+                var design;
+                if (window.matchMedia('only screen and (max-device-width: 320px)').matches) {
+                    design = 'touch';
+                 } else if (window.matchMedia('only screen and (max-device-width: 1024px)').matches) {
+                    design = 'tablet';
+                } else if (window.matchMedia('screen').matches) {
+                    design = 'desktop';
+                } else if (window.matchMedia('handheld').matches) {
+                    design = 'mobile';
+                }
+                return design;
+            }
+            
+            var myTimeout;
+            
+            var timeoutFn = function () {
+                sendstr ();
+            };
+
+            function onkd (e) {
+                if (myTimeout) clearTimeout (myTimeout);
+                if (timeoutFn) {
+                    myTimeout = setTimeout(timeoutFn, 1000) // don't touch
+                }
+                
+            }
+                
+            function setSize () {
+                divContainer1.style.height = divContainer.clientHeight - document.getElementById ("params").clientHeight + "px";
+                conf.style.height = divContainer.clientHeight - document.getElementById ("params").clientHeight + "px";
+                conf.style.font = init["ctrl-font-size"] + "px monospace";
+            }
+
+            wonload = function () {
+                setSize ();
+                divContainer.style.visibility = "visible";
+
+                var resizeId;
+                window.addEventListener('resize', function () {
+                    divContainer.style.visibility = "hidden";
+                    
+                    clearTimeout(resizeId);
+                    resizeId = setTimeout(function () {
+                        setSize ();
+                        divContainer.style.visibility = "visible";
+                        
+                    }, 1000);
+                });
+            };
+            
+            var divContainer1 = document.getElementById ("divContainer1");
+            var conf = document.getElementById ("conf");
+            conf.style.color = init["oval-color"];
+            conf.style.backgroundColor = init["text-color"];
+            conf.value = JSON.stringify (init["database"], null, 2);
+            conf.oninput = onkd;
+            
+            window.addEventListener("load", wonload ());
+
+            function sendstr () {
+                init["database"] = JSON.parse (conf.value)
+                window.parent.frames[1].postMessage("[" + JSON.stringify (init["database"]) + ", " +'{"head": "' + init["database"]["top-node"] + '", "rel": []}' + "]" , "*");
+            }
+            
+            function clearstr () {
+                window.parent.frames[1].postMessage("clear", "*");
+            }
+            
+        </script>
+      </section>
+    </body>
+</html>

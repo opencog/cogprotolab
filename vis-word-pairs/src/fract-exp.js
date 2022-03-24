@@ -732,14 +732,14 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                             var text2 = "";
                             var text3 = "";
                             for (var st in data.stats) {
-                                if (cnt === 0) {
-                                    text1 += st + ": " + Number(data.stats[st]).toFixed (2) + "; ";
-        
-                                } else if (cnt > 0 && cnt < 3) {
+                                if (cnt >= 0 && cnt < 2) {
                                     text2 += st + ": " + Number(data.stats[st]).toFixed (2) + "; ";
+        
+                                } else if (cnt >=2 && cnt < 4) {
+                                    text3 += st + ": " + Number(data.stats[st]).toFixed (2) + "; ";
 
                                 } else {
-                                    text3 += st + ": " + Number(data.stats[st]).toFixed (2) + "; ";
+                                    text1 += st + ": " + Number(data.stats[st]).toFixed (2) + "; ";
                                 }
                                 cnt++;
                             }
@@ -747,16 +747,16 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                             var lhy = lh * 1.8;
                             ctx.font = lh + "px monospace";
                             ctx.fillStyle = env.textColor;
-                            ctx.fillText(text1, x0 * squashX - ctx.measureText(text1).width / 2, y0 * squashY - lh * 4.5);
-                            ctx.fillText(text2, x0 * squashX - ctx.measureText(text2).width / 2, y0 * squashY - lh * 4.5 + lhy);
-                            ctx.fillText(text3, x0 * squashX - ctx.measureText(text3).width / 2, y0 * squashY - lh * 4.5 + lhy * 2);
+                            ctx.fillText(text1, x0 * squashX - ctx.measureText(text1).width / 2, y0 * squashY - lh * 4.3);
+                            ctx.fillText(text2, x0 * squashX - ctx.measureText(text2).width / 2, y0 * squashY - lh * 4.3 + lhy);
+                            ctx.fillText(text3, x0 * squashX - ctx.measureText(text3).width / 2, y0 * squashY - lh * 4.3 + lhy * 2);
                             
                             // bottom text
                             
                             var x0 = xa;
                             var y0 = ya + ra * Math.sin (Math.PI / 2 + delta);;
 
-                            var lh = env.fsize * 0.28 * r / 250;
+                            var lh = env.fsize * 0.3 * r / 250;
 
                             if (data.description1) {
                                 var text = data.description1;

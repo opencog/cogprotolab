@@ -79,16 +79,11 @@
         <script src="src/exp-log.js"></script>
     </head>
     <body>
-    <div id="myDropdown" class="dropdown-content">
-        <!--a href="javascript:populate('math-exp');">&nbsp;&nbsp;&nbsp; math expression</a>
-        <a href="javascript:populate('NLP');">&nbsp;&nbsp;&nbsp; natural language</a>
-        <a href="javascript:populate('s-expr');">&nbsp;&nbsp;&nbsp; s-expression</a>
-        <a href="javascript:populate('ambig');">&nbsp;&nbsp;&nbsp; ambiguity test</a-->
-    </div>
+      <div id="myDropdown" class="dropdown-content"></div>
       <section>
         <div id="divContainer" style="position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; visibility: hidden;">
         </div>
-        <div id="divStats" style="position: absolute; top: 5px; left: 5px; font-family: 'monospace'; font-size: 9px; color: white; text-shadow: 0px 0px 2px rgba(0,0,0,1); /*visibility: hidden;*/"></div>
+        <div id="divStats" style="position: absolute; top: 5px; left: 5px; font-family: 'monospace'; font-size: 9px; color: white; text-shadow: 0px 0px 2px rgba(0,0,0,1); visibility: hidden;"></div>
         
         <script>
             rules = [
@@ -137,7 +132,7 @@
             */
             
             function sendstr (str) {
-                window.postMessage(str, "*");
+                window.postMessage("[" + JSON.stringify (init["database"], null, 2) + " ," + str + "]", "*");
             }
 
             var strPrompt = null;
@@ -263,16 +258,19 @@
 
                 if (event.data === "clear") {
                     divContainer.style.visibility = "hidden";
-                    divStats.style.visibility = "hidden";
+                    //divStats.style.visibility = "hidden";
                 } else {
-                    var d = JSON.parse (event.data);
+                    var psd = JSON.parse (event.data);
+                    var d = psd[1];
+                    env.database = psd[0];
+                    populateMyDropDown ()
                     nodeTree = formArray (d.head, d.rel);
                     onBusy();
                     refr++;
                     setTimeout( function () {
                         divContainer.dispatchEvent(new CustomEvent('redefineData', {detail: nodeTree}));
                         divContainer.style.visibility = "visible";
-                        divStats.style.visibility = "visible";
+                        //divStats.style.visibility = "visible";
                     }, 1);
                 }
             };
@@ -309,6 +307,15 @@
                 divContainer.dispatchEvent(new CustomEvent('idle', null));
             }
             
+            function populateMyDropDown() {
+                var dropDown = document.getElementById ("myDropdown");
+                var txta = ""
+                for (var i = 0; i < env.database["queries"].length; i++) {
+                    txta += '<a href="javascript:setBranching(' + i + ');">' + env.database["queries"][i]["description1"] + '<br>' + env.database["queries"][i]["description2"] + '</a>'
+                }
+                dropDown.innerHTML = txta;
+            }
+            
             function wonload () {
                 setSize ();
                 
@@ -336,13 +343,7 @@
                   }
                 }
                 
-                var dropDown = document.getElementById ("myDropdown");
-                var txta = ""
-                for (var i = 0; i < env.database["queries"].length; i++) {
-                    txta += '<a href="javascript:setBranching(' + i + ');">' + env.database["queries"][i]["description1"] + '<br>' + env.database["queries"][i]["description2"] + '</a>'
-                }
-                dropDown.innerHTML = txta;
-                
+                populateMyDropDown ()
 
                 function callMouseUp (evt, sel, cur) {
                     var tmpsel = sel;
@@ -377,13 +378,9 @@
 
                 setPrompt ().then (
                     (response) => {
-                        //sendcmd (env.queryMaker + "\n").then (
-                        //    (response) => {
-                                var s = '{"head": "' + env.database["top-node"] + '", "rel": []}';
-                                sendstr (s);
-                                divContainer.dispatchEvent(new CustomEvent('idle', null));
-                        //    }
-                        //);
+                        var s = '{"head": "' + env.database["top-node"] + '", "rel": []}';
+                        sendstr (s);
+                        divContainer.dispatchEvent(new CustomEvent('idle', null));
                     }
                 );
 
@@ -394,14 +391,14 @@
                 window.addEventListener('resize', function () {
                     document.getElementById("tooltip").style.visibility = "hidden";
                     divContainer.style.visibility = "hidden";
-                    divStats.style.visibility = "hidden";
+                    //divStats.style.visibility = "hidden";
                     
                     clearTimeout(resizeId);
                     resizeId = setTimeout(function () {
                         setSize ();
                         dispatchSize ();
                         divContainer.style.visibility = "visible";
-                        divStats.style.visibility = "visible";
+                        //divStats.style.visibility = "visible";
                     }, 500);
                 });
             }
@@ -700,37 +697,6 @@
                 //return str.replaceAll("\\", "\\\\").replaceAll("\"", "\\\"");
                 return str;
             }
-
-            /*
-            function unfoldsexpr (sexpr) {
-                if (Array.isArray (sexpr)) {
-                    var arr = [];
-                    var idx = 0;
-                    while (Array.isArray (sexpr)) {
-                        if (sexpr[0] === "(") {
-                            arr[idx] = unfoldsexpr (sexpr[1][1]);
-                            if (idx === 0)
-                                return arr[0];
-                            
-                            else
-                                return arr;
-                            
-                        } else {
-                            arr[idx] = unfoldsexpr (sexpr[0]);
-                            sexpr = sexpr[2];
-                            idx++;
-                        }
-                    }
-                    
-                    arr[idx] = sexpr;
-                    
-                    return arr;
-
-                } else {
-                    return sexpr?sexpr:"";
-                }
-            }
-            */
 
             function formArray (sexpr) {
                 var node = {sexpr: sexpr, children: []};
