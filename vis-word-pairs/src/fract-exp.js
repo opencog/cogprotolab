@@ -521,7 +521,7 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
     //cnv.setAttribute("image-rendering", "pixelated");
     //cnv.setAttribute("-webkit-font-smoothing", "none");
     var superSampling = 1;
-    var globalScale = 1;
+    var pixelSize = 1;
 
 
     var ratio = 1 / 1.61803398875; //0.7;//575;
@@ -660,7 +660,7 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                     
                     function fillText (text, xb, yb) {
                         if (Math.sqrt((xa - xx) * (xa - xx) + (ya - yy) * (ya - yy)) < rr) {
-                            ctx.fillText(text, xb - ctx.measureText(text).width / 2, yb);
+                            ctx.fillText(text, Math.round (xb - ctx.measureText(text).width / 2), Math.round (yb));
                         }
                     }
 
@@ -720,7 +720,7 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                             }
                             var lh = env.fsize * 0.25 * r / 250;
                             var lhy = lh * 1.8;
-                            ctx.font = lh + "px monospace";
+                            ctx.font = Math.round (lh) + "px monospace";
                             ctx.fillStyle = env.textColor;
                             /*
                             ctx.fillText(text1, x0 * squashX - ctx.measureText(text1).width / 2, y0 * squashY - lh * 4.3);
@@ -740,7 +740,7 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
 
                             if (data.description1) {
                                 var text = data.description1;
-                                ctx.font = lh + "px monospace";
+                                ctx.font = Math.round (lh) + "px monospace";
                                 ctx.fillStyle = env.textColor;
                                 //ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY + lh * 2);
                                 fillText(text, x0 * squashX, y0 * squashY + lh * 2);
@@ -748,7 +748,7 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
 
                             if (data.description2) {
                                 var text = data.description2;
-                                ctx.font = lh + "px monospace";
+                                ctx.font = Math.round (lh) + "px monospace";
                                 ctx.fillStyle = env.textColor;
                                 //ctx.fillText(text, x0 * squashX - ctx.measureText(text).width / 2, y0 * squashY + lh * 4);
                                 fillText(text, x0 * squashX, y0 * squashY + lh * 4);
@@ -764,8 +764,8 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
 
                     var text = data.head;
                     if (text) {
-                        var lh = env.fsize * magn;
-                        ctx.font = "bold " + lh + "px monospace";
+                        var lh = env.fsize * magn / pixelSize;
+                        ctx.font = "bold " + Math.round (lh) + "px monospace";
                         ctx.fillStyle = env.textColor;
                         /*
                         ctx.fillText(text, xa * squashX - ctx.measureText(text).width / 2, ya * squashY + lh / 2 * 0.7);
@@ -984,7 +984,7 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
       xpos -= obj_left;
       ypos -= obj_top;
       
-      return {x: Math.floor (xpos / globalScale), y: Math.floor (ypos / globalScale)};
+      return {x: Math.floor (xpos / pixelSize), y: Math.floor (ypos / pixelSize)};
     }
     
     function setCenter (select, x, y) {
@@ -1982,7 +1982,7 @@ ctx.fill ();
     }
 
     function resize(width, height) {
-        setDimensions (width / globalScale, height / globalScale);
+        setDimensions (width / pixelSize, height / pixelSize);
         alignX = 0;
         alignY = squashY * rr * 1 / 2;
     
@@ -1993,10 +1993,10 @@ ctx.fill ();
         minRadius = rr * squashX * squashY * Math.pow((1 - ratio), recCount) * ratio;
         minrad = minRadius / squashX / squashY; // if strict mode error, delete this line
 
-        clip.setAttribute('cx', x1 * globalScale * squashX);
-        clip.setAttribute('cy', y1 * globalScale * squashY);
-        clip.setAttribute('rx', (r1) * globalScale * squashX + shadowr);
-        clip.setAttribute('ry', (r1) * globalScale * squashY + shadowr);
+        clip.setAttribute('cx', x1 * pixelSize * squashX);
+        clip.setAttribute('cy', y1 * pixelSize * squashY);
+        clip.setAttribute('rx', (r1) * pixelSize * squashX + shadowr);
+        clip.setAttribute('ry', (r1) * pixelSize * squashY + shadowr);
         clip.setAttribute('stroke-width',  1);
         
         cnv.width = ww;
@@ -2004,8 +2004,8 @@ ctx.fill ();
 
         //cnv.setAttribute ("width", ww * 2 + "px");
         //cnv.setAttribute ("height", hh * 2 + "px");
-        cnv.style.width = ww * globalScale + "px";
-        cnv.style.height = hh * globalScale + "px";
+        cnv.style.width = ww * pixelSize + "px";
+        cnv.style.height = hh * pixelSize + "px";
         cnv.style.clipPath = "url(#clip128)";
         
         function clearData (data) {
