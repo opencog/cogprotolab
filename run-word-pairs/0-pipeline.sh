@@ -3,8 +3,7 @@
 # 0-pipeline.sh
 #
 # Master file for configuration parameters for langugage learning.
-# This particular file is aimed at artificial-language/corpus
-# generation and processing.
+# This particular file is aimed at (English) word-pair visualization.
 # ----------
 
 # Location where processing scripts are installed.
@@ -24,6 +23,3 @@ export CONFIG_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # The master config file, which is this file.  Don't change.
 export MASTER_CONFIG_FILE=${CONFIG_DIR}/$( basename "${BASH_SOURCE[0]}" )
-
-# File containing grammatical-class configuration
-# export GRAM_CONF_FILE=$CONFIG_DIR/4-gram-conf-en.sh
