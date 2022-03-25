@@ -121,7 +121,8 @@ function fractalOvals(ctx, ratio, xx, yy, ww, hh, rr, squashX, squashY, drawCirc
         if (
             Math.sqrt ((x1 - xx) * (x1 - xx) + (y1 - yy) * (y1 - yy)) < r1 + rr
         ) {
-            if ((r1 * squashY * squashX) >= minRadius) {
+            //if ((r1 * squashY * squashX) >= minRadius) {
+            if (r0 >= minRadius) {
                 var colorFill = fill1;
                 
                 //if (!renderHint || (rec > 1 && renderHint === "1+") || renderHint === "1" || renderHint === "0") {
@@ -147,7 +148,8 @@ function fractalOvals(ctx, ratio, xx, yy, ww, hh, rr, squashX, squashY, drawCirc
         
                     c0 = getCircle (alpha, x0, y0, r0, x1, y1, r1);
                     ci = (cursor?cursor.index:0);
-                    if (c0.r * squashX * squashY >= minRadius) {
+                    //if (c0.r * squashX * squashY >= minRadius) {
+                    if (c0.r >= minRadius) {
                         got = render (minRadius, x0 + c0.x, y0 + c0.y, c0.r, angle + alpha - Math.PI, rec + 1, mouse, data.children[ci], ci, (cursor?cursor.children[ci]:null), selectedCursor, null, renderData, r1);
                         if (got) {
                             idx = ci;
@@ -164,7 +166,8 @@ function fractalOvals(ctx, ratio, xx, yy, ww, hh, rr, squashX, squashY, drawCirc
                         delta = c1.r > oldr;
                         ci++;
                         
-                        if (c1.r * squashX * squashY >= minRadius) {
+                        //if (c1.r * squashX * squashY >= minRadius) {
+                        if (c1.r >= minRadius) {
                             got = render (minRadius, x0 + c1.x, y0 + c1.y, c1.r, angle + alpha - Math.PI, rec + 1, mouse, data.children[ci], ci, (cursor?cursor.children[ci]:null), selectedCursor, null, renderData, r1);
                             if (!ret && got) {
                                 idx = ci;
@@ -189,7 +192,8 @@ function fractalOvals(ctx, ratio, xx, yy, ww, hh, rr, squashX, squashY, drawCirc
                         delta = c1.r > oldr;
                         ci--;
 
-                        if (c1.r * squashX * squashY >= minRadius) {
+                        //if (c1.r * squashX * squashY >= minRadius) {
+                        if (c1.r >= minRadius) {
                             got = render (minRadius, x0 + c1.x, y0 + c1.y, c1.r, angle + alpha - Math.PI, rec + 1, mouse, data.children[ci], ci, (cursor?cursor.children[ci]:null), selectedCursor, null, renderData, r1);
                             if (!ret && got) {
                                 idx = ci;
@@ -531,7 +535,7 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
 
     var minRadius;
     var shadowr = shadowRadius;
-    var recCount = 3;
+    var recCount = 4.5;
 
     var dragPrecision = Math.pow (2, 8);
 
@@ -588,7 +592,7 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
     if (renderHint === "1") diff = 2; else diff = 1;
     if (r * squashX - diff <= 0 || r * squashY - diff <= 0) return;
     //////////////////////
-        if (/*Math.sqrt((x - xx) * (x - xx) + (y - yy) * (y - yy)) < rr + r &&*/ r * squashX > 0.5 && r * squashY > 0.5) {
+        if (true/*r >= minRadius*/) {
 
             ctx.globalAlpha = 1;
             
@@ -624,10 +628,10 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                 // whole oval
                 ctx.beginPath ();
                 ctx.ellipse (
-                    xa * squashX,
-                    ya * squashY,
-                    ra * squashX - 1,
-                    ra * squashY - 1,
+                    ~~(xa * squashX),
+                    ~~(ya * squashY),
+                    ~~(ra * squashX),
+                    ~~(ra * squashY),
                     0,
                     0,
                     2 * Math.PI,
@@ -801,10 +805,10 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                         
                         ctx.beginPath ();
                         ctx.ellipse (
-                            lx * squashX,
-                            ly * squashY,
-                            lr * squashX,
-                            lr * squashY,
+                            ~~(lx * squashX),
+                            ~~(ly * squashY),
+                            ~~(lr * squashX),
+                            ~~(lr * squashY),
                             0,
                             0,
                             2 * Math.PI,
@@ -1991,8 +1995,9 @@ ctx.fill ();
 
         n = fractalOvals (ctx, ratio, xx, yy, ww, hh, rr, squashX, squashY, drawCircle, fill1, back1);
         
-        minRadius = rr * squashX * squashY * Math.pow((1 - ratio), recCount) * ratio;
-        minrad = minRadius / squashX / squashY; // if strict mode error, delete this line
+        //minRadius = rr * squashX * squashY * Math.pow((1 - ratio), recCount) * ratio;
+        minRadius = Math.floor(rr / ratio * Math.pow ((1 - ratio), recCount));
+        minrad = minRadius;// / squashX / squashY; // if strict mode error, delete this line
 
         clip.setAttribute('cx', x1 * pixelSize * squashX);
         clip.setAttribute('cy', y1 * pixelSize * squashY);
