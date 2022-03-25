@@ -596,6 +596,7 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
             if (shadow) {
             } else {
                 var magn = r / (rr * ratio);
+                var minr = 5;
                 //parentR = r / ratio;
 
                 var ra = r * circleSize;
@@ -664,7 +665,7 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                         }
                     }
 
-                    if (data.head !== "###ERROR###") {
+                    if (data.head !== "###ERROR###" && ra > minr) {
                         //try {
                             ctx.globalCompositeOperation = "source-atop";
 
@@ -763,7 +764,7 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                     ctx.globalCompositeOperation = "source-atop";
 
                     var text = data.head;
-                    if (text) {
+                    if (text && ra > minr) {
                         var lh = env.fsize * magn / pixelSize;
                         ctx.font = "bold " + Math.round (lh) + "px monospace";
                         ctx.fillStyle = env.textColor;
@@ -1981,7 +1982,7 @@ ctx.fill ();
         
     }
 
-    function resize(width, height) {
+    function resize(width, height, noidle) {
         setDimensions (width / pixelSize, height / pixelSize);
         alignX = 0;
         alignY = squashY * rr * 1 / 2;
@@ -2058,18 +2059,21 @@ ctx.fill ();
 
         clearData (d.children[0]);
         redraw ();
-        idle ();
+        if (!noidle)
+            idle ();
         //updateCache (d.children[0]);
     }
     
     function busy () {
-        if (onBusy)
+        if (onBusy) {
             onBusy ();
+        }
     }
     
     function idle () {
-        if (onIdle)
+        if (onIdle) {
             onIdle (renderData);
+        }
     }
     
     var renderData;

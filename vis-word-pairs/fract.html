@@ -209,6 +209,7 @@
                 });
             }
 
+            /*
             function multisendcmd (cmd) {
                 return new Promise(function(resolve, reject) {
                     var host = encodeURI (strHost);
@@ -229,6 +230,7 @@
                     xhttp.send("host=" + host + "&port=" + port + "&cmd=" + cmd + "&prompt=" + prompt);
                 });
             }
+            */
 
             function GetURLParameter(sParam) {
                 var sPageURL = window.location.search.substring(1);
@@ -486,9 +488,11 @@
                             }
                             await loadOval (ovals[i], refr);
                             divContainer.dispatchEvent(new CustomEvent('redraw', null));
-                            divContainer.dispatchEvent(new CustomEvent('idle', null));
+                            if (!pauseLoading) {
+                                divContainer.dispatchEvent(new CustomEvent('idle', null));
+                            }
                         } catch (e) {
-                            divContainer.dispatchEvent(new CustomEvent('idle', null));
+                            //divContainer.dispatchEvent(new CustomEvent('idle', null));
                             break;
                         }
                     }
