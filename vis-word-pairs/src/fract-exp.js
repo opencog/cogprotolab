@@ -795,6 +795,7 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                         ctx.globalCompositeOperation = "destination-over";
                         ctx.strokeStyle = ovalColor;
                         ctx.stroke();
+                        
                         ctx.globalCompositeOperation = "source-over";
                         
                         var fs = env.fsize * rr / 500 * magn;

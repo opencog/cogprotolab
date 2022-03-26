@@ -282,9 +282,14 @@
 
                 evt = event;
 
-                if (event.data === "clear") {
-                    divContainer.style.visibility = "hidden";
-                    //divStats.style.visibility = "hidden";
+                if (event.data === "###ERROR###") {
+                    nodeTree = {head: event.data, done: true, children: []};
+                    setTimeout( function () {
+                        divContainer.dispatchEvent(new CustomEvent('redefineData', {detail: nodeTree}));
+                        divContainer.style.visibility = "visible";
+                        //divStats.style.visibility = "visible";
+                    }, 1);
+
                 } else {
                     var psd = JSON.parse (event.data);
                     var d = psd[1];
@@ -486,8 +491,10 @@
                                     ovals[i].data.ranking = ovals[i].data.parent.ranking;
                                 }
                             }
-                            await loadOval (ovals[i], refr);
-                            divContainer.dispatchEvent(new CustomEvent('redraw', null));
+                            if (ovals[i].data.head !== "###ERROR###") {
+                                await loadOval (ovals[i], refr);
+                                divContainer.dispatchEvent(new CustomEvent('redraw', null));
+                            }
                             if (!pauseLoading) {
                                 divContainer.dispatchEvent(new CustomEvent('idle', null));
                             }
@@ -547,41 +554,45 @@
 
             async function setOval (data) {
                 return new Promise(async function(resolve, reject) {
-                    query = "(display "
-                    
-                        query += "(list ";
+                    try {
+                        query = "(display "
+                        
                             query += "(list ";
+                                query += "(list ";
 
-                                // stats
-                                for (var i = 0; i < env.database["stats"].length; i++)
-                                    query += constructStatsCall (Object.values(env.database["stats"])[i][Object.keys(env.database["stats"][i])[0]], '(Word "' + data.head + '")') + " ";
+                                    // stats
+                                    for (var i = 0; i < env.database["stats"].length; i++)
+                                        query += constructStatsCall (Object.values(env.database["stats"])[i][Object.keys(env.database["stats"][i])[0]], '(Word "' + data.head + '")') + " ";
 
-                            query += ")" + " ";
-                                
-                            // children and scores
-                            //query += `((lambda ($w2) (list $w2 (map (lambda ($w3) (pair-nav 'edge-score (Word "top") $w3)) $w2))) (pair-nav 'forward (Word "top")))`
-                            query += `((lambda ($w2) (list $w2 (map (lambda ($w3) ` + constructRankingCall (data.ranking, '(Word "' + data.head + '")', "$w3") + `) $w2))) ` + constructQueryCall (data.query, '(Word "' + data.head + '")') + `)`
+                                query += ")" + " ";
+                                    
+                                // children and scores
+                                //query += `((lambda ($w2) (list $w2 (map (lambda ($w3) (pair-nav 'edge-score (Word "top") $w3)) $w2))) (pair-nav 'forward (Word "top")))`
+                                query += `((lambda ($w2) (list $w2 (map (lambda ($w3) ` + constructRankingCall (data.ranking, '(Word "' + data.head + '")', "$w3") + `) $w2))) ` + constructQueryCall (data.query, '(Word "' + data.head + '")') + `)`
 
+                            query += ")";
                         query += ")";
-                    query += ")";
-                    
-                    sendcmd (query + "\n").then (
-                        (response) => {
-                            // stats
-                            try {
-                                var resp = parser.parse(rules, response).sexpr;
-                            
-                                setStats (data, resp[1][1][1][0][1][1]);
-                                setChildren (data, resp[1][1][1][2][1][1][0][1][1])
-                                setScores (data, resp[1][1][1][2][1][1][2][1][1]);
-                                resolve ();
-                            } catch (e) {
-                                console.log (response);
-                                data.children.push ({head: "###ERROR###", done: true, score: undefined, parent: data, index: i, children: []});
-                                resolve ()
+                        
+                        sendcmd (query + "\n").then (
+                            (response) => {
+                                // stats
+                                try {
+                                    var resp = parser.parse(rules, response).sexpr;
+                                
+                                    setStats (data, resp[1][1][1][0][1][1]);
+                                    setChildren (data, resp[1][1][1][2][1][1][0][1][1])
+                                    setScores (data, resp[1][1][1][2][1][1][2][1][1]);
+                                    resolve ();
+                                } catch (e) {
+                                    console.log (response);
+                                    data.children.push ({head: "###ERROR###", done: true, score: undefined, parent: data, index: i, children: []});
+                                    resolve ()
+                                }
                             }
-                        }
-                    )
+                        )
+                    } catch (e) {
+                        resolve ();
+                    }
                 });
             }
             

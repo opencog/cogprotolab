@@ -123,7 +123,7 @@
                     init["database"] = JSON.parse (conf.value)
                     window.parent.frames[1].postMessage("[" + JSON.stringify (init["database"]) + ", " +'{"head": "' + init["database"]["top-node"] + '", "rel": []}' + "]" , "*");
                 } catch (e) {
-                    window.parent.frames[1].postMessage("clear", "*");
+                    window.parent.frames[1].postMessage('###ERROR###', "*");
                 }
             }
             
