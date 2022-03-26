@@ -282,8 +282,9 @@
 
                 evt = event;
 
-                if (event.data === "###ERROR###") {
-                    nodeTree = {head: event.data, done: true, children: []};
+                var psd = JSON.parse (event.data);
+                if (psd[0] === "###ERROR###") {
+                    nodeTree = {head: "###ERROR###", error: psd[1], done: true, children: []};
                     setTimeout( function () {
                         divContainer.dispatchEvent(new CustomEvent('redefineData', {detail: nodeTree}));
                         divContainer.style.visibility = "visible";
@@ -291,7 +292,6 @@
                     }, 1);
 
                 } else {
-                    var psd = JSON.parse (event.data);
                     var d = psd[1];
                     env.database = psd[0];
                     populateMyDropDown ()
