@@ -769,24 +769,14 @@ function Orbital (divContainer, data, quant, flatArea, scale, ovalColor, backCol
                     ctx.globalCompositeOperation = "source-atop";
 
                     var text = data.head;
-                    if (data.error) {
-                        var lh = 0.25 * env.fsize * magn / pixelSize;
-                        ctx.font = Math.round (lh) + "px monospace";
+                    if (text && ra > minr) {
+                        var lh = env.fsize * magn / pixelSize;
+                        ctx.font = "bold " + Math.round (lh) + "px monospace";
                         ctx.fillStyle = env.textColor;
                         /*
                         ctx.fillText(text, xa * squashX - ctx.measureText(text).width / 2, ya * squashY + lh / 2 * 0.7);
                         */
-                        fillText ("Error: " + data.error, xa * squashX, ya * squashY + lh / 2 * 0.7);
-                    } else {
-                        if (text && ra > minr) {
-                            var lh = env.fsize * magn / pixelSize;
-                            ctx.font = "bold " + Math.round (lh) + "px monospace";
-                            ctx.fillStyle = env.textColor;
-                            /*
-                            ctx.fillText(text, xa * squashX - ctx.measureText(text).width / 2, ya * squashY + lh / 2 * 0.7);
-                            */
-                            fillText (text, xa * squashX, ya * squashY + lh / 2 * 0.7);
-                        }
+                        fillText (text, xa * squashX, ya * squashY + lh / 2 * 0.7);
                     }
                     
                     ctx.globalCompositeOperation = "source-over";

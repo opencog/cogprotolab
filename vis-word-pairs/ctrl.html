@@ -54,6 +54,9 @@
             <div id="divContainer1" style="border-style: none; padding:0; margin:0;">
                 <textarea id="conf" wrap="off" spellcheck="false" style="border-style: none; display: block; width: 100%; resize: none; overflow: auto; outline: none; box-sizing: border-box; padding: 0; margin: 0;"></textarea>
             </div>
+            <div id="errors" style="border-style: none; padding:0; margin:0; padding-left: 5px; padding-top: 5px; padding-bottom: 5px; font-family: 'monospace';">
+                &nbsp;
+            </div>
         </div>
         
         <script>
@@ -87,8 +90,8 @@
             }
                 
             function setSize () {
-                divContainer1.style.height = divContainer.clientHeight - document.getElementById ("params").clientHeight + "px";
-                conf.style.height = divContainer.clientHeight - document.getElementById ("params").clientHeight + "px";
+                divContainer1.style.height = divContainer.clientHeight - document.getElementById ("params").clientHeight - document.getElementById ("errors").clientHeight + "px";
+                conf.style.height = divContainer.clientHeight - document.getElementById ("params").clientHeight - document.getElementById ("errors").clientHeight + "px";
                 conf.style.font = init["ctrl-font-size"] + "px monospace";
             }
 
@@ -110,6 +113,10 @@
             };
             
             var divContainer1 = document.getElementById ("divContainer1");
+            var divErrors = document.getElementById ("errors");
+            divErrors.style.color = init["text-color"];
+            divErrors.style.backgroundColor = init["oval-color"];
+            divErrors.style.font = init["ctrl-font-size"] + "px monospace";
             var conf = document.getElementById ("conf");
             conf.style.color = init["oval-color"];
             conf.style.backgroundColor = init["text-color"];
@@ -121,9 +128,13 @@
             function sendstr () {
                 try {
                     init["database"] = JSON.parse (conf.value)
+                    divErrors.innerHTML = "&nbsp;";
+                    setSize ();
                     window.parent.frames[1].postMessage("[" + JSON.stringify (init["database"]) + ", " +'{"head": "' + init["database"]["top-node"] + '", "rel": []}' + "]" , "*");
                 } catch (e) {
-                    window.parent.frames[1].postMessage('["###ERROR###", "' + e.message + '"]', "*");
+                    divErrors.innerHTML = "Error: " + e.message;
+                    setSize ();
+                    window.parent.frames[1].postMessage('["###ERROR###"]', "*");
                 }
             }
             
