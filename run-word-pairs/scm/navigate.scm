@@ -6,7 +6,6 @@
 ; as descrbied in README.md
 ;
 
-
 (use-modules (srfi srfi-1))
 
 ; General terminology:
