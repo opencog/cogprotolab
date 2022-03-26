@@ -92,7 +92,6 @@
             function setSize () {
                 divContainer1.style.height = divContainer.clientHeight - document.getElementById ("params").clientHeight - document.getElementById ("errors").clientHeight + "px";
                 conf.style.height = divContainer.clientHeight - document.getElementById ("params").clientHeight - document.getElementById ("errors").clientHeight + "px";
-                conf.style.font = init["ctrl-font-size"] + "px monospace";
             }
 
             wonload = function () {
@@ -120,7 +119,9 @@
             var conf = document.getElementById ("conf");
             conf.style.color = init["oval-color"];
             conf.style.backgroundColor = init["text-color"];
+            conf.style.font = init["ctrl-font-size"] + "px monospace";
             conf.value = JSON.stringify (init["database"], null, 2);
+            divErrors.innerHTML = "JSON parse: OK";
             conf.oninput = onkd;
             
             window.addEventListener("load", wonload ());
@@ -128,11 +129,11 @@
             function sendstr () {
                 try {
                     init["database"] = JSON.parse (conf.value)
-                    divErrors.innerHTML = "&nbsp;";
+                    divErrors.innerHTML = "JSON parse: OK";
                     setSize ();
                     window.parent.frames[1].postMessage("[" + JSON.stringify (init["database"]) + ", " +'{"head": "' + init["database"]["top-node"] + '", "rel": []}' + "]" , "*");
                 } catch (e) {
-                    divErrors.innerHTML = "Error: " + e.message;
+                    divErrors.innerHTML = e.message;
                     setSize ();
                     window.parent.frames[1].postMessage('["###ERROR###"]', "*");
                 }
