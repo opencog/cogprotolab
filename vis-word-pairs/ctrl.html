@@ -45,16 +45,16 @@
     </head>
     <body>
       <section>
-        <div id="divContainer" style="overflow: hidden; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; border-sytle: none; padding:0; margin:0;">
-            <div id="params" style="border-style: none; padding:0; margin:0; padding-left: 5px; padding-top: 5px; padding-bottom: 5px; font-family: 'monospace'; color: white; background-color: black">
+        <div id="divContainer" style="overflow: hidden; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; border-sytle: none; padding:0; margin:0; font-family: monospace;">
+            <div id="params" style="border-style: none; padding:0; margin:0; padding-left: 5px; padding-bottom: 5px; font-family: 'monospace';">
                 <div>
-                    <strong id="title">word pairs configuration</strong> <span style="font-size: 10px;">(edit top node, queries, statistics)</span><br/>
+                    <span style="font-size: 0.7em;"><strong id="title">word pairs config</strong></span><span style="font-size: 0.4em;"> (edit top node, queries, statistics)</span><br/>
                 </div>
             </div>
             <div id="divContainer1" style="border-style: none; padding:0; margin:0;">
-                <textarea id="conf" wrap="off" spellcheck="false" style="border-style: none; display: block; width: 100%; resize: none; overflow: auto; outline: none; box-sizing: border-box; padding: 0; margin: 0; padding-left: 5px; padding-top: 5px; padding-bottom: 5px;"></textarea>
+                <textarea id="conf" wrap="off" spellcheck="false" style="border-style: none; display: block; width: 100%; resize: none; overflow: auto; outline: none; box-sizing: border-box; padding: 0; margin: 0; padding-left: 5px; padding-top: 5px; padding-bottom: 5px; font-size: 0.5em;"></textarea>
             </div>
-            <div id="errors" style="border-style: none; padding:0; margin:0; padding-left: 5px; padding-top: 5px; padding-bottom: 5px; font-family: 'monospace';">
+            <div id="errors" style="border-style: none; padding:0; margin:0; padding-left: 5px; padding-top: 5px; padding-bottom: 5px; font-size: 0.5em;">
                 &nbsp;
             </div>
         </div>
@@ -111,15 +111,23 @@
                 });
             };
             
+            var divContainer = document.body;
+            divContainer.style.fontSize = init["ctrl-font-size"] + "em";
+            
             var divContainer1 = document.getElementById ("divContainer1");
+            
+            var divParams = document.getElementById ("params");
+            divParams.style.color = init["text-color"];
+            divParams.style.backgroundColor = init["oval-color"];
+            
             var divErrors = document.getElementById ("errors");
             divErrors.style.color = init["text-color"];
             divErrors.style.backgroundColor = init["oval-color"];
-            divErrors.style.font = init["ctrl-font-size"] + "px monospace";
+            
             var conf = document.getElementById ("conf");
             conf.style.color = init["oval-color"];
             conf.style.backgroundColor = init["text-color"];
-            conf.style.font = init["ctrl-font-size"] + "px monospace";
+            
             conf.value = JSON.stringify (init["database"], null, 2);
             divErrors.innerHTML = "JSON parse: OK";
             conf.oninput = onkd;

@@ -1,7 +1,7 @@
 var init = {
     "host": "localhost",
     "port": "17014",
-    "ctrl-font-size": "10",
+    "ctrl-font-size": "1.75",
     "font-size": "50",
     "background-color": "gray",
     "oval-color": "rgb(208,208,208)",
