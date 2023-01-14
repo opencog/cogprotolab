@@ -573,7 +573,7 @@
                             query += ")";
                         query += ")";
                         
-                        sendcmd (query + "\n").then (
+                        sendcmd (query + "(newline)\n").then (
                             (response) => {
                                 // stats
                                 try {
@@ -607,12 +607,18 @@
             function setChildren (data, rel) {
                 var ret = [];
                 while (Array.isArray(rel[2])) {
-                    var txt = rel[0][1][1][2];
+                    var txta = rel[0][1][1][2];
+                    var txt = txta;
+                    if (typeof txt != 'string')
+                        txt = txta[0];
                     ret.push (txt.substr (1, txt.length - 2));
                     rel = rel[2];
                 }
                 
-                var txt = rel[1][1][2];
+                var txta = rel[1][1][2];
+                var txt = txta;
+                if (typeof txt != 'string')
+                    txt = txta[0];
                 ret.push (txt.substr (1, txt.length - 2));
 
                 data.children = [];
