@@ -7,8 +7,16 @@ data, and word similarity scores.
 
 Instructions
 ------------
-Get your hands on one of these datasets (or create your own; see
-the opencog/learn project for instructions how.) Contact Linas
+You need to either crate a dataset, or get one from someone else.
+To create your own:
+```
+git clone https://github.com/opencog/docker
+```
+Then `cd opencog/land-pairs` and build the Docker container here.
+(You'll need to build three others first.) The follow the instructions
+in that README.
+
+Alternately, get your hands on one of these datasets Contact Linas
 to get these datasets.
 
 * `run-1-marg-tranche-123.rdb` -- Requires 59GB to load word-pairs,

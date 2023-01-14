@@ -16,10 +16,10 @@ experimental word pairs visualization project
 ## Use Instructions
 
 1. Copy this directory to a local web server directory, usually under `/var/www/html/`
-2. prepare the database following instructions from directory `../run-word-pairs/`
+2. Prepare the database following instructions from directory `../run-word-pairs/`
 3. Configure connection host and port parameters in `main.conf.js`
 4. Load `index.html` in browser to browse the database
-5. refer to built-in instructions on navigating the contents (big questionmark in bottom-right corner) `// under construction //`
+5. Refer to built-in instructions on navigating the contents (big questionmark in bottom-right corner) `// under construction //`
 
 ## Project Status
 
