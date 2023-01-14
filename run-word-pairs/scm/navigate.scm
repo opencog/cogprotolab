@@ -53,7 +53,10 @@
 
 		; Sort the list above, and then return the
 		; first NUM-TO-SHOW of that list.
-		(take (sort tail-verts compare-fun) NUM-TO-SHOW))
+		(define sorted-verts (sort tail-verts compare-fun))
+		(if (< (length sorted-verts) NUM-TO-SHOW)
+			sorted-verts
+			(take sorted-verts NUM-TO-SHOW)))
 
 	; Return an edge-score for the given edge.
 	; This is a trivial wrapper.
