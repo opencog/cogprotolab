@@ -12,7 +12,7 @@
         echo "telnet connection error: $errno $errstr";
 
     } else {
-        //stream_set_blocking($fp, false);
+        // stream_set_blocking($fp, false);
         stream_set_timeout($fp, 0, 2500);
         
         send($fp, $delay, "scm\n", $prompt);
@@ -22,16 +22,18 @@
     }
 
     function send ($fp, $delay, $command, $prompt) {
-        $timeout = 5;
+        // Timeout in seconds. For large servers, it might take
+        // more than 5 seconds. But 25 should be enough?!
+        $timeout = 25;
         $starttime = time();
 
-        //write to socket
+        // Write to socket
         if (fwrite($fp, $command) == false) {
-            return "telnet command send error";
+            return "Error in PHP telnet: Error sending data on socket";
         }
 
         $response = "";
-        //read socket
+        // Read socket
         while ((time() - $starttime) < $timeout) {
             while (($ret = fgets($fp)) != false) {
                 if ($ret == $prompt) {
@@ -43,6 +45,6 @@
             }
         }
         
-        return "timed out";
+        return "Error in PHP telnet: Timed out waiting for CogServer";
     }
 ?>
