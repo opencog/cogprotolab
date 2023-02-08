@@ -29,7 +29,7 @@
 
         // Write to socket
         if (fwrite($fp, $command) == false) {
-            return "Error in PHP telnet: Error sending data on socket";
+            return "telnet.php: Error sending data to CogServer";
         }
 
         $response = "";
@@ -45,6 +45,6 @@
             }
         }
         
-        return "Error in PHP telnet: Timed out waiting for CogServer";
+        return "telnet.php: Timed out waiting for CogServer";
     }
 ?>
